@@ -26,6 +26,8 @@
     "mocha": "^3.4.2"
   },
   "dependencies": {
-    "commander": "^2.9.0"
+    "commander": "^2.9.0",
+    "request": "^2.81.0",
+    "sync-queue": "0.0.2"
   }
 }
