@@ -4,6 +4,7 @@ const Queue = require("sync-queue");
 let queue = new Queue();
 const request = require("request");
 const auth = require("./auth");
+const path = require("path");
 
 function localFilesListing(dir) {
   const files = fs.readdirSync(dir);
@@ -37,32 +38,27 @@ function sendFile(file, config) {
   return new Promise((resolve, reject) => {
     console.log("in ");
     console.log(file);
-    /*
-    setTimeout(function() {
-      resolve();
-    }, 500)
-    */
 
     let formData = {
-      "testtiti": 45
+      "info": JSON.stringify(file),
+      "file": fs.createReadStream(file.path)
     };
+    //
+    console.log("after form data");
 
     let url = 'http://localhost:3002/instances/' + config.site_name +
       "/sendFile?token=" + config.token
-
-    console.log("url = " + url);
 
     request.post({
       url: url,
       formData: formData
     }, function optionalCallback(err, httpResponse, body) {
-      if (err || httpResponse.statusCode != 200) {
+      if (err) {
+        console.log(err);
         reject("failed send");
       } else {
         resolve(body);
       }
-      console.log(httpResponse.statusCode);
-      console.log('Upload successful!  Server responded with:', body);
     });
   });
   // ...
