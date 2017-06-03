@@ -6,6 +6,7 @@ function prepareAuthenticatedCommand() {
     let envs = env.get();
     auth(envs).then((token) => {
       envs.token = token;
+      env.set(envs);
     }).catch((err) => {
       reject(err);
     });

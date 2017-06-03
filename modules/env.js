@@ -1,4 +1,5 @@
 const fs = require('fs');
+const log = require("./log");
 
 function get() {
   try {
@@ -10,6 +11,15 @@ function get() {
   }
 };
 
+function set(envs) {
+  try {
+    fs.writeFileSync("./.openode", JSON.stringify(envs));
+  } catch(err) {
+    log.err(err);
+  }
+}
+
 module.exports = {
-  get
+  get,
+  set
 };
