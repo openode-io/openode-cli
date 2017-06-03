@@ -5,8 +5,9 @@ let queue = new Queue();
 const request = require("request");
 const auth = require("./auth");
 const path = require("path");
+const cliConfs = require("./cliConfs");
 
-const API_URL = "http://localhost:3002/"
+const API_URL = cliConfs.API_URL;
 
 function localFilesListing(dir) {
   const files = fs.readdirSync(dir);
@@ -177,27 +178,20 @@ function deleteFiles(files, config) {
 
 
 
-module.exports = function deploy() {
-
-  const site_name = "test123";
-  const token = auth();
-  const config = {
-    site_name,
-    token
-  };
+module.exports = function deploy(env) {
 
   const localFiles = localFilesListing(".");
 
   // verifyFilesRequired .. todo
-  findChanges(localFiles, config).then((resChanges) => {
+  findChanges(localFiles, env).then((resChanges) => {
     let changes = JSON.parse(resChanges);
     let files2Modify = changes.filter(f => f.change == 'M' || f.change == 'C');
     let files2Delete = changes.filter(f => f.change == 'D');
 
-    sendFiles(files2Modify, config).then(() => {
+    sendFiles(files2Modify, env).then(() => {
       // done
 
-      deleteFiles(files2Delete, config).then(() => {
+      deleteFiles(files2Delete, env).then(() => {
         // done
       }).catch((err) => {
         console.log(err);
