@@ -6,6 +6,8 @@ const request = require("request");
 const auth = require("./auth");
 const path = require("path");
 
+const API_URL = "http://localhost:3002/"
+
 function localFilesListing(dir) {
   const files = fs.readdirSync(dir);
   let allFiles = [];
@@ -24,6 +26,9 @@ function localFilesListing(dir) {
 
     if (fStat.isDirectory()) {
       allFiles = allFiles.concat(localFilesListing(fInfo.path));
+      fInfo.type = "D";
+      fInfo.mtime = fStat.mtime;
+      allFiles.push(fInfo);
     } else {
       fInfo.type = "F";
       fInfo.mtime = fStat.mtime;
@@ -31,25 +36,24 @@ function localFilesListing(dir) {
     }
   }
 
-  return allFiles;
+  return JSON.parse(JSON.stringify(allFiles));
 }
 
 function sendFile(file, config) {
   return new Promise((resolve, reject) => {
-    console.log("in ");
-    console.log(file);
 
     let formData = {
       "info": JSON.stringify(file),
       "file": fs.createReadStream(file.path)
     };
-    //
-    console.log("after form data");
 
-    let url = 'http://localhost:3002/instances/' + config.site_name +
-      "/sendFile?token=" + config.token
+    let url = API_URL + 'instances/' + config.site_name +
+      "/sendFile";
 
     request.post({
+      headers: {
+        "x-auth-token": config.token
+      },
       url: url,
       formData: formData
     }, function optionalCallback(err, httpResponse, body) {
@@ -61,14 +65,42 @@ function sendFile(file, config) {
       }
     });
   });
-  // ...
-  //console.log("f = " + file);
+}
+
+function findChanges(files, config) {
+  return new Promise((resolve, reject) => {
+
+    let url = API_URL + 'instances/' + config.site_name + "/changes";
+
+    request.post({
+      headers: {
+        "x-auth-token": config.token
+      },
+      url: url,
+      json: true,
+      formData: {
+        "files": JSON.stringify(files)
+      }
+    }, function optionalCallback(err, httpResponse, body) {
+      if (err) {
+        console.log(err);
+        reject("failed send");
+      } else {
+        resolve(body);
+      }
+    });
+  });
 }
 
 // https://github.com/tessel/sync-queue
 
 function sendFiles(files, config) {
   return new Promise((resolve, reject) => {
+
+    if ( ! files || files.length == 0) {
+      resolve();
+    }
+
     files.forEach((f, index) => {
       queue.place(function() {
         sendFile(f, config).then((result) => {
@@ -95,13 +127,32 @@ module.exports = function deploy() {
   const config = {
     site_name,
     token
-  }
+  };
 
-  const files = localFilesListing(".");
+  const localFiles = localFilesListing(".");
 
   // verifyFilesRequired .. todo
+  findChanges(localFiles, config).then((resChanges) => {
+    let changes = JSON.parse(resChanges);
+    let files2Modify = changes.filter(f => f.change == 'M' || f.change == 'C');
+    let files2Delete = changes.filter(f => f.change == 'D');
+
+    if (files2Modify.length > 0) {
+      sendFiles(files2Modify, config).then(() => {
+        log.out("Successfully sent files: ");
+        console.log(files2Modify);
+      }).catch((err) => {
+        log.err(err);
+      });
+    } else {
+      log.out("No files to upload, all sync!")
+    }
+  }).catch((err) => {
+    log.err(err);
+  })
 
   // filesToSend = ...
+  /*
   sendFiles(files, config).then(() => {
     console.log("sent all files");
 
@@ -110,6 +161,6 @@ module.exports = function deploy() {
   }).catch((err) => {
     console.log(err);
   });
+  */
 
-  console.log(files);
 };
