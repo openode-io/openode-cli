@@ -45,6 +45,29 @@ function authenticate(email, password) {
   });
 }
 
+function signupApi(email, password, password_confirmation) {
+  return new Promise((resolve, reject) => {
+    let url = cliConfs.API_URL + 'account/register';
+
+    request.post({
+      url: url,
+      json: true,
+      form: {
+        email,
+        password,
+        password_confirmation
+      }
+    }, function optionalCallback(err, httpResponse, body) {
+
+      if (err || httpResponse.statusCode != 200) {
+        reject(body);
+      } else {
+        resolve(body);
+      }
+    });
+  });
+}
+
 function login() {
   return new Promise((resolve, reject) => {
     const schema = {
@@ -60,9 +83,6 @@ function login() {
 
     prompt.start();
 
-    //
-    // Get two properties from the user: email, password
-    //
     prompt.get(schema, function (err, result) {
       if (err) {
         reject(err);
@@ -73,11 +93,62 @@ function login() {
           reject(err);
         });
       }
-      console.log("resulttt login ");
-      console.log(result);
     });
   });
 }
+
+function promisifyPrompt(schema) {
+  return new Promise((resolve, reject) => {
+    prompt.start();
+    prompt.get(schema, function (err, result) {
+      if (err) {
+        resolve(null);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
+async function signup() {
+  const schema = {
+    properties: {
+      email: {
+        required: true
+      },
+      password: {
+        hidden: true
+      },
+      password_confirmation: {
+        hidden: true
+      }
+    }
+  };
+
+  let user = null;
+
+  while (user == null) {
+
+    try {
+      let result = await promisifyPrompt(schema);
+      user = await signupApi(result.email, result.password, result.password_confirmation);
+
+      if (user) {
+        return user.token;
+      }
+    } catch(err) {
+      log.err(err);
+      user = null;
+
+      if ( ! err.error) {
+        return null;
+      }
+    }
+  }
+
+  return user.token;
+}
+
 
 function loginOrSignup() {
   return new Promise((resolve, reject) => {
@@ -95,17 +166,8 @@ function loginOrSignup() {
 
     prompt.start();
 
-    //
-    // Get two properties from the user: email, password
-    //
     prompt.get(schema, function (err, result) {
-      //
-      // Log the results.
-      //
-      console.log('Command-line input received:');
-      console.log('  name: ' + result.loginOrSignup);
       if (result.loginOrSignup == "l") {
-        console.log("have to login...");
         login().then((token) => {
           resolve(token);
         }).catch((err) => {
@@ -114,12 +176,18 @@ function loginOrSignup() {
         });
       }
       else if (result.loginOrSignup == "r") {
+        signup().then((token) => {
+          console.log("done signuppppp...");
+          resolve(token);
+        }).catch((err) => {
+          console.log(err);
+          reject(err)
+        });
 
       } else {
 
       }
     });
-
   });
 }
 
@@ -130,7 +198,6 @@ module.exports = function(env) {
         resolve(env.token);
       } else {
         log.err("Invalid token");
-        console.log("ohhhhhhhhhhhhhhhhhhh");
         loginOrSignup().then((token) => {
           resolve(token);
         }).catch(err => {
