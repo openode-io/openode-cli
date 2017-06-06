@@ -50,7 +50,7 @@ function findChanges(files, config) {
     request.post({
       headers: {
         "x-auth-token": config.token
-      },
+      }, 
       url: url,
       json: true,
       formData: {
