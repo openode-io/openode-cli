@@ -1,17 +1,18 @@
 const env = require("./env");
 const auth = require("./auth");
+const instance = require("./instance");
 
-function prepareAuthenticatedCommand() {
-  return new Promise((resolve, reject) => {
-    let envs = env.get();
-    auth(envs).then((token) => {
-      envs.token = token;
-      env.set(envs);
-    }).catch((err) => {
-      reject(err);
-    });
+async function prepareAuthenticatedCommand() {
+  let envs = env.get();
+  let token = await auth(envs);
+  envs.token = token;
+  env.set(envs);
 
-  })
+  let site_name = await instance(envs);
+  envs.site_name = site_name;
+  env.set(envs);
+
+  return envs;
 }
 
 module.exports = {

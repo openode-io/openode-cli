@@ -2,6 +2,7 @@ const cliConfs = require("./cliConfs");
 const request = require("request");
 const log = require("./log");
 const prompt = require("prompt");
+const promptUtil = require("./promptUtil")
 
 function tokenValid(token) {
   return new Promise((resolve, reject) => {
@@ -97,19 +98,6 @@ function login() {
   });
 }
 
-function promisifyPrompt(schema) {
-  return new Promise((resolve, reject) => {
-    prompt.start();
-    prompt.get(schema, function (err, result) {
-      if (err) {
-        resolve(null);
-      } else {
-        resolve(result);
-      }
-    });
-  });
-}
-
 async function signup() {
   const schema = {
     properties: {
@@ -130,7 +118,7 @@ async function signup() {
   while (user == null) {
 
     try {
-      let result = await promisifyPrompt(schema);
+      let result = await promptUtil.promisifyPrompt(schema);
       user = await signupApi(result.email, result.password, result.password_confirmation);
 
       if (user) {
@@ -157,7 +145,7 @@ function loginOrSignup() {
         loginOrSignup: {
           description: 'Would you like to [l]ogin or [r]egister a new account?',
           pattern: /^[l,r]$/,
-          message: 'Invalid input, please either l to login or r to register.',
+          message: 'Invalid input, please enter either l to [l]ogin or r to [r]egister.',
           required: true,
           default: "r"
         }

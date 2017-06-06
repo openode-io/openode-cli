@@ -8,8 +8,10 @@ commander
   .command('deploy')
   .description('Deploy your website on opeNode')
   //.option("-s, --setup_mode [mode]", "Which setup mode to use")
-  .action(function() {
-    main.prepareAuthenticatedCommand();
+  .action(async function() {
+    let envVars = await main.prepareAuthenticatedCommand();
+    console.log("varss A");
+    console.log(envVars);
     //require("./modules/deploy")();
   });
 
