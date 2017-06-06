@@ -114,7 +114,7 @@ function sendFile(file, config) {
       url: url,
       formData: formData
     }, function optionalCallback(err, httpResponse, body) {
-      if (err) {
+      if (err || httpResponse.statusCode != 200) {
         console.log(err);
         reject("failed send");
       } else {
@@ -206,5 +206,7 @@ function deploy(env) {
 
 module.exports = {
   localFilesListing,
+  sendFile,
+  sendFiles,
   deploy
 }

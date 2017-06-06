@@ -1,5 +1,7 @@
-var expect = require('expect.js');
+const expect = require('expect.js');
 const deployModule = require("../modules/deploy.js");
+const nock = require("nock");
+const cliConfs = require("../modules/cliConfs");
 
 function findFiles(files, fPath) {
   return files.filter(f => f.path == fPath);
@@ -51,6 +53,23 @@ describe('Deploy', function() {
         .to.equal("./test/localRepos/withIgnoredFiles/test.js");
       expect(findFiles(files, "./test/localRepos/withIgnoredFiles/test.js")[0].type)
         .to.equal("F");
+    });
+  });
+
+  describe('send files', function() {
+    it("single file", function(done) {
+      let files = [{"path": "./test/localRepos/basic/test.js"}];
+
+      nock(cliConfs.API_URL)
+        .post('/instances/mysite/sendFile')
+        .reply(200, {
+         });
+
+      deployModule.sendFiles(files, {"site_name": "mysite"}).then((result) => {
+        done();
+      }).catch(err => {
+        done(err);
+      });
     });
   });
 

@@ -24,7 +24,8 @@
   "homepage": "https://github.com/martinlevesque/openode-cli#readme",
   "devDependencies": {
     "expect.js": "^0.3.1",
-    "mocha": "^3.4.2"
+    "mocha": "^3.4.2",
+    "nock": "^9.0.13"
   },
   "dependencies": {
     "commander": "^2.9.0",
