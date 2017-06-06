@@ -21,7 +21,8 @@ function localFilesListing(dir) {
 
 
     if ((f == "node_modules" && fStat.isDirectory()) ||
-      (f == ".git" && fStat.isDirectory())) {
+      (f == ".git" && fStat.isDirectory()) ||
+      (f == ".openode")) {
       continue;
     }
 
@@ -176,9 +177,7 @@ function deleteFiles(files, config) {
   });
 }
 
-
-
-module.exports = function deploy(env) {
+function deploy(env) {
 
   const localFiles = localFilesListing(".");
 
@@ -203,4 +202,9 @@ module.exports = function deploy(env) {
   }).catch((err) => {
     log.err(err);
   })
-};
+}
+
+module.exports = {
+  localFilesListing,
+  deploy
+}

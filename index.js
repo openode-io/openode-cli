@@ -12,7 +12,7 @@ commander
     let envVars = await main.prepareAuthenticatedCommand();
     console.log("varss A");
     console.log(envVars);
-    //require("./modules/deploy")();
+    //require("./modules/deploy").deploy();
   });
 
 commander.parse(process.argv);
