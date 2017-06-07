@@ -20,7 +20,6 @@ function getOp(operation, sitename, config) {
       url: url,
       json: true,
     }, function optionalCallback(err, httpResponse, body) {
-
       if (err || httpResponse.statusCode != 200) {
         reject(body);
       } else {
