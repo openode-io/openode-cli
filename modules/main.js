@@ -2,8 +2,19 @@ const env = require("./env");
 const auth = require("./auth");
 const instance = require("./instance");
 
+function isFirstRun() {
+  try {
+    let envs = env.get();
+
+    return JSON.stringify(envs) == "{}"
+  } catch(err) {
+    return false;
+  }
+}
+
 async function prepareAuthenticatedCommand() {
   let envs = env.get();
+  env.set(envs);
   let token = await auth(envs);
   envs.token = token;
   env.set(envs);
@@ -16,5 +27,6 @@ async function prepareAuthenticatedCommand() {
 }
 
 module.exports = {
+  isFirstRun,
   prepareAuthenticatedCommand
 };
