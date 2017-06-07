@@ -155,6 +155,11 @@ function loginOrSignup() {
     prompt.start();
 
     prompt.get(schema, function (err, result) {
+
+      if (err || ! result) {
+        return reject(err);
+      }
+
       if (result.loginOrSignup == "l") {
         login().then((token) => {
           resolve(token);
@@ -183,10 +188,11 @@ module.exports = function(env) {
   return new Promise((resolve, reject) => {
     tokenValid(env.token).then((isValid) => {
       if (isValid) {
+        log.out("[+] Authentication valid.")
         resolve(env.token);
       } else {
-        log.err("Invalid token");
         loginOrSignup().then((token) => {
+          log.out("[+] Authentication valid.")
           resolve(token);
         }).catch(err => {
           reject(err);

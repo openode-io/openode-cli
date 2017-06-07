@@ -6,6 +6,7 @@ const request = require("request");
 const auth = require("./auth");
 const path = require("path");
 const cliConfs = require("./cliConfs");
+const instanceOperation = require("./instance_operation");
 
 const API_URL = cliConfs.API_URL;
 
@@ -50,7 +51,7 @@ function findChanges(files, config) {
     request.post({
       headers: {
         "x-auth-token": config.token
-      }, 
+      },
       url: url,
       json: true,
       formData: {
@@ -101,8 +102,12 @@ function sendFile(file, config) {
 
     let formData = {
       "info": JSON.stringify(file),
-      "file": fs.createReadStream(file.path)
     };
+
+    if (file.type == "F") {
+      let file2Upload = fs.createReadStream(file.path);
+      formData.file = file2Upload
+    }
 
     let url = API_URL + 'instances/' + config.site_name +
       "/sendFile";
@@ -115,7 +120,6 @@ function sendFile(file, config) {
       formData: formData
     }, function optionalCallback(err, httpResponse, body) {
       if (err || httpResponse.statusCode != 200) {
-        console.log(err);
         reject("failed send");
       } else {
         resolve(body);
@@ -177,31 +181,23 @@ function deleteFiles(files, config) {
   });
 }
 
-function deploy(env) {
+async function deploy(env) {
+  try {
+    const localFiles = localFilesListing(".");
 
-  const localFiles = localFilesListing(".");
-
-  // verifyFilesRequired .. todo
-  findChanges(localFiles, env).then((resChanges) => {
+    let resChanges = await findChanges(localFiles, env);
     let changes = JSON.parse(resChanges);
     let files2Modify = changes.filter(f => f.change == 'M' || f.change == 'C');
     let files2Delete = changes.filter(f => f.change == 'D');
 
-    sendFiles(files2Modify, env).then(() => {
-      // done
-
-      deleteFiles(files2Delete, env).then(() => {
-        // done
-      }).catch((err) => {
-        console.log(err);
-        log.err(err);
-      });
-    }).catch((err) => {
-      log.err(err);
-    });
-  }).catch((err) => {
-    log.err(err);
-  })
+    console.log("files 2 modify ");
+    console.log(files2Modify)
+    await sendFiles(files2Modify, env);
+    await deleteFiles(files2Delete, env);
+    return await instanceOperation("restart", env);
+  } catch(err) {
+    return err;
+  }
 }
 
 module.exports = {
