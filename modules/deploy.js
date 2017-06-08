@@ -190,8 +190,6 @@ async function deploy(env) {
     let files2Modify = changes.filter(f => f.change == 'M' || f.change == 'C');
     let files2Delete = changes.filter(f => f.change == 'D');
 
-    console.log("files 2 modify ");
-    console.log(files2Modify)
     await sendFiles(files2Modify, env);
     await deleteFiles(files2Delete, env);
     return await instanceOperation("restart", env);

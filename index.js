@@ -2,6 +2,8 @@ const commander = require('commander');
 const main = require('./modules/main');
 const asciify = require("asciify");
 const log = require("./modules/log");
+var Spinner = require('cli-spinner').Spinner;
+
 
 function processCommander() {
   commander
@@ -15,7 +17,7 @@ function processCommander() {
       let envVars = await main.prepareAuthenticatedCommand();
 
       if (envVars) {
-        let result = await require("./modules/deploy").deploy(envVars);
+        let result = await progress(require("./modules/deploy").deploy(envVars));
         log.prettyPrint(result);
       }
     });
@@ -27,7 +29,7 @@ function processCommander() {
       let envVars = await main.prepareAuthenticatedCommand();
 
       if (envVars) {
-        let result = await require("./modules/instance_operation")("status", envVars);
+        let result = await progress(require("./modules/instance_operation")("status", envVars));
         log.prettyPrint(result);
       }
     });
@@ -39,7 +41,7 @@ function processCommander() {
       let envVars = await main.prepareAuthenticatedCommand();
 
       if (envVars) {
-        let result = await require("./modules/instance_operation")("stop", envVars);
+        let result = await progress(require("./modules/instance_operation")("stop", envVars));
         log.prettyPrint(result);
       }
     });
@@ -51,15 +53,42 @@ function processCommander() {
       let envVars = await main.prepareAuthenticatedCommand();
 
       if (envVars) {
-        let result = await require("./modules/instance_operation")("restart", envVars);
+        let result = await progress(require("./modules/instance_operation")("restart", envVars));
         log.prettyPrint(result);
       }
+    });
+
+  commander
+    .command('*')
+    .description('')
+    .action(async function() {
+      log.err("Invalid command")
+      commander.help();
     });
 
   commander.parse(process.argv);
 
   if ( ! commander.args.length)
     commander.help();
+}
+
+let progressObj = new Spinner('%s ...processing')
+progressObj.setSpinnerString(2);
+
+function progressBegin() {
+  progressObj.start();
+}
+
+function progressEnd() {
+  progressObj.stop(true);
+}
+
+async function progress(promise) {
+  progressBegin();
+  let result = await promise;
+  progressEnd();
+
+  return result;
 }
 
 if (main.isFirstRun()) {

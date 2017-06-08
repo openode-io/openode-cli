@@ -29,6 +29,7 @@ function getOp(operation, sitename, config) {
   });
 }
 
+
 module.exports = async function(operation, env) {
   //let currentValid = await sitenameValid(env.site_name, env);
   try {
