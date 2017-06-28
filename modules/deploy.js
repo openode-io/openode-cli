@@ -59,8 +59,7 @@ function findChanges(files, config) {
       }
     }, function optionalCallback(err, httpResponse, body) {
       if (err) {
-        console.log(err);
-        reject("failed send");
+        reject("failed to obtain changes");
       } else {
         resolve(body);
       }
@@ -120,7 +119,7 @@ function sendFile(file, config) {
       formData: formData
     }, function optionalCallback(err, httpResponse, body) {
       if (err || httpResponse.statusCode != 200) {
-        reject("failed send");
+        reject(body);
       } else {
         resolve(body);
       }
@@ -146,8 +145,7 @@ function deleteFile(file, config) {
       formData: formData
     }, function optionalCallback(err, httpResponse, body) {
       if (err) {
-        console.log(err);
-        reject("failed send");
+        reject("failed to delete");
       } else {
         resolve(body);
       }
@@ -173,7 +171,6 @@ function deleteFiles(files, config) {
             queue.next();
           }
         }).catch((err) => {
-          console.log(err);
           reject(err);
         });
       });

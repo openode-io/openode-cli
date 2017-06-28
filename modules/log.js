@@ -11,6 +11,14 @@ function err(msg) {
 }
 
 function prettyPrint(json) {
+  if (typeof(json) == 'string') {
+    try {
+      json = JSON.parse(json);
+    } catch(err) {
+
+    }
+  }
+
   console.log(util.inspect(json, {depth: null, colors: true}));
 }
 
