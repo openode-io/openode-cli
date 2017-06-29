@@ -170,7 +170,6 @@ function loginOrSignup() {
       }
       else if (result.loginOrSignup == "r") {
         signup().then((token) => {
-          console.log("done signuppppp...");
           resolve(token);
         }).catch((err) => {
           console.log(err);

@@ -91,8 +91,11 @@ async function selectExistingOrCreate(env) {
     let sites = await sitenames(env);
     let defaultSitename = "";
 
-    if (sites.length > 0) {
+    if (sites.length > 1) {
       defaultSitename = sites[0];
+    }
+    else if (sites.length == 1) {
+      return sites[0];
     }
 
     const schema = {
