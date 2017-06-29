@@ -91,11 +91,8 @@ async function selectExistingOrCreate(env) {
     let sites = await sitenames(env);
     let defaultSitename = "";
 
-    if (sites.length > 1) {
+    if (sites.length >= 1) {
       defaultSitename = sites[0];
-    }
-    else if (sites.length == 1) {
-      return sites[0];
     }
 
     const schema = {
@@ -122,6 +119,7 @@ async function selectExistingOrCreate(env) {
       log.out("using existing site " + result.sitename)
       return result.sitename;
     } else {
+      log.out("creating website...")
       // try to create it!
       let siteCreated = await createInstance(result.sitename, env);
 
