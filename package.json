@@ -1,10 +1,13 @@
 {
   "name": "openode",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "opeNode command line interface to control and manage instances.",
   "main": "index.js",
   "scripts": {
     "test": "node ./node_modules/mocha/bin/mocha"
+  },
+  "bin": {
+    "openode": "./index.js"
   },
   "engines" : { "node" : ">=7.6.0" },
   "repository": {
