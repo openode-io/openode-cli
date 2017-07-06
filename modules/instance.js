@@ -49,6 +49,7 @@ function createInstance(sitename, config) {
       }
     }, function optionalCallback(err, httpResponse, body) {
       if (err || httpResponse.statusCode != 200) {
+        log.err(body); // show error
         resolve(false);
       } else {
         resolve(true);
