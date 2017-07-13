@@ -46,7 +46,7 @@ function authenticate(email, password) {
   });
 }
 
-function signupApi(email, password, password_confirmation) {
+function signupApi(email, password, password_confirmation, newsletter) {
   return new Promise((resolve, reject) => {
     let url = cliConfs.API_URL + 'account/register';
 
@@ -56,7 +56,8 @@ function signupApi(email, password, password_confirmation) {
       form: {
         email,
         password,
-        password_confirmation
+        password_confirmation,
+        newsletter
       }
     }, function optionalCallback(err, httpResponse, body) {
 
@@ -98,6 +99,33 @@ function login() {
   });
 }
 
+// request wether or not the user wants to register to the newsletter
+function wantsNewsletter() {
+  return new Promise((resolve, reject) => {
+    const schema = {
+      properties: {
+        wantsNewsletter: {
+          description: 'Subscribe to the newsletter ([y]es or [n]o) ?',
+          pattern: /^[y,n]$/,
+          message: 'Invalid input, please enter either Y or N.',
+          required: true,
+          default: "y"
+        }
+      }
+    };
+
+    prompt.start();
+
+    prompt.get(schema, function (err, result) {
+      if (err || ! result) {
+        return reject(err);
+      } else {
+        resolve(result.wantsNewsletter);
+      }
+    });
+  });
+}
+
 async function signup() {
   const schema = {
     properties: {
@@ -119,7 +147,8 @@ async function signup() {
 
     try {
       let result = await promptUtil.promisifyPrompt(schema);
-      user = await signupApi(result.email, result.password, result.password_confirmation);
+      let newsletter = (await wantsNewsletter()) === 'y';
+      user = await signupApi(result.email, result.password, result.password_confirmation, newsletter);
 
       if (user) {
         return user.token;
@@ -136,7 +165,6 @@ async function signup() {
 
   return user.token;
 }
-
 
 function loginOrSignup() {
   return new Promise((resolve, reject) => {

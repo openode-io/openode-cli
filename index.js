@@ -7,7 +7,7 @@ var Spinner = require('cli-spinner').Spinner;
 
 function processCommander() {
   commander
-    .version('1.0.5');
+    .version('1.0.6');
 
   commander
     .command('deploy')
