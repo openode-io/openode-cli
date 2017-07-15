@@ -99,8 +99,8 @@ async function selectExistingOrCreate(env) {
     const schema = {
       properties: {
         sitename: {
-          description: 'Type your sitename',
-          message: 'Invalid input, please enter a sitename.',
+          description: 'Type your subdomain sitename (Example: my-site) OR custom domain (mysite.com)',
+          message: 'Invalid input, please enter a sitename or custom domain.',
           required: true,
           default: defaultSitename
         }
