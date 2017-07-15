@@ -58,6 +58,45 @@ function processCommander() {
       }
     });
 
+  // aliases (custom domain)
+  commander
+    .command('list-aliases')
+    .description('List aliases of the custom domain')
+    .action(async function() {
+      let envVars = await main.prepareAuthenticatedCommand();
+
+      if (envVars) {
+        let result = await progress(require("./modules/instance_operation")("listAliases", envVars));
+        log.prettyPrint(result);
+      }
+    });
+
+  commander
+    .command('add-alias <hostname>')
+    .description('Add hostname alias')
+    .action(async function(hostname) {
+
+      let envVars = await main.prepareAuthenticatedCommand();
+
+      if (envVars) {
+        let result = await progress(require("./modules/instance_operation")("addAlias", envVars, hostname));
+        log.prettyPrint(result);
+      }
+    });
+
+  commander
+    .command('del-alias <hostname>')
+    .description('Delete hostname alias')
+    .action(async function(hostname) {
+
+      let envVars = await main.prepareAuthenticatedCommand();
+
+      if (envVars) {
+        let result = await progress(require("./modules/instance_operation")("delAlias", envVars, hostname));
+        log.prettyPrint(result);
+      }
+    });
+
   commander
     .command('*')
     .description('')

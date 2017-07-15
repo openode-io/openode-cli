@@ -89,5 +89,56 @@ describe('Instance Operation', function() {
     });
   });
 
+  describe('list-aliases', function() {
+    it("should return status with valid instance", function(done) {
+      nock(cliConfs.API_URL)
+        .get('/instances/my.site/')
+        .reply(200, {
+          "domains": "[]"
+         });
+
+      instanceModule("listAliases", {"site_name": "my.site", "token": "asfd"}).then((result) => {
+        expect(JSON.stringify(result)).to.equal("[]");
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
+
+  describe('add-alias', function() {
+    it("should add alias", function(done) {
+      nock(cliConfs.API_URL)
+        .post('/instances/my.site/add-alias')
+        .reply(200, {
+          "result": "success"
+         });
+
+      instanceModule("addAlias", {"site_name": "my.site", "token": "asfd"}).then((result) => {
+        expect(result.result).to.equal("success");
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
+
+  describe('del-alias', function() {
+    it("should del alias", function(done) {
+      nock(cliConfs.API_URL)
+        .post('/instances/my.site/del-alias')
+        .reply(200, {
+          "result": "success"
+         });
+
+      instanceModule("delAlias", {"site_name": "my.site", "token": "asfd"}).then((result) => {
+        expect(result.result).to.equal("success");
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
+
 
 });

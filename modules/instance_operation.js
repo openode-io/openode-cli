@@ -29,8 +29,36 @@ function getOp(operation, sitename, config) {
   });
 }
 
+function postOp(operation, sitename, hostname, config) {
+  return new Promise((resolve, reject) => {
 
-module.exports = async function(operation, env) {
+    if (!sitename || sitename == "") {
+      reject({});
+    }
+
+    let url = cliConfs.API_URL + 'instances/' + sitename + "/" + operation;
+
+    request.post({
+      headers: {
+        "x-auth-token": config.token
+      },
+      url: url,
+      json: true,
+      form: {
+        "hostname": hostname
+      }
+    }, function optionalCallback(err, httpResponse, body) {
+      if (err || httpResponse.statusCode != 200) {
+        reject(body);
+      } else {
+        resolve(body);
+      }
+    });
+  });
+}
+
+
+module.exports = async function(operation, env, hostname) {
   //let currentValid = await sitenameValid(env.site_name, env);
   try {
     switch(operation) {
@@ -42,6 +70,22 @@ module.exports = async function(operation, env) {
         break;
       case "restart":
         return await getOp("restart", env.site_name, env);
+        break;
+      case "listAliases":
+        let statusResult = await getOp("", env.site_name, env);
+
+        try {
+          return JSON.parse(statusResult.domains);
+        } catch(err) {
+          console.error(err);
+          return [];
+        }
+        break;
+      case "addAlias":
+        return await postOp("add-alias", env.site_name, hostname, env);
+        break;
+      case "delAlias":
+        return await postOp("del-alias", env.site_name, hostname, env);
         break;
     }
 
