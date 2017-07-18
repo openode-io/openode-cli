@@ -20,7 +20,7 @@ npm install -g openode
 First, just go to your project directory in command line:
 
 ```
-cd <your project directory>
+cd [your project directory]
 ```
 
 And then just type:
@@ -28,6 +28,9 @@ And then just type:
 ```
 openode deploy
 ```
+
+This command will upload your local repository to the opeNode cloud, npm install, then launch a secure container of your server, and then put it online. During this command, you can also select between
+using a subdomain.openode.io or a custom domain.
 
 ### Status
 
@@ -47,6 +50,39 @@ openode stop
 
 ```
 openode restart
+```
+
+## Custom Domain
+
+To enable a custom domain, make sure to enter your custom domain while running openode deploy.
+Then you can manage your custom domain subdomains using the following commands.
+
+### List aliases (subdomains)
+
+```
+openode list-aliases
+```
+
+### Add an alias (subdomain)
+
+```
+openode add-alias [hostname]
+```
+
+If your custom domain is for example mycustomdomain.com, then you can run
+
+```
+openode add-alias www.mycustomdomain.com
+openode add-alias blog.mycustomdomain.com
+```
+
+in order to point mycustomdomain.com, www.mycustomdomain.com, and blog.mycustomdomain.com
+to this instance.
+
+### Removing an alias (subdomain)
+
+```
+openode del-alias [hostname]
 ```
 
 ## License
