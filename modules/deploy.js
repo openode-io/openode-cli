@@ -1,6 +1,6 @@
 const fs = require("fs");
 const log = require("./log");
-const Queue = require("sync-queue"); // todo remove packagejson
+const Queue = require("sync-queue"); 
 let queue = new Queue();
 const request = require("request");
 const auth = require("./auth");
