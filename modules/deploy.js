@@ -1,12 +1,14 @@
 const fs = require("fs");
 const log = require("./log");
-const Queue = require("sync-queue");
+const Queue = require("sync-queue"); // todo remove packagejson
 let queue = new Queue();
 const request = require("request");
 const auth = require("./auth");
 const path = require("path");
 const cliConfs = require("./cliConfs");
 const instanceOperation = require("./instance_operation");
+const archiver = require("archiver");
+const zipArchive = archiver('zip');
 
 const API_URL = cliConfs.API_URL;
 
@@ -69,6 +71,19 @@ function findChanges(files, config) {
 
 // https://github.com/tessel/sync-queue
 
+function genFile2Send(f) {
+  if (f.type == "D" && f.change == "C") {
+    return {
+      "target": f.path
+    };
+  } else {
+    return {
+      "source": f.path,
+      "target": f.path
+    };
+  }
+}
+
 function sendFiles(files, config) {
   return new Promise((resolve, reject) => {
 
@@ -76,23 +91,32 @@ function sendFiles(files, config) {
       resolve();
     }
 
-    queue.clear();
+    var output = fs.createWriteStream(config.token + ".zip");
 
-    files.forEach((f, index) => {
-      queue.place(function() {
-        sendFile(f, config).then((result) => {
-
-          if (index == files.length - 1) {
-            queue.next();
-            resolve();
-          } else {
-            queue.next();
-          }
-        }).catch((err) => {
-          reject(err);
-        });
+    output.on('close', function() {
+      sendFile(config.token + ".zip", config).then((result) => {
+        resolve();
+      }).catch((err) => {
+        reject(err);
       });
     });
+
+    zipArchive.pipe(output);
+
+    const files2Send =
+      files.filter(f => !(f.type == "D" && f.change == "C"))
+      .map(f => genFile2Send(f));
+
+    for (let f of files2Send) {
+      zipArchive.file(f.target, { name: f.target });
+    }
+
+    zipArchive.finalize(function(err, bytes) {
+        if(err) {
+          reject(err);
+        }
+    });
+
   });
 }
 
@@ -100,16 +124,16 @@ function sendFile(file, config) {
   return new Promise((resolve, reject) => {
 
     let formData = {
-      "info": JSON.stringify(file),
+      "info": JSON.stringify({"path": file}),
+      "version": config.version
+
     };
 
-    if (file.type == "F") {
-      let file2Upload = fs.createReadStream(file.path);
-      formData.file = file2Upload
-    }
+    let file2Upload = fs.createReadStream(file);
+    formData.file = file2Upload
 
     let url = API_URL + 'instances/' + config.site_name +
-      "/sendFile";
+      "/sendCompressedFile";
 
     request.post({
       headers: {
@@ -178,6 +202,12 @@ function deleteFiles(files, config) {
   });
 }
 
+function deleteLocalArchive(env) {
+  fs.unlink(env.token + ".zip", function(err) {
+
+  });
+}
+
 async function deploy(env) {
   try {
     const localFiles = localFilesListing(".");
@@ -187,10 +217,12 @@ async function deploy(env) {
     let files2Modify = changes.filter(f => f.change == 'M' || f.change == 'C');
     let files2Delete = changes.filter(f => f.change == 'D');
 
-    await sendFiles(files2Modify, env);
     await deleteFiles(files2Delete, env);
+    await sendFiles(files2Modify, env);
+    deleteLocalArchive(env);
     return await instanceOperation("restart", env);
   } catch(err) {
+    deleteLocalArchive(env);
     return err;
   }
 }

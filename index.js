@@ -4,10 +4,11 @@ const asciify = require("asciify");
 const log = require("./modules/log");
 var Spinner = require('cli-spinner').Spinner;
 
+const version = "1.1.0"
 
 function processCommander() {
   commander
-    .version('1.0.9');
+    .version(version);
 
   commander
     .command('deploy')
@@ -15,10 +16,16 @@ function processCommander() {
     //.option("-s, --setup_mode [mode]", "Which setup mode to use")
     .action(async function() {
       let envVars = await main.prepareAuthenticatedCommand();
+      envVars.version = version;
 
       if (envVars) {
-        let result = await progress(require("./modules/deploy").deploy(envVars));
-        log.prettyPrint(result);
+        try {
+          let result = await progress(require("./modules/deploy").deploy(envVars));
+          log.prettyPrint(result);
+        } catch(err) {
+          console.error("Unhandled error, please report this bug:");
+          console.error(err);
+        }
       }
     });
 
