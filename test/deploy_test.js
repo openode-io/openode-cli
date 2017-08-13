@@ -58,14 +58,14 @@ describe('Deploy', function() {
 
   describe('send files', function() {
     it("single file", function(done) {
-      let files = [{"path": "./test/localRepos/basic/test.js"}];
+      let files = [];
 
       nock(cliConfs.API_URL)
-        .post('/instances/mysite/sendFile')
+        .post('/instances/mysite/sendCompressedFile')
         .reply(200, {
          });
 
-      deployModule.sendFiles(files, {"site_name": "mysite"}).then((result) => {
+      deployModule.sendFiles(files, {"token": "12354asdfasdfasdf", "site_name": "mysite"}).then((result) => {
         done();
       }).catch(err => {
         done(err);

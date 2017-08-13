@@ -126,7 +126,6 @@ function sendFile(file, config) {
     let formData = {
       "info": JSON.stringify({"path": file}),
       "version": config.version
-
     };
 
     let file2Upload = fs.createReadStream(file);
