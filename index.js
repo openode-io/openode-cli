@@ -104,6 +104,23 @@ function processCommander() {
       }
     });
 
+  // storage areas
+  commander
+    .command('storage-areas')
+      .description('List the storage areas')
+      //.option("-s, --setup_mode [mode]", "Which setup mode to use")
+      .action(async function() {
+        let envVars = await main.prepareAuthenticatedCommand();
+
+        try {
+          let result = await progress(require("./modules/storageAreas").list(envVars));
+          log.prettyPrint(result);
+        } catch(err) {
+          console.error("Unhandled error, please report this bug:");
+          console.error(err);
+        }
+      });
+
   commander
     .command('*')
     .description('')
