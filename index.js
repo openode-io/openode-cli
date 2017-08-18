@@ -113,7 +113,39 @@ function processCommander() {
         let envVars = await main.prepareAuthenticatedCommand();
 
         try {
-          let result = await progress(require("./modules/storageAreas").list(envVars));
+          let result = await progress(require("./modules/storageAreas")("list", envVars));
+          log.prettyPrint(result);
+        } catch(err) {
+          console.error("Unhandled error, please report this bug:");
+          console.error(err);
+        }
+      });
+
+  commander
+    .command('add-storage-area <storageArea>')
+      .description('Add a new storage area')
+      //.option("-s, --setup_mode [mode]", "Which setup mode to use")
+      .action(async function(storageArea) {
+        let envVars = await main.prepareAuthenticatedCommand();
+
+        try {
+          let result = await progress(require("./modules/storageAreas")("add", envVars, storageArea));
+          log.prettyPrint(result);
+        } catch(err) {
+          console.error("Unhandled error, please report this bug:");
+          console.error(err);
+        }
+      });
+
+  commander
+    .command('del-storage-area <storageArea>')
+      .description('Delete a storage area')
+      //.option("-s, --setup_mode [mode]", "Which setup mode to use")
+      .action(async function(storageArea) {
+        let envVars = await main.prepareAuthenticatedCommand();
+
+        try {
+          let result = await progress(require("./modules/storageAreas")("del", envVars, storageArea));
           log.prettyPrint(result);
         } catch(err) {
           console.error("Unhandled error, please report this bug:");
