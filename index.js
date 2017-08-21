@@ -4,7 +4,7 @@ const asciify = require("asciify");
 const log = require("./modules/log");
 var Spinner = require('cli-spinner').Spinner;
 
-const version = "1.1.2"
+const version = "1.1.3"
 
 function processCommander() {
   commander
@@ -38,11 +38,8 @@ function processCommander() {
       let [envVars,] = await main.prepareAuthenticatedCommand(true);
 
       if (envVars) {
-        console.log("env..1");
         let result = await progress(require("./modules/instance_operation")("status", envVars));
-        console.log("env..2");
         log.prettyPrint(result);
-        console.log("env..3");
       }
 
       main.terminate();
