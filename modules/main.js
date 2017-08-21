@@ -1,6 +1,8 @@
 const env = require("./env");
 const auth = require("./auth");
 const instance = require("./instance");
+const cliConfs = require("./cliConfs");
+const socketIo = require('socket.io-client')(cliConfs.API_URL);
 
 function isFirstRun() {
   try {
@@ -23,14 +25,20 @@ async function prepareAuthenticatedCommand() {
     let site_name = await instance(envs);
     envs.site_name = site_name;
     env.set(envs);
+    envs.io = socketIo;
 
-    return envs;
+    return [envs, socketIo];
   } catch(err) {
     return null;
   }
 }
 
+function terminate() {
+  socketIo.disconnect();
+}
+
 module.exports = {
   isFirstRun,
-  prepareAuthenticatedCommand
+  prepareAuthenticatedCommand,
+  terminate
 };

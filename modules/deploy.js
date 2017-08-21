@@ -1,6 +1,6 @@
 const fs = require("fs");
 const log = require("./log");
-const Queue = require("sync-queue"); 
+const Queue = require("sync-queue");
 let queue = new Queue();
 const request = require("request");
 const auth = require("./auth");
@@ -209,6 +209,13 @@ function deleteLocalArchive(env) {
 
 async function deploy(env) {
   try {
+    // join socket io to receive notifications
+    env.io.emit('room', env.site_name + "/" + env.token);
+
+    env.io.on('message', function(data) {
+      console.log(data);
+    });
+
     const localFiles = localFilesListing(".");
 
     let resChanges = await findChanges(localFiles, env);

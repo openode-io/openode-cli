@@ -4,7 +4,7 @@ const asciify = require("asciify");
 const log = require("./modules/log");
 var Spinner = require('cli-spinner').Spinner;
 
-const version = "1.1.1"
+const version = "1.1.2"
 
 function processCommander() {
   commander
@@ -15,7 +15,7 @@ function processCommander() {
     .description('Deploy your website on opeNode')
     //.option("-s, --setup_mode [mode]", "Which setup mode to use")
     .action(async function() {
-      let envVars = await main.prepareAuthenticatedCommand();
+      let [envVars, io] = await main.prepareAuthenticatedCommand();
       envVars.version = version;
 
       if (envVars) {
@@ -27,42 +27,53 @@ function processCommander() {
           console.error(err);
         }
       }
+
+      main.terminate();
     });
 
   commander
     .command('status')
     .description('Get info on your opeNode instance')
     .action(async function() {
-      let envVars = await main.prepareAuthenticatedCommand();
+      let [envVars,] = await main.prepareAuthenticatedCommand(true);
 
       if (envVars) {
+        console.log("env..1");
         let result = await progress(require("./modules/instance_operation")("status", envVars));
+        console.log("env..2");
         log.prettyPrint(result);
+        console.log("env..3");
       }
+
+      main.terminate();
     });
 
   commander
     .command('stop')
     .description('Stop your opeNode instance')
     .action(async function() {
-      let envVars = await main.prepareAuthenticatedCommand();
+      let [envVars,] = await main.prepareAuthenticatedCommand();
 
       if (envVars) {
         let result = await progress(require("./modules/instance_operation")("stop", envVars));
         log.prettyPrint(result);
       }
+
+      main.terminate();
     });
 
   commander
     .command('restart')
     .description('Restart your opeNode instance')
     .action(async function() {
-      let envVars = await main.prepareAuthenticatedCommand();
+      let [envVars,] = await main.prepareAuthenticatedCommand();
 
       if (envVars) {
         let result = await progress(require("./modules/instance_operation")("restart", envVars));
         log.prettyPrint(result);
       }
+
+      main.terminate();
     });
 
   // aliases (custom domain)
@@ -70,12 +81,14 @@ function processCommander() {
     .command('list-aliases')
     .description('List aliases of the custom domain')
     .action(async function() {
-      let envVars = await main.prepareAuthenticatedCommand();
+      let [envVars,] = await main.prepareAuthenticatedCommand();
 
       if (envVars) {
         let result = await progress(require("./modules/instance_operation")("listAliases", envVars));
         log.prettyPrint(result);
       }
+
+      main.terminate();
     });
 
   commander
@@ -83,12 +96,14 @@ function processCommander() {
     .description('Add hostname alias')
     .action(async function(hostname) {
 
-      let envVars = await main.prepareAuthenticatedCommand();
+      let [envVars,] = await main.prepareAuthenticatedCommand();
 
       if (envVars) {
         let result = await progress(require("./modules/instance_operation")("addAlias", envVars, hostname));
         log.prettyPrint(result);
       }
+
+      main.terminate();
     });
 
   commander
@@ -96,12 +111,14 @@ function processCommander() {
     .description('Delete hostname alias')
     .action(async function(hostname) {
 
-      let envVars = await main.prepareAuthenticatedCommand();
+      let [envVars,] = await main.prepareAuthenticatedCommand();
 
       if (envVars) {
         let result = await progress(require("./modules/instance_operation")("delAlias", envVars, hostname));
         log.prettyPrint(result);
       }
+
+      main.terminate();
     });
 
   // storage areas
@@ -110,7 +127,7 @@ function processCommander() {
       .description('List the storage areas')
       //.option("-s, --setup_mode [mode]", "Which setup mode to use")
       .action(async function() {
-        let envVars = await main.prepareAuthenticatedCommand();
+        let [envVars,] = await main.prepareAuthenticatedCommand();
 
         try {
           let result = await progress(require("./modules/storageAreas")("list", envVars));
@@ -119,6 +136,8 @@ function processCommander() {
           console.error("Unhandled error, please report this bug:");
           console.error(err);
         }
+
+        main.terminate();
       });
 
   commander
@@ -126,7 +145,7 @@ function processCommander() {
       .description('Add a new storage area')
       //.option("-s, --setup_mode [mode]", "Which setup mode to use")
       .action(async function(storageArea) {
-        let envVars = await main.prepareAuthenticatedCommand();
+        let [envVars,] = await main.prepareAuthenticatedCommand();
 
         try {
           let result = await progress(require("./modules/storageAreas")("add", envVars, storageArea));
@@ -135,6 +154,8 @@ function processCommander() {
           console.error("Unhandled error, please report this bug:");
           console.error(err);
         }
+
+        main.terminate();
       });
 
   commander
@@ -142,7 +163,7 @@ function processCommander() {
       .description('Delete a storage area')
       //.option("-s, --setup_mode [mode]", "Which setup mode to use")
       .action(async function(storageArea) {
-        let envVars = await main.prepareAuthenticatedCommand();
+        let [envVars,] = await main.prepareAuthenticatedCommand();
 
         try {
           let result = await progress(require("./modules/storageAreas")("del", envVars, storageArea));
@@ -151,6 +172,8 @@ function processCommander() {
           console.error("Unhandled error, please report this bug:");
           console.error(err);
         }
+
+        main.terminate();
       });
 
   commander
@@ -167,7 +190,7 @@ function processCommander() {
     commander.help();
 }
 
-let progressObj = new Spinner('%s ...processing')
+let progressObj = new Spinner('%s ')
 progressObj.setSpinnerString(2);
 
 function progressBegin() {
