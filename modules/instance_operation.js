@@ -29,7 +29,7 @@ function getOp(operation, sitename, config) {
   });
 }
 
-function postOp(operation, sitename, hostname, config) {
+function postOp(operation, sitename, form, config) {
   return new Promise((resolve, reject) => {
 
     if (!sitename || sitename == "") {
@@ -44,9 +44,7 @@ function postOp(operation, sitename, hostname, config) {
       },
       url: url,
       json: true,
-      form: {
-        "hostname": hostname
-      }
+      form: form
     }, function optionalCallback(err, httpResponse, body) {
       if (err || httpResponse.statusCode != 200) {
         reject(body);
@@ -82,10 +80,13 @@ module.exports = async function(operation, env, hostname) {
         }
         break;
       case "addAlias":
-        return await postOp("add-alias", env.site_name, hostname, env);
+        return await postOp("add-alias", env.site_name, { hostname }, env);
         break;
       case "delAlias":
-        return await postOp("del-alias", env.site_name, hostname, env);
+        return await postOp("del-alias", env.site_name, { hostname }, env);
+        break;
+      case "eraseAll":
+        return await postOp("erase-all", env.site_name, {}, env);
         break;
     }
 

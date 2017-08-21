@@ -4,7 +4,7 @@ const asciify = require("asciify");
 const log = require("./modules/log");
 var Spinner = require('cli-spinner').Spinner;
 
-const version = "1.1.3"
+const version = "1.1.4"
 
 function processCommander() {
   commander
@@ -20,7 +20,7 @@ function processCommander() {
 
       if (envVars) {
         try {
-          let result = await progress(require("./modules/deploy").deploy(envVars));
+          let result = await progress(require("./modules/deploy").deploy(envVars), envVars);
           log.prettyPrint(result);
         } catch(err) {
           console.error("Unhandled error, please report this bug:");
@@ -38,7 +38,7 @@ function processCommander() {
       let [envVars,] = await main.prepareAuthenticatedCommand(true);
 
       if (envVars) {
-        let result = await progress(require("./modules/instance_operation")("status", envVars));
+        let result = await progress(require("./modules/instance_operation")("status", envVars), envVars);
         log.prettyPrint(result);
       }
 
@@ -112,6 +112,20 @@ function processCommander() {
 
       if (envVars) {
         let result = await progress(require("./modules/instance_operation")("delAlias", envVars, hostname));
+        log.prettyPrint(result);
+      }
+
+      main.terminate();
+    });
+
+  commander
+    .command('erase-all')
+    .description('Erase all content in the remote repository')
+    .action(async function() {
+      let [envVars,] = await main.prepareAuthenticatedCommand();
+
+      if (envVars) {
+        let result = await progress(require("./modules/instance_operation")("eraseAll", envVars), envVars);
         log.prettyPrint(result);
       }
 
@@ -198,7 +212,17 @@ function progressEnd() {
   progressObj.stop(true);
 }
 
-async function progress(promise) {
+async function progress(promise, env) {
+
+  if (env && env.io) {
+    // join socket io to receive notifications
+    env.io.emit('room', env.site_name + "/" + env.token);
+
+    env.io.on('message', function(data) {
+      console.log(data);
+    });
+  }
+
   progressBegin();
   let result = await promise;
   progressEnd();
