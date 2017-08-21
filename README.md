@@ -31,8 +31,9 @@ And then just type:
 openode deploy
 ```
 
-This command will upload your local repository to the opeNode cloud, npm install, then launch a secure container of your server, and then put it online. During this command, you can also select between
-using a subdomain.openode.io or a custom domain.
+This command will upload your local repository to the opeNode cloud, npm install,
+then launch a secure container of your server, and then put it online. During this 
+command, you can also select between using a subdomain.openode.io or a custom domain.
 
 Note that when you run *openode deploy* and your website is already running, it will update your files, update the environment variables (if they changed), and reload your website with 0-second-downtime.
 
@@ -54,6 +55,15 @@ openode stop
 
 ```
 openode restart
+```
+
+### Erase all content
+
+In order to clear all content of your cloud repository and stop your instance,
+the following operation must done:
+
+```
+openode erase-all
 ```
 
 ## Custom Domain
