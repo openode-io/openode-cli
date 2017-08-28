@@ -32,6 +32,27 @@ function processCommander() {
     });
 
   commander
+    .command('pull')
+    .description('Pull your website from opeNode to your local disk')
+    //.option("-s, --setup_mode [mode]", "Which setup mode to use")
+    .action(async function() {
+      let [envVars, io] = await main.prepareAuthenticatedCommand();
+      envVars.version = version;
+
+      if (envVars) {
+        try {
+          let result = await progress(require("./modules/deploy").pull(envVars), envVars);
+          log.prettyPrint(result);
+        } catch(err) {
+          console.error("Unhandled error, please report this bug:");
+          console.error(err);
+        }
+      }
+
+      main.terminate();
+    });
+
+  commander
     .command('status')
     .description('Get info on your opeNode instance')
     .action(async function() {

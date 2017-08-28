@@ -9,6 +9,7 @@ const cliConfs = require("./cliConfs");
 const instanceOperation = require("./instance_operation");
 const archiver = require("archiver");
 const zipArchive = archiver('zip');
+const unzip = require("unzip");
 
 const API_URL = cliConfs.API_URL;
 
@@ -226,9 +227,55 @@ async function deploy(env) {
   }
 }
 
+function pullAll(config) {
+  return new Promise((resolve, reject) => {
+
+    let formData = {
+      "version": config.version
+    };
+
+    let url = API_URL + 'instances/' + config.site_name +
+      "/pull";
+
+    request.get({
+      headers: {
+        "x-auth-token": config.token
+      },
+      url: url
+    }, function optionalCallback(err, httpResponse, body) {
+      if (err || httpResponse.statusCode != 200) {
+        reject();
+      } else {
+        resolve();
+      }
+    }).pipe(fs.createWriteStream(config.token + '.zip'));
+  });
+}
+
+
+
+async function pull(env) {
+  try {
+    await pullAll(env);
+
+    const unzipExtractor = unzip.Extract({ path: '.' });
+    fs.createReadStream(env.token + ".zip").pipe(unzipExtractor);
+
+    unzipExtractor.on('close', function() {
+      deleteLocalArchive(env);
+    });
+
+    return {"result": "success"};
+  } catch(err) {
+    deleteLocalArchive(env);
+    return err;
+  }
+}
+
 module.exports = {
   localFilesListing,
   sendFile,
   sendFiles,
-  deploy
+  deploy,
+  pull
 }
