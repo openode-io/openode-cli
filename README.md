@@ -39,13 +39,13 @@ Note that when you run *openode deploy* and your website is already running, it 
 
 ### Pull / Backup
 
-If you need to get your remote repository to your local, or need to backup your live website, you need to use the pull, just like that:
+If you need to get your remote repository to your local, or need to backup your live website, you need to use the pull command, just like that:
 
 ```
 openode pull
 ```
 
-This will take the remote files and copy all of them in the current folder. It will overwrite files. If a given local file is not present remotely, it will not be erased locally. Thus, if you need a fresh pull, first remote the local content (*rm -rf \**) and then run *openode pull*.
+This will take the remote files and copy all of them in the current folder. Note that it will overwrite files. Also, if a given local file is not present remotely, it will not be erased locally. Thus, if you need a fresh pull, first remote the local content (*rm -rf \**) and then run *openode pull*.
 
 ### Status
 
