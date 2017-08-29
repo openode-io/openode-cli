@@ -6,21 +6,31 @@ var Spinner = require('cli-spinner').Spinner;
 
 const version = "1.1.5"
 
+async function runCommand(promisedCmd) {
+  try {
+
+  }
+}
+
 function processCommander() {
   commander
     .version(version);
 
   commander
     .command('deploy')
+    .option("--clearNpm", "Clear node_modules before deploying")
     .description('Deploy your website on opeNode')
-    //.option("-s, --setup_mode [mode]", "Which setup mode to use")
-    .action(async function() {
+    .action(async function(opts) {
+      const options = {
+        "clearNpm": opts.clearNpm === true
+      };
+
       let [envVars, io] = await main.prepareAuthenticatedCommand();
       envVars.version = version;
 
       if (envVars) {
         try {
-          let result = await progress(require("./modules/deploy").deploy(envVars), envVars);
+          let result = await progress(require("./modules/deploy").deploy(envVars), envVars, options);
           log.prettyPrint(result);
         } catch(err) {
           console.error("Unhandled error, please report this bug:");
