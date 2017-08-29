@@ -2,7 +2,11 @@ const commander = require('commander');
 const main = require('./modules/main');
 const asciify = require("asciify");
 const log = require("./modules/log");
-var Spinner = require('cli-spinner').Spinner;
+//var Spinner = require('cli-spinner').Spinner;
+const ora = require('ora')({
+  "color": "red",
+  "stream": process.stdout
+});
 
 const version = "1.1.5"
 
@@ -145,15 +149,13 @@ function processCommander() {
     commander.help();
 }
 
-let progressObj = new Spinner('%s ')
-progressObj.setSpinnerString(2);
-
 function progressBegin() {
-  progressObj.start();
+  ora.start("processing...");
 }
 
 function progressEnd() {
-  progressObj.stop(true);
+  //progressObj.stop(true);
+  ora.stop();
 }
 
 async function progress(promise, env) {
