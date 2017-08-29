@@ -208,7 +208,7 @@ function deleteLocalArchive(env) {
   });
 }
 
-async function deploy(env) {
+async function deploy(env, options) {
   try {
     const localFiles = localFilesListing(".");
 
@@ -220,7 +220,7 @@ async function deploy(env) {
     await deleteFiles(files2Delete, env);
     await sendFiles(files2Modify, env);
     deleteLocalArchive(env);
-    return await instanceOperation("restart", env);
+    return await instanceOperation("restart", env, options);
   } catch(err) {
     deleteLocalArchive(env);
     return err;

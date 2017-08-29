@@ -56,7 +56,7 @@ function postOp(operation, sitename, form, config) {
 }
 
 
-module.exports = async function(operation, env, hostname) {
+module.exports = async function(operation, env, options = {}) {
   //let currentValid = await sitenameValid(env.site_name, env);
   try {
     switch(operation) {
@@ -67,7 +67,7 @@ module.exports = async function(operation, env, hostname) {
         return await getOp("stop", env.site_name, env);
         break;
       case "restart":
-        return await getOp("restart", env.site_name, env);
+        return await getOp("restart", env.site_name, env, options);
         break;
       case "listAliases":
         let statusResult = await getOp("", env.site_name, env);
@@ -80,10 +80,10 @@ module.exports = async function(operation, env, hostname) {
         }
         break;
       case "addAlias":
-        return await postOp("add-alias", env.site_name, { hostname }, env);
+        return await postOp("add-alias", env.site_name, options, env);
         break;
       case "delAlias":
-        return await postOp("del-alias", env.site_name, { hostname }, env);
+        return await postOp("del-alias", env.site_name, options, env);
         break;
       case "eraseAll":
         return await postOp("erase-all", env.site_name, {}, env);

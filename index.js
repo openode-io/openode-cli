@@ -38,7 +38,7 @@ function processCommander() {
         "clearNpm": opts.clearNpm === true
       };
       let [envVars, ] = await prepareAuth();
-      await runCommand(progress(require("./modules/deploy").deploy(envVars), envVars, options));
+      await runCommand(progress(require("./modules/deploy").deploy(envVars, options), envVars));
     });
 
   commander
@@ -88,7 +88,7 @@ function processCommander() {
     .description('Add hostname alias')
     .action(async function(hostname) {
       let [envVars, ] = await prepareAuth();
-      await runCommand(progress(require("./modules/instance_operation")("addAlias", envVars, hostname)));
+      await runCommand(progress(require("./modules/instance_operation")("addAlias", envVars, { hostname} )));
     });
 
   commander
@@ -96,7 +96,7 @@ function processCommander() {
     .description('Delete hostname alias')
     .action(async function(hostname) {
       let [envVars, ] = await prepareAuth();
-      await runCommand(progress(require("./modules/instance_operation")("delAlias", envVars, hostname)));
+      await runCommand(progress(require("./modules/instance_operation")("delAlias", envVars, { hostname } )));
     });
 
   commander
