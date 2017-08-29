@@ -14,7 +14,7 @@ function isFirstRun() {
   }
 }
 
-async function prepareAuthenticatedCommand() {
+async function prepareAuthenticatedCommand(version) {
   try {
     let envs = env.get();
     env.set(envs);
@@ -27,6 +27,7 @@ async function prepareAuthenticatedCommand() {
     env.set(envs);
     envs.io = socketIo;
 
+    envs.version = version
     return [envs, socketIo];
   } catch(err) {
     return null;

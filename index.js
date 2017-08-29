@@ -8,8 +8,17 @@ const version = "1.1.5"
 
 async function runCommand(promisedCmd) {
   try {
-
+    let result = await promisedCmd;
+    log.prettyPrint(result);
+    main.terminate();
+  } catch(err) {
+    console.error("Unhandled error, please report this bug:");
+    console.error(err);
   }
+}
+
+function prepareAuth() {
+  return main.prepareAuthenticatedCommand(version);
 }
 
 function processCommander() {
@@ -24,21 +33,8 @@ function processCommander() {
       const options = {
         "clearNpm": opts.clearNpm === true
       };
-
-      let [envVars, io] = await main.prepareAuthenticatedCommand();
-      envVars.version = version;
-
-      if (envVars) {
-        try {
-          let result = await progress(require("./modules/deploy").deploy(envVars), envVars, options);
-          log.prettyPrint(result);
-        } catch(err) {
-          console.error("Unhandled error, please report this bug:");
-          console.error(err);
-        }
-      }
-
-      main.terminate();
+      let [envVars, ] = await prepareAuth();
+      await runCommand(progress(require("./modules/deploy").deploy(envVars), envVars, options));
     });
 
   commander
@@ -46,62 +42,32 @@ function processCommander() {
     .description('Pull your website from opeNode to your local disk')
     //.option("-s, --setup_mode [mode]", "Which setup mode to use")
     .action(async function() {
-      let [envVars, io] = await main.prepareAuthenticatedCommand();
-      envVars.version = version;
-
-      if (envVars) {
-        try {
-          let result = await progress(require("./modules/deploy").pull(envVars), envVars);
-          log.prettyPrint(result);
-        } catch(err) {
-          console.error("Unhandled error, please report this bug:");
-          console.error(err);
-        }
-      }
-
-      main.terminate();
+      let [envVars, ] = await prepareAuth();
+      await runCommand(progress(require("./modules/deploy").pull(envVars), envVars));
     });
 
   commander
     .command('status')
     .description('Get info on your opeNode instance')
     .action(async function() {
-      let [envVars,] = await main.prepareAuthenticatedCommand(true);
-
-      if (envVars) {
-        let result = await progress(require("./modules/instance_operation")("status", envVars), envVars);
-        log.prettyPrint(result);
-      }
-
-      main.terminate();
+      let [envVars, ] = await prepareAuth();
+      await runCommand(progress(require("./modules/instance_operation")("status", envVars), envVars));
     });
 
   commander
     .command('stop')
     .description('Stop your opeNode instance')
     .action(async function() {
-      let [envVars,] = await main.prepareAuthenticatedCommand();
-
-      if (envVars) {
-        let result = await progress(require("./modules/instance_operation")("stop", envVars));
-        log.prettyPrint(result);
-      }
-
-      main.terminate();
+      let [envVars, ] = await prepareAuth();
+      await runCommand(progress(require("./modules/instance_operation")("stop", envVars)));
     });
 
   commander
     .command('restart')
     .description('Restart your opeNode instance')
     .action(async function() {
-      let [envVars,] = await main.prepareAuthenticatedCommand();
-
-      if (envVars) {
-        let result = await progress(require("./modules/instance_operation")("restart", envVars));
-        log.prettyPrint(result);
-      }
-
-      main.terminate();
+      let [envVars, ] = await prepareAuth();
+      await runCommand(progress(require("./modules/instance_operation")("restart", envVars)));
     });
 
   // aliases (custom domain)
@@ -109,58 +75,32 @@ function processCommander() {
     .command('list-aliases')
     .description('List aliases of the custom domain')
     .action(async function() {
-      let [envVars,] = await main.prepareAuthenticatedCommand();
-
-      if (envVars) {
-        let result = await progress(require("./modules/instance_operation")("listAliases", envVars));
-        log.prettyPrint(result);
-      }
-
-      main.terminate();
+      let [envVars, ] = await prepareAuth();
+      await runCommand(progress(require("./modules/instance_operation")("listAliases", envVars)));
     });
 
   commander
     .command('add-alias <hostname>')
     .description('Add hostname alias')
     .action(async function(hostname) {
-
-      let [envVars,] = await main.prepareAuthenticatedCommand();
-
-      if (envVars) {
-        let result = await progress(require("./modules/instance_operation")("addAlias", envVars, hostname));
-        log.prettyPrint(result);
-      }
-
-      main.terminate();
+      let [envVars, ] = await prepareAuth();
+      await runCommand(progress(require("./modules/instance_operation")("addAlias", envVars, hostname)));
     });
 
   commander
     .command('del-alias <hostname>')
     .description('Delete hostname alias')
     .action(async function(hostname) {
-
-      let [envVars,] = await main.prepareAuthenticatedCommand();
-
-      if (envVars) {
-        let result = await progress(require("./modules/instance_operation")("delAlias", envVars, hostname));
-        log.prettyPrint(result);
-      }
-
-      main.terminate();
+      let [envVars, ] = await prepareAuth();
+      await runCommand(progress(require("./modules/instance_operation")("delAlias", envVars, hostname)));
     });
 
   commander
     .command('erase-all')
     .description('Erase all content in the remote repository')
     .action(async function() {
-      let [envVars,] = await main.prepareAuthenticatedCommand();
-
-      if (envVars) {
-        let result = await progress(require("./modules/instance_operation")("eraseAll", envVars), envVars);
-        log.prettyPrint(result);
-      }
-
-      main.terminate();
+      let [envVars, ] = await prepareAuth();
+      await runCommand(progress(require("./modules/instance_operation")("eraseAll", envVars), envVars));
     });
 
   // storage areas
@@ -169,17 +109,8 @@ function processCommander() {
       .description('List the storage areas')
       //.option("-s, --setup_mode [mode]", "Which setup mode to use")
       .action(async function() {
-        let [envVars,] = await main.prepareAuthenticatedCommand();
-
-        try {
-          let result = await progress(require("./modules/storageAreas")("list", envVars));
-          log.prettyPrint(result);
-        } catch(err) {
-          console.error("Unhandled error, please report this bug:");
-          console.error(err);
-        }
-
-        main.terminate();
+      let [envVars, ] = await prepareAuth();
+        await runCommand(progress(require("./modules/storageAreas")("list", envVars)));
       });
 
   commander
@@ -187,17 +118,8 @@ function processCommander() {
       .description('Add a new storage area')
       //.option("-s, --setup_mode [mode]", "Which setup mode to use")
       .action(async function(storageArea) {
-        let [envVars,] = await main.prepareAuthenticatedCommand();
-
-        try {
-          let result = await progress(require("./modules/storageAreas")("add", envVars, storageArea));
-          log.prettyPrint(result);
-        } catch(err) {
-          console.error("Unhandled error, please report this bug:");
-          console.error(err);
-        }
-
-        main.terminate();
+      let [envVars, ] = await prepareAuth();
+        await runCommand(progress(require("./modules/storageAreas")("add", envVars, storageArea)));
       });
 
   commander
@@ -205,17 +127,8 @@ function processCommander() {
       .description('Delete a storage area')
       //.option("-s, --setup_mode [mode]", "Which setup mode to use")
       .action(async function(storageArea) {
-        let [envVars,] = await main.prepareAuthenticatedCommand();
-
-        try {
-          let result = await progress(require("./modules/storageAreas")("del", envVars, storageArea));
-          log.prettyPrint(result);
-        } catch(err) {
-          console.error("Unhandled error, please report this bug:");
-          console.error(err);
-        }
-
-        main.terminate();
+      let [envVars, ] = await prepareAuth();
+        await runCommand(progress(require("./modules/storageAreas")("del", envVars, storageArea)));
       });
 
   commander
