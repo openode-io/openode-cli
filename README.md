@@ -32,10 +32,20 @@ openode deploy
 ```
 
 This command will upload your local repository to the opeNode cloud, npm install,
-then launch a secure container of your server, and then put it online. During this 
+then launch a secure container of your server, and then put it online. During this
 command, you can also select between using a subdomain.openode.io or a custom domain.
 
 Note that when you run *openode deploy* and your website is already running, it will update your files, update the environment variables (if they changed), and reload your website with 0-second-downtime.
+
+### Pull / Backup
+
+If you need to get your remote repository to your local, or need to backup your live website, you need to use the pull, just like that:
+
+```
+openode pull
+```
+
+This will take the remote files and copy all of them in the current folder. It will overwrite files. If a given local file is not present remotely, it will not be erased locally. Thus, if you need a fresh pull, first remote the local content (*rm -rf \**) and then run *openode pull*.
 
 ### Status
 

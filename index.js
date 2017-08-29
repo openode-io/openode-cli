@@ -4,7 +4,7 @@ const asciify = require("asciify");
 const log = require("./modules/log");
 var Spinner = require('cli-spinner').Spinner;
 
-const version = "1.1.4"
+const version = "1.1.5"
 
 function processCommander() {
   commander
