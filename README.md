@@ -37,6 +37,14 @@ command, you can also select between using a subdomain.openode.io or a custom do
 
 Note that when you run *openode deploy* and your website is already running, it will update your files, update the environment variables (if they changed), and reload your website with 0-second-downtime.
 
+#### Options
+
+```
+openode deploy [--clearNpm]
+```
+
+* *clearNpm:* Remote the node_modules folder before deploying.
+
 ### Pull / Backup
 
 If you need to get your remote repository to your local, or need to backup your live website, you need to use the pull command, just like that:
@@ -78,7 +86,8 @@ openode erase-all
 
 ## Custom Domain
 
-To enable a custom domain, make sure to enter your custom domain while running openode deploy.
+To enable a custom domain, make sure to enter your custom domain while running
+openode deploy.
 Then you can manage your custom domain subdomains using the following commands.
 
 ### List aliases (subdomains)
@@ -111,7 +120,8 @@ openode del-alias [hostname]
 
 ## Defining storage areas
 
-The storage areas are folders which will never be deleted. Those folders can be used for storage purpose (database, configurations, etc.).
+The storage areas are folders which will never be deleted. Those folders can
+be used for storage purpose (database, configurations, etc.).
 
 ### List storage areas
 

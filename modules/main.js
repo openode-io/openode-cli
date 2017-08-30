@@ -30,7 +30,7 @@ async function prepareAuthenticatedCommand(version) {
     envs.version = version
     return [envs, socketIo];
   } catch(err) {
-    return null;
+    return [{}, ];
   }
 }
 

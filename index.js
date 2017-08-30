@@ -8,7 +8,7 @@ const ora = require('ora')({
   "stream": process.stdout
 });
 
-const version = "1.1.5"
+const version = "1.1.6"
 
 async function runCommand(promisedCmd) {
   try {
@@ -21,8 +21,12 @@ async function runCommand(promisedCmd) {
   }
 }
 
-function prepareAuth() {
-  return main.prepareAuthenticatedCommand(version);
+async function prepareAuth() {
+  try {
+    return await main.prepareAuthenticatedCommand(version);
+  } catch(err) {
+    return [{}, ];
+  }
 }
 
 function processCommander() {
@@ -35,8 +39,9 @@ function processCommander() {
     .description('Deploy your website on opeNode')
     .action(async function(opts) {
       const options = {
-        "clearNpm": opts.clearNpm === true
+        "clearNpm": opts && opts.clearNpm === true
       };
+
       let [envVars, ] = await prepareAuth();
       await runCommand(progress(require("./modules/deploy").deploy(envVars, options), envVars));
     });
@@ -150,7 +155,7 @@ function processCommander() {
 }
 
 function progressBegin() {
-  ora.start("processing...");
+  ora.start("");
 }
 
 function progressEnd() {

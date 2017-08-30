@@ -4,14 +4,17 @@ const log = require("./log");
 const prompt = require("prompt");
 const promptUtil = require("./promptUtil");
 
-function getOp(operation, sitename, config) {
+function getOp(operation, sitename, config, options = {}) {
   return new Promise((resolve, reject) => {
 
     if (!sitename || sitename == "") {
       reject({});
     }
 
-    let url = cliConfs.API_URL + 'instances/' + sitename + "/" + operation;
+    let url = cliConfs.API_URL + 'instances/' + sitename + "/" + operation + "?";
+
+    const params = Object.keys(options).map(k => k + '=' + options[k]).join("&");
+    url += params;
 
     request.get({
       headers: {
