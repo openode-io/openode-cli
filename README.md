@@ -43,7 +43,7 @@ Note that when you run *openode deploy* and your website is already running, it 
 openode deploy [--clearNpm]
 ```
 
-* *clearNpm:* Remote the node_modules folder before deploying.
+* *clearNpm:* Remove the node_modules folder before deploying.
 
 ### Pull / Backup
 
