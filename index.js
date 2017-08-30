@@ -2,7 +2,6 @@ const commander = require('commander');
 const main = require('./modules/main');
 const asciify = require("asciify");
 const log = require("./modules/log");
-//var Spinner = require('cli-spinner').Spinner;
 const ora = require('ora')({
   "color": "red",
   "stream": process.stdout
@@ -10,11 +9,14 @@ const ora = require('ora')({
 
 const version = "1.1.6"
 
-async function runCommand(promisedCmd) {
+async function runCommand(promisedCmd, options = {}) {
   try {
     let result = await promisedCmd;
     log.prettyPrint(result);
-    main.terminate();
+
+    if (options.keepIo) {
+      main.terminate();
+    }
   } catch(err) {
     console.error("Unhandled error, please report this bug:");
     console.error(err);
@@ -61,6 +63,18 @@ function processCommander() {
     .action(async function() {
       let [envVars, ] = await prepareAuth();
       await runCommand(progress(require("./modules/instance_operation")("status", envVars), envVars));
+    });
+
+  commander
+    .command('logs')
+    .description('Print logs in realtime')
+    .action(async function() {
+      const socketIo = require('socket.io-client')(cliConfs.API_URL);
+      let [envVars, ] = await prepareAuth();
+      await runCommand(
+        progress(require("./modules/instance_operation")("logs", envVars), envVars, false),
+        { "keepIo": false }
+      );
     });
 
   commander
@@ -163,20 +177,25 @@ function progressEnd() {
   ora.stop();
 }
 
-async function progress(promise, env) {
+async function progress(promise, env, withProgressLoader = true) {
 
   if (env && env.io) {
     // join socket io to receive notifications
     env.io.emit('room', env.site_name + "/" + env.token);
 
     env.io.on('message', function(data) {
-      console.log(data);
+      //console.log(data);
+      process.stdout.write(data)
     });
   }
 
-  progressBegin();
+  if (withProgressLoader)
+    progressBegin();
+
   let result = await promise;
-  progressEnd();
+
+  if (withProgressLoader)
+    progressEnd();
 
   return result;
 }

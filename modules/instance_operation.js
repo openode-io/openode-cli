@@ -60,11 +60,13 @@ function postOp(operation, sitename, form, config) {
 
 
 module.exports = async function(operation, env, options = {}) {
-  //let currentValid = await sitenameValid(env.site_name, env);
   try {
     switch(operation) {
       case "status":
         return await getOp("", env.site_name, env);
+        break;
+      case "logs":
+        return await getOp("logs", env.site_name, env);
         break;
       case "stop":
         return await getOp("stop", env.site_name, env);

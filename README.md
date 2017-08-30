@@ -3,8 +3,6 @@
 [![Build status](https://travis-ci.org/martinlevesque/openode-cli.svg?branch=master)](https://travis-ci.org/martinlevesque/openode-cli)
 [![Known Vulnerabilities](https://snyk.io/test/github/martinlevesque/openode-cli/badge.svg)](https://snyk.io/test/github/martinlevesque/openode-cli)
 
-
-
 [opeNode](https://www.openode.io/) (https://www.openode.io/) command line to control and manage your Node.js instances efficiently.
 
 [opeNode](https://www.openode.io/) is a reliable and fast Cloud Node.js hosting service to deploy your Node.js app instantly.
@@ -61,6 +59,14 @@ You can obtain the info on your website instance via:
 
 ```
 openode status
+```
+
+### Logs
+
+You can obtain realtime logs by using the following command:
+
+```
+openode logs
 ```
 
 ### Stopping an Instance
