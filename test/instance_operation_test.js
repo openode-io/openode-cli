@@ -8,7 +8,7 @@ describe('Instance Operation', function() {
   describe('status', function() {
     it("should return status with valid instance", function(done) {
       nock(cliConfs.API_URL)
-        .get('/instances/mysite/')
+        .get('/instances/mysite/?')
         .reply(200, {
           "site_name": "mysite",
           "valid": true
@@ -28,7 +28,7 @@ describe('Instance Operation', function() {
   describe('stop', function() {
     it("should return status with valid instance", function(done) {
       nock(cliConfs.API_URL)
-        .get('/instances/mysite/stop')
+        .get('/instances/mysite/stop?')
         .reply(200, {
           "result": "success"
          });
@@ -43,7 +43,7 @@ describe('Instance Operation', function() {
 
     it("should return 500 with invalid response", function(done) {
       nock(cliConfs.API_URL)
-        .get('/instances/mysite/stop')
+        .get('/instances/mysite/stop?')
         .reply(500, {
           "error": {}
          });
@@ -60,7 +60,7 @@ describe('Instance Operation', function() {
   describe('restart', function() {
     it("should return status with valid instance", function(done) {
       nock(cliConfs.API_URL)
-        .get('/instances/mysite/restart')
+        .get('/instances/mysite/restart?')
         .reply(200, {
           "result": "success"
          });
@@ -75,7 +75,7 @@ describe('Instance Operation', function() {
 
     it("should return 500 with invalid response", function(done) {
       nock(cliConfs.API_URL)
-        .get('/instances/mysite/restart')
+        .get('/instances/mysite/restart?')
         .reply(500, {
           "error": {}
          });
@@ -92,7 +92,7 @@ describe('Instance Operation', function() {
   describe('list-aliases', function() {
     it("should return status with valid instance", function(done) {
       nock(cliConfs.API_URL)
-        .get('/instances/my.site/')
+        .get('/instances/my.site/?')
         .reply(200, {
           "domains": "[]"
          });
