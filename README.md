@@ -51,7 +51,17 @@ If you need to get your remote repository to your local, or need to backup your 
 openode pull
 ```
 
-This will take the remote files and copy all of them in the current folder. Note that it will overwrite files. Also, if a given local file is not present remotely, it will not be erased locally. Thus, if you need a fresh pull, first remote the local content (*rm -rf \**) and then run *openode pull*.
+This will take the remote files and copy all of them in the current folder. Note that it will overwrite files. Also, if a given local file is not present remotely, it will not be erased locally. Thus, if you need a fresh pull, first remove the local content (*rm -rf \**) and then run *openode pull*.
+
+### ci-conf
+
+...
+
+```
+openode ci-conf <TOKEN> <SITENAME>
+```
+
+...
 
 ### Status
 

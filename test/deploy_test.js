@@ -2,6 +2,7 @@ const expect = require('expect.js');
 const deployModule = require("../modules/deploy.js");
 const nock = require("nock");
 const cliConfs = require("../modules/cliConfs");
+const proc = require('child_process');
 
 function findFiles(files, fPath) {
   return files.filter(f => f.path == fPath);
@@ -71,6 +72,13 @@ describe('Deploy', function() {
         done(err);
       });
     });
-  });
 
+    afterEach(function() {
+      try {
+        proc.execSync("rm -f 12354asdfasdfasdf.zip").toString();
+      } catch(err) {
+
+      }
+    });
+  });
 });

@@ -2,12 +2,13 @@ const commander = require('commander');
 const main = require('./modules/main');
 const asciify = require("asciify");
 const log = require("./modules/log");
+const ciConf = require("./modules/ciConf");
 const ora = require('ora')({
   "color": "red",
   "stream": process.stdout
 });
 
-const version = "1.1.6"
+const version = "1.1.7"
 
 async function runCommand(promisedCmd, options = {}) {
   try {
@@ -58,11 +59,11 @@ function processCommander() {
     });
 
   commander
-    .command('status')
-    .description('Get info on your opeNode instance')
-    .action(async function() {
-      let [envVars, ] = await prepareAuth();
-      await runCommand(progress(require("./modules/instance_operation")("status", envVars), envVars));
+    .command('ci-conf <token> <sitename>')
+    .description('Generate the config file for your continuous integration (CI) environment')
+    .action(async function(token, sitename) {
+      ciConf(token, sitename);
+      process.exit();
     });
 
   commander
