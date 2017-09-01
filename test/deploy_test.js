@@ -74,9 +74,8 @@ describe('Deploy', function() {
     });
 
     afterEach(function() {
-      
       try {
-        proc.execSync("rm -f 12354asdfasdfasdf.zip").toString();
+        //proc.execSync("rm -f 12354asdfasdfasdf.zip").toString();
       } catch(err) {
 
       }
