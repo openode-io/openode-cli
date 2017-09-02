@@ -55,13 +55,12 @@ This will take the remote files and copy all of them in the current folder. Note
 
 ### ci-conf
 
-...
+To integrate with your favorite continuous integration (CI) tool, you can use the
+following command in order to generate the .openode file:
 
 ```
 openode ci-conf <TOKEN> <SITENAME>
 ```
-
-...
 
 ### Status
 
