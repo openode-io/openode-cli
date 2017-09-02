@@ -252,18 +252,27 @@ function pullAll(config) {
   });
 }
 
-
-
-async function pull(env) {
-  try {
-    await pullAll(env);
-
+function unzipRepo(env) {
+  return new Promise((resolve, reject) => {
     const unzipExtractor = unzip.Extract({ path: '.' });
     fs.createReadStream(env.token + ".zip").pipe(unzipExtractor);
 
     unzipExtractor.on('close', function() {
       deleteLocalArchive(env);
+      resolve();
     });
+
+    unzipExtractor.on('error', function(err) {
+      reject(err);
+    });
+  });
+}
+
+async function pull(env) {
+  try {
+    await pullAll(env);
+
+    await unzipRepo(env);
 
     return {"result": "success"};
   } catch(err) {
