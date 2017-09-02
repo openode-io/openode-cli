@@ -18,6 +18,8 @@ async function runCommand(promisedCmd, options = {}) {
     if (options.keepIo) {
       main.terminate();
     }
+
+    process.exit();
   } catch(err) {
     console.error("Unhandled error, please report this bug:");
     console.error(err);
@@ -60,17 +62,24 @@ function processCommander() {
 
   commander
     .command('ci-conf <token> <sitename>')
-    .description('Generate the config file for your continuous integration (CI) environment')
+    .description('Write the confs for your continuous integration (CI) env')
     .action(async function(token, sitename) {
       ciConf(token, sitename);
       process.exit();
     });
 
   commander
+    .command('status')
+    .description('Get info on your opeNode instance')
+    .action(async function() {
+      let [envVars, ] = await prepareAuth();
+      await runCommand(progress(require("./modules/instance_operation")("status", envVars), envVars));
+    });
+
+  commander
     .command('logs')
     .description('Print logs in realtime')
     .action(async function() {
-      const socketIo = require('socket.io-client')(cliConfs.API_URL);
       let [envVars, ] = await prepareAuth();
       await runCommand(
         progress(require("./modules/instance_operation")("logs", envVars), envVars, false),
@@ -185,8 +194,11 @@ async function progress(promise, env, withProgressLoader = true) {
     env.io.emit('room', env.site_name + "/" + env.token);
 
     env.io.on('message', function(data) {
-      //console.log(data);
-      process.stdout.write(data)
+      if (withProgressLoader) {
+        console.log(data);
+      } else {
+        process.stdout.write(data)
+      }
     });
   }
 
