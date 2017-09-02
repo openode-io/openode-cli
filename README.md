@@ -59,7 +59,7 @@ To integrate with your favorite continuous integration (CI) tool, you can use th
 following command in order to generate the .openode file:
 
 ```
-openode ci-conf <TOKEN> <SITENAME>
+openode ci-conf TOKEN SITENAME
 ```
 
 ### Status
