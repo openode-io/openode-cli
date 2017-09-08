@@ -38,10 +38,12 @@ Note that when you run *openode deploy* and your website is already running, it 
 #### Options
 
 ```
-openode deploy [--clearNpm]
+openode deploy [--clearNpm] [-t TOKEN -s SITE_NAME]
 ```
 
-* *clearNpm:* Remove the node_modules folder before deploying.
+* *--clearNpm:* Remove the node_modules folder before deploying.
+* *-t:* Provide an API token used for authentication.
+* *-s:* Provide a site name.
 
 ### Pull / Backup
 
@@ -61,6 +63,8 @@ following command in order to generate the .openode file:
 ```
 openode ci-conf TOKEN SITENAME
 ```
+
+Note that you can avoid using *ci-conf* and provide the token and sitename by using the *-t* and *-s* options in the deploy command, for example: *openode deploy -t your_token -s your_sitename*.
 
 ### Status
 

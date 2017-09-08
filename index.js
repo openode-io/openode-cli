@@ -41,13 +41,24 @@ function processCommander() {
   commander
     .command('deploy')
     .option("--clearNpm", "Clear node_modules before deploying")
+    .option("-t <token>", "User token used for authentication")
+    .option("-s <site name>", "Instance site name.")
     .description('Deploy your website on opeNode')
     .action(async function(opts) {
       const options = {
         "clearNpm": opts && opts.clearNpm === true
       };
 
-      let [envVars, ] = await prepareAuth();
+      let envVars = {};
+
+      if ( ! opts.T) {
+        // did not specify token, need to ask it/.openode
+        [envVars, ] = await prepareAuth();
+      } else {
+        envVars.token = opts.T;
+        envVars.site_name = opts.S;
+      }
+
       await runCommand(progress(require("./modules/deploy").deploy(envVars, options), envVars));
     });
 
