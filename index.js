@@ -57,6 +57,7 @@ function processCommander() {
       } else {
         envVars.token = opts.T;
         envVars.site_name = opts.S;
+        envVars.version = version;
       }
 
       await runCommand(progress(require("./modules/deploy").deploy(envVars, options), envVars));
