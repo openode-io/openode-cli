@@ -55,6 +55,26 @@ openode pull
 
 This will take the remote files and copy all of them in the current folder. Note that it will overwrite files. Also, if a given local file is not present remotely, it will not be erased locally. Thus, if you need a fresh pull, first remove the local content (*rm -rf \**) and then run *openode pull*.
 
+### Upgrading Your Plan
+
+In order to upgrade your plan, you first have to look at the possible plans using:
+
+```
+openode plans
+```
+
+Pick the right *id*, and then you can upgrade by running:
+
+```
+openode set-plan PLAN_ID
+```
+
+You can always verify which plan is currently active with:
+
+```
+openode plan
+```
+
 ### ci-conf
 
 To integrate with your favorite continuous integration (CI) tool, you can use the

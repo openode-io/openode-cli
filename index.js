@@ -8,7 +8,7 @@ const ora = require('ora')({
   "stream": process.stdout
 });
 
-const version = "1.1.8"
+const version = "1.1.9"
 
 async function runCommand(promisedCmd, options = {}) {
   try {
@@ -152,7 +152,6 @@ function processCommander() {
   commander
     .command('storage-areas')
       .description('List the storage areas')
-      //.option("-s, --setup_mode [mode]", "Which setup mode to use")
       .action(async function() {
       let [envVars, ] = await prepareAuth();
         await runCommand(progress(require("./modules/storageAreas")("list", envVars)));
@@ -161,19 +160,42 @@ function processCommander() {
   commander
     .command('add-storage-area <storageArea>')
       .description('Add a new storage area')
-      //.option("-s, --setup_mode [mode]", "Which setup mode to use")
       .action(async function(storageArea) {
-      let [envVars, ] = await prepareAuth();
+        let [envVars, ] = await prepareAuth();
         await runCommand(progress(require("./modules/storageAreas")("add", envVars, storageArea)));
       });
 
   commander
     .command('del-storage-area <storageArea>')
       .description('Delete a storage area')
-      //.option("-s, --setup_mode [mode]", "Which setup mode to use")
       .action(async function(storageArea) {
-      let [envVars, ] = await prepareAuth();
+        let [envVars, ] = await prepareAuth();
         await runCommand(progress(require("./modules/storageAreas")("del", envVars, storageArea)));
+      });
+
+  // plans
+  commander
+    .command('plans')
+      .description('List the available plans')
+      .action(async function() {
+        let [envVars, ] = await prepareAuth();
+        await runCommand(progress(require("./modules/plans")("list", envVars)));
+      });
+
+  commander
+    .command('plan')
+      .description('Show the currently active plan')
+      .action(async function() {
+        let [envVars, ] = await prepareAuth();
+        await runCommand(progress(require("./modules/plans")("plan", envVars)));
+      });
+
+  commander
+    .command('set-plan <plan>')
+      .description('Set the currently active plan')
+      .action(async function(plan) {
+        let [envVars, ] = await prepareAuth();
+        await runCommand(progress(require("./modules/plans")("set", envVars, plan)));
       });
 
   commander
