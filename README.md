@@ -1,7 +1,7 @@
 # openode-cli
 
 [![Build status](https://travis-ci.org/martinlevesque/openode-cli.svg?branch=master)](https://travis-ci.org/martinlevesque/openode-cli)
-[![Known Vulnerabilities](https://snyk.io/test/github/martinlevesque/openode-cli/badge.svg)](https://snyk.io/test/github/martinlevesque/openode-cli)
+[![NPM](https://nodei.co/npm/openode.png)](https://nodei.co/npm/openode/)
 
 [opeNode](https://www.openode.io/) (https://www.openode.io/) command line to control and manage your Node.js instances efficiently.
 
