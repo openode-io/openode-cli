@@ -50,9 +50,9 @@ function createInstance(sitename, config) {
     }, function optionalCallback(err, httpResponse, body) {
       if (err || httpResponse.statusCode != 200) {
         log.err(body); // show error
-        resolve(false);
+        resolve(null);
       } else {
-        resolve(true);
+        resolve(body); // returns the created website info
       }
     });
   });
@@ -125,7 +125,7 @@ async function selectExistingOrCreate(env) {
       let siteCreated = await createInstance(result.sitename, env);
 
       if (siteCreated) {
-        return result.sitename;
+        return siteCreated.site_name;
       }
     }
 
