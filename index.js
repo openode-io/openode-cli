@@ -8,7 +8,7 @@ const ora = require('ora')({
   "stream": process.stdout
 });
 
-const version = "1.2.2"
+const version = "1.2.3"
 
 async function runCommand(promisedCmd, options = {}) {
   try {

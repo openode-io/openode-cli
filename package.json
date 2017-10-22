@@ -1,6 +1,6 @@
 {
   "name": "openode",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "opeNode command line interface to control and manage instances.",
   "main": "index.js",
   "scripts": {
@@ -42,7 +42,6 @@
     "prompt": "^1.0.0",
     "request": "^2.81.0",
     "socket.io-client": "^2.0.3",
-    "sync-queue": "0.0.2",
     "unzip": "^0.1.11"
   }
 }

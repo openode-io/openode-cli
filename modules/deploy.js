@@ -1,7 +1,5 @@
 const fs = require("fs");
 const log = require("./log");
-const Queue = require("sync-queue");
-let queue = new Queue();
 const request = require("request");
 const auth = require("./auth");
 const path = require("path");
@@ -69,8 +67,6 @@ function findChanges(files, config) {
     });
   });
 }
-
-// https://github.com/tessel/sync-queue
 
 function genFile2Send(f) {
   if (f.type == "D" && f.change == "C") {
@@ -151,15 +147,18 @@ function sendFile(file, config) {
   });
 }
 
-function deleteFile(file, config) {
+function deleteFiles(files, config) {
   return new Promise((resolve, reject) => {
+    if ( ! files || files.length == 0) {
+      return resolve();
+    }
 
     let formData = {
-      "info": JSON.stringify(file),
+      "filesInfo": JSON.stringify(files),
     };
 
     let url = API_URL + 'instances/' + config.site_name +
-      "/deleteFile";
+      "/deleteFiles";
 
     request.delete({
       headers: {
@@ -169,36 +168,12 @@ function deleteFile(file, config) {
       formData: formData
     }, function optionalCallback(err, httpResponse, body) {
       if (err) {
-        reject("failed to delete");
+        reject("failed to delete files");
       } else {
         resolve(body);
       }
     });
-  });
-}
 
-function deleteFiles(files, config) {
-  return new Promise((resolve, reject) => {
-    if ( ! files || files.length == 0) {
-      resolve();
-    }
-
-    queue.clear();
-
-    files.forEach((f, index) => {
-      queue.place(function() {
-        deleteFile(f, config).then((result) => {
-          if (index == files.length - 1) {
-            queue.next();
-            resolve();
-          } else {
-            queue.next();
-          }
-        }).catch((err) => {
-          reject(err);
-        });
-      });
-    });
   });
 }
 
