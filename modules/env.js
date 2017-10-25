@@ -1,6 +1,7 @@
 const fs = require('fs');
 const log = require("./log");
 const gitignore = require('parse-gitignore');
+const pathModule = require("path");
 
 function get() {
   try {
@@ -21,6 +22,8 @@ function set(envs) {
 }
 
 function extractFiles2Ignore(path = "./.openodeignore") {
+  let result = [];
+
   const openodeIgnoreFile = path;
   const defaultList2Ignore = [
     ".openode",
@@ -32,16 +35,21 @@ function extractFiles2Ignore(path = "./.openodeignore") {
   ];
 
   if ( ! fs.existsSync(path)) {
-    return defaultList2Ignore;
+    result = defaultList2Ignore;
+  } else {
+    try {
+      result = gitignore(openodeIgnoreFile, defaultList2Ignore).filter((f) => {
+        return f.indexOf("/**") === -1;
+      });
+    } catch(err) {
+      result = defaultList2Ignore;
+    }
   }
 
-  try {
-    let result = gitignore(openodeIgnoreFile, defaultList2Ignore);
+  // normalize:
+  result = result.map(r => pathModule.normalize(r));
 
-    return result;
-  } catch(err) {
-    return defaultList2Ignore;
-  }
+  return result;
 }
 
 module.exports = {

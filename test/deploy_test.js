@@ -3,6 +3,7 @@ const deployModule = require("../modules/deploy.js");
 const nock = require("nock");
 const cliConfs = require("../modules/cliConfs");
 const proc = require('child_process');
+const envModule = require("../modules/env");
 
 function findFiles(files, fPath) {
   return files.filter(f => f.path == fPath);
@@ -46,7 +47,11 @@ describe('Deploy', function() {
     });
 
     it("repo with ignored files", function() {
-      let files = deployModule.localFilesListing("./test/localRepos/withIgnoredFiles");
+      let files = deployModule.localFilesListing("./test/localRepos/withIgnoredFiles",
+        envModule.extractFiles2Ignore(), true);
+
+      console.log("filesss -> ");
+      console.log(files);
 
       expect(files.length).to.equal(1);
 

@@ -11,7 +11,7 @@ const unzip = require("unzip");
 
 const API_URL = cliConfs.API_URL;
 
-function localFilesListing(dir) {
+function localFilesListing(dir, files2Ignore, firstLevel = false) {
   const files = fs.readdirSync(dir);
   let allFiles = [];
 
@@ -21,15 +21,14 @@ function localFilesListing(dir) {
 
     const fStat = fs.lstatSync(fInfo.path);
 
-
-    if ((f == "node_modules" && fStat.isDirectory()) ||
-      (f == ".git" && fStat.isDirectory()) ||
-      (f == ".openode")) {
+    // should we ignore and skip?
+    if (files2Ignore && files2Ignore.indexOf(path.normalize(fInfo.path)) >= 0 ||
+      (firstLevel && files2Ignore && files2Ignore.indexOf(path.normalize(f)) >= 0)) {
       continue;
     }
 
     if (fStat.isDirectory()) {
-      allFiles = allFiles.concat(localFilesListing(fInfo.path));
+      allFiles = allFiles.concat(localFilesListing(fInfo.path, files2Ignore));
       fInfo.type = "D";
       fInfo.mtime = fStat.mtime;
       allFiles.push(fInfo);
@@ -185,7 +184,7 @@ function deleteLocalArchive(env) {
 
 async function deploy(env, options) {
   try {
-    const localFiles = localFilesListing(".");
+    const localFiles = localFilesListing(".", env.files2Ignore, true);
 
     let resChanges = await findChanges(localFiles, env);
     let changes = JSON.parse(resChanges);

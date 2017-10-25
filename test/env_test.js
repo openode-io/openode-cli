@@ -21,6 +21,8 @@ describe('Env', function() {
     it("with 2 files", function() {
       let f2ignore = envModule.extractFiles2Ignore("./test/localRepos/ignoreWith2F/.openodeignore");
 
+      console.log(f2ignore);
+
       expect(f2ignore.indexOf(".openode")).to.not.equal(-1);
       expect(f2ignore.indexOf("openode_scripts")).to.not.equal(-1);
       expect(f2ignore.indexOf(".wtf")).to.not.equal(-1);
