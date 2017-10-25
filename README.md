@@ -46,6 +46,10 @@ openode deploy [--clearNpm] [-t TOKEN -s SITE_NAME]
 * *-t:* Provide an API token used for authentication.
 * *-s:* Provide a site name.
 
+*.openodeignore*: If you add a .openodeignore file in your repository, the
+list of files provided in this file will get ignored (not sent). The format is the
+same as the well known .gitignore.
+
 ### Pull / Backup
 
 If you need to get your remote repository to your local, or need to backup your live website, you need to use the pull command, just like that:
