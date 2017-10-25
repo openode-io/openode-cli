@@ -25,9 +25,11 @@ async function prepareAuthenticatedCommand(version) {
     let site_name = await instance(envs);
     envs.site_name = site_name;
     env.set(envs);
-    envs.io = socketIo;
 
-    envs.version = version
+    envs.io = socketIo;
+    envs.version = version;
+    envs.files2Ignore = env.extractFiles2Ignore();
+
     return [envs, socketIo];
   } catch(err) {
     return [{}, ];
