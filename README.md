@@ -128,19 +128,19 @@ the following operation must done:
 openode erase-all
 ```
 
-## Custom Domain
+### Custom Domain
 
 To enable a custom domain, make sure to enter your custom domain while running
 openode deploy.
 Then you can manage your custom domain subdomains using the following commands.
 
-### List aliases (subdomains)
+#### List aliases (subdomains)
 
 ```
 openode list-aliases
 ```
 
-### Add an alias (subdomain)
+#### Add an alias (subdomain)
 
 ```
 openode add-alias [hostname]
@@ -156,24 +156,24 @@ openode add-alias blog.mycustomdomain.com
 in order to point mycustomdomain.com, www.mycustomdomain.com, and blog.mycustomdomain.com
 to this instance.
 
-### Removing an alias (subdomain)
+#### Removing an alias (subdomain)
 
 ```
 openode del-alias [hostname]
 ```
 
-## Defining storage areas
+### Defining storage areas
 
 The storage areas are folders which will never be deleted. Those folders can
 be used for storage purpose (database, configurations, etc.).
 
-### List storage areas
+#### List storage areas
 
 ```
 openode storage-areas
 ```
 
-### Add a storage area
+#### Add a storage area
 
 ```
 openode add-storage-area [relative-folder]
@@ -181,7 +181,7 @@ openode add-storage-area [relative-folder]
 
 Exemple [relative-folder]: db/
 
-### Delete a storage area
+#### Delete a storage area
 
 ```
 openode del-storage-area [relative-folder]
