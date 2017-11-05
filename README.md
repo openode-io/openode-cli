@@ -50,6 +50,14 @@ openode deploy [--clearNpm] [-t TOKEN -s SITE_NAME]
 list of files provided in this file will get ignored (not sent). The format is the
 same as the well known .gitignore.
 
+### Sync - Send only the changed/new files
+
+If you only need to send new files without deploying, then you can simply run:
+
+```
+openode sync
+```
+
 ### Pull / Backup
 
 If you need to get your remote repository to your local, or need to backup your live website, you need to use the pull command, just like that:
