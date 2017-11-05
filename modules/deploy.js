@@ -182,7 +182,7 @@ function deleteLocalArchive(env) {
   });
 }
 
-async function deploy(env, options) {
+async function execSyncFiles(env) {
   try {
     const localFiles = localFilesListing(".", env.files2Ignore, true);
 
@@ -194,9 +194,37 @@ async function deploy(env, options) {
     await deleteFiles(files2Delete, env);
     await sendFiles(files2Modify, env);
     deleteLocalArchive(env);
+
+    return {
+      files2Delete,
+      files2Modify
+    };
+  } catch(err) {
+    deleteLocalArchive(env);
+    throw err;
+  }
+}
+
+async function deploy(env, options) {
+  try {
+    await execSyncFiles(env);
+
     return await instanceOperation("restart", env, options);
   } catch(err) {
     deleteLocalArchive(env);
+    return err;
+  }
+}
+
+async function syncFiles(env) {
+  try {
+    let res = await execSyncFiles(env);
+
+    return {
+      "result": "success",
+      "details": `${res.files2Modify.length} change(s), ${res.files2Delete.length} deletion(s)`
+    }
+  } catch(err) {
     return err;
   }
 }
@@ -260,5 +288,6 @@ module.exports = {
   sendFile,
   sendFiles,
   deploy,
+  syncFiles,
   pull
 }

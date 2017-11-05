@@ -8,7 +8,7 @@ const ora = require('ora')({
   "stream": process.stdout
 });
 
-const version = "1.2.4"
+const version = "1.2.5"
 
 async function runCommand(promisedCmd, options = {}) {
   try {
@@ -61,6 +61,14 @@ function processCommander() {
       }
 
       await runCommand(progress(require("./modules/deploy").deploy(envVars, options), envVars));
+    });
+
+  commander
+    .command('sync')
+    .description('Send the changed/new files to opeNode without deployment')
+    .action(async function() {
+      let [envVars, ] = await prepareAuth();
+      await runCommand(progress(require("./modules/deploy").syncFiles(envVars), envVars));
     });
 
   commander
