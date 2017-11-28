@@ -206,6 +206,16 @@ function processCommander() {
         await runCommand(progress(require("./modules/plans")("set", envVars, plan)));
       });
 
+  // locations
+
+  commander
+    .command('available-locations')
+    .description('List the available locations')
+    .action(async function(token, sitename) {
+      let [envVars, ] = await prepareAuth();
+      await runCommand(progress(require("./modules/locations")(envVars), envVars));
+    });
+
   commander
     .command('*')
     .description('')
