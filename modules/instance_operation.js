@@ -109,7 +109,7 @@ module.exports = async function(operation, env, options = {}) {
         }, env);
         break;
       case "locations":
-        return await getOp("locations", env.site_name, {}, env);
+        return await getOp("locations", env.site_name, env);
         break;
     }
 

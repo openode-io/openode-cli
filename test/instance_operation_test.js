@@ -89,6 +89,53 @@ describe('Instance Operation', function() {
     });
   });
 
+  describe('locations', function() {
+    it("should return locations with valid instance", function(done) {
+      nock(cliConfs.API_URL)
+        .get('/instances/mysite/locations?')
+        .reply(200, {
+          "result": "success"
+         });
+
+      instanceModule("locations", {"site_name": "mysite", "token": "asfd"}).then((result) => {
+        expect(result.result).to.equal("success");
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+    it("should call proper api when adding location", function(done) {
+      nock(cliConfs.API_URL)
+        .post('/instances/mysite/add-location')
+        .reply(200, {
+          "result": "success"
+         });
+
+      instanceModule("addLocation", {"site_name": "mysite", "token": "asfd"}).then((result) => {
+        expect(result.result).to.equal("success");
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+    it("should call proper api when removing location", function(done) {
+      nock(cliConfs.API_URL)
+        .post('/instances/mysite/remove-location')
+        .reply(200, {
+          "result": "success"
+         });
+
+      instanceModule("removeLocation", {"site_name": "mysite", "token": "asfd"}).then((result) => {
+        expect(result.result).to.equal("success");
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+  });
+
   describe('list-aliases', function() {
     it("should return status with valid instance", function(done) {
       nock(cliConfs.API_URL)
