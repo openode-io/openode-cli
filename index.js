@@ -8,7 +8,7 @@ const ora = require('ora')({
   "stream": process.stdout
 });
 
-const version = "1.2.5"
+const version = "1.2.6"
 
 async function runCommand(promisedCmd, options = {}) {
   try {
@@ -215,6 +215,33 @@ function processCommander() {
       let [envVars, ] = await prepareAuth();
       await runCommand(progress(require("./modules/locations")(envVars), envVars));
     });
+
+  commander
+    .command('locations')
+      .description('Currently active locations')
+      .action(async function() {
+        let [envVars, ] = await prepareAuth();
+        await runCommand(progress(require("./modules/instance_operation")("locations", envVars,
+          { } )));
+      });
+
+  commander
+    .command('add-location <location id>')
+      .description('Add a new location')
+      .action(async function(locationId) {
+        let [envVars, ] = await prepareAuth();
+        await runCommand(progress(require("./modules/instance_operation")("addLocation", envVars,
+          { locationId } )));
+      });
+
+  commander
+    .command('del-location <location id>')
+      .description('Remove a location')
+      .action(async function(locationId) {
+        let [envVars, ] = await prepareAuth();
+        await runCommand(progress(require("./modules/instance_operation")("removeLocation", envVars,
+          { locationId } )));
+      });
 
   commander
     .command('*')

@@ -93,6 +93,24 @@ module.exports = async function(operation, env, options = {}) {
       case "eraseAll":
         return await postOp("erase-all", env.site_name, {}, env);
         break;
+
+      case "addLocation":
+        return await postOp("add-location", env.site_name, {
+          "location": {
+            "str_id": options.locationId
+          }
+        }, env);
+        break;
+      case "removeLocation":
+        return await postOp("remove-location", env.site_name, {
+          "location": {
+            "str_id": options.locationId
+          }
+        }, env);
+        break;
+      case "locations":
+        return await getOp("locations", env.site_name, {}, env);
+        break;
     }
 
   } catch(err) {
