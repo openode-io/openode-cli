@@ -96,16 +96,12 @@ module.exports = async function(operation, env, options = {}) {
 
       case "addLocation":
         return await postOp("add-location", env.site_name, {
-          "location": {
-            "str_id": options.locationId
-          }
+          "location_str_id": options.locationId
         }, env);
         break;
       case "removeLocation":
         return await postOp("remove-location", env.site_name, {
-          "location": {
-            "str_id": options.locationId
-          }
+          "location_str_id": options.locationId
         }, env);
         break;
       case "locations":
