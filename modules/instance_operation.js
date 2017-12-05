@@ -91,7 +91,7 @@ module.exports = async function(operation, env, options = {}) {
         return await postOp("del-alias", env.site_name, options, env);
         break;
       case "eraseAll":
-        return await postOp("erase-all", env.site_name, {}, env);
+        return await postOp("erase-all", env.site_name, options, env);
         break;
 
       case "addLocation":

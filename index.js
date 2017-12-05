@@ -137,7 +137,7 @@ function processCommander() {
     .description('Add hostname alias')
     .action(async function(hostname) {
       let [envVars, ] = await prepareAuth();
-      await runCommand(progress(require("./modules/instance_operation")("addAlias", envVars, { hostname} )));
+      await runCommand(progress(require("./modules/instance_operation")("addAlias", envVars, { hostname } )));
     });
 
   commander
@@ -149,11 +149,11 @@ function processCommander() {
     });
 
   commander
-    .command('erase-all')
+    .command('erase-all <locationId>')
     .description('Erase all content in the remote repository')
-    .action(async function() {
+    .action(async function(locationId) {
       let [envVars, ] = await prepareAuth();
-      await runCommand(progress(require("./modules/instance_operation")("eraseAll", envVars), envVars));
+      await runCommand(progress(require("./modules/instance_operation")("eraseAll", envVars, { "location_id": locationId }), envVars));
     });
 
   // storage areas
