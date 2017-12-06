@@ -5,7 +5,6 @@ const auth = require("./auth");
 const path = require("path");
 const cliConfs = require("./cliConfs");
 const instanceOperation = require("./instance_operation");
-const locationsModule = require("./locations");
 const archiver = require("archiver");
 const zipArchive = archiver('zip');
 const unzip = require("unzip");
@@ -204,18 +203,6 @@ async function execSyncFiles(env) {
     deleteLocalArchive(env);
     throw err;
   }
-}
-
-async function getLocations(env) {
-  return await instanceOperation("locations", env, { } );
-}
-
-async function getLocations2Clean(locations2Deploy, env) {
-  const availableLocations = await locationsModule(env);
-
-  return availableLocations.filter((location) => {
-    return ! locations2Deploy.find((l) => l.id == location.id);
-  });
 }
 
 async function deploy(env, options) {

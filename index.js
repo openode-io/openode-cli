@@ -3,6 +3,7 @@ const main = require('./modules/main');
 const asciify = require("asciify");
 const log = require("./modules/log");
 const ciConf = require("./modules/ciConf");
+const moduleLocations = require("./modules/locations");
 const ora = require('ora')({
   "color": "red",
   "stream": process.stdout
@@ -31,6 +32,28 @@ async function prepareAuth() {
     return await main.prepareAuthenticatedCommand(version);
   } catch(err) {
     return [{}, ];
+  }
+}
+
+async function processAllLocations(envVars, locationIdInput, callbackProcess) {
+  try {
+    const locationIds = await moduleLocations.locations2Process(envVars, locationIdInput);
+    const results = [];
+
+    for (let locationId of locationIds) {
+      try {
+        console.log("Processing for " + locationId);
+        let resultCurrent = await callbackProcess(locationId);
+        resultCurrent.location = locationId;
+        results.push(resultCurrent);
+      } catch(err) {
+        throw new Error(err);
+      }
+    }
+
+    return results;
+  } catch(err) {
+    throw new Error("Issue while processing a location");
   }
 }
 
@@ -149,11 +172,18 @@ function processCommander() {
     });
 
   commander
-    .command('erase-all <locationId>')
+    .command('erase-all [locationId]')
     .description('Erase all content in the remote repository')
-    .action(async function(locationId) {
+    .action(async function(locationIdInput) {
       let [envVars, ] = await prepareAuth();
-      await runCommand(progress(require("./modules/instance_operation")("eraseAll", envVars, { "location_id": locationId }), envVars));
+
+
+      function procEraseAll(locationId) {
+        return require("./modules/instance_operation")("eraseAll", envVars,
+          { "location_id": locationId });
+      }
+
+      await runCommand(progress(processAllLocations(envVars, locationIdInput, procEraseAll)));
     });
 
   // storage areas
@@ -213,7 +243,7 @@ function processCommander() {
     .description('List the available locations')
     .action(async function(token, sitename) {
       let [envVars, ] = await prepareAuth();
-      await runCommand(progress(require("./modules/locations")(envVars), envVars));
+      await runCommand(progress(moduleLocations.availableLocations(envVars), envVars));
     });
 
   commander
