@@ -5,6 +5,7 @@ const auth = require("./auth");
 const path = require("path");
 const cliConfs = require("./cliConfs");
 const instanceOperation = require("./instance_operation");
+const locationsModule = require("./locations");
 const archiver = require("archiver");
 const zipArchive = archiver('zip');
 const unzip = require("unzip");
@@ -207,8 +208,21 @@ async function execSyncFiles(env) {
 
 async function deploy(env, options) {
   try {
-    const locations2Deploy = await getLocations(env);
-    const locations2Clean = await getLocations2Clean(locations2Deploy, env);
+    const locations2Deploy = await locationsModule.getLocations(env);
+
+    if ( ! locations2Deploy || locations2Deploy.length == 0) {
+      const leastLoaded = await locationsModule.leastLoadedLocation(env);
+
+      if (leastLoaded) {
+        console.log("adding location " + leastLoaded.id);
+        options.locationId = leastLoaded.id;
+        await instanceOperation("addLocation", env, options);
+      }
+    }
+    return;
+
+
+    const locations2Clean = await locationsModule.getLocations2Clean(locations2Deploy, env);
 
     for (const location of locations2Clean) {
       await instanceOperation("eraseAll", env, { "location_id": location.id });

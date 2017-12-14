@@ -10,14 +10,22 @@ async function availableLocations(env) {
   }
 }
 
+async function leastLoadedLocation(env) {
+  try {
+    return await req.get('global/least-loaded-location', env);
+  } catch(err) {
+    return err;
+  }
+}
+
 async function getLocations(env) {
   return await instanceOperation("locations", env, { } );
 }
 
 async function getLocations2Clean(locations2Deploy, env) {
-  const availableLocations = await locationsModule(env);
+  const locs = await availableLocations(env);
 
-  return availableLocations.filter((location) => {
+  return locs.filter((location) => {
     return ! locations2Deploy.find((l) => l.id == location.id);
   });
 }
@@ -40,5 +48,6 @@ module.exports = {
   availableLocations,
   getLocations,
   getLocations2Clean,
-  locations2Process
+  locations2Process,
+  leastLoadedLocation
 };
