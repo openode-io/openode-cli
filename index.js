@@ -180,7 +180,7 @@ function processCommander() {
 
       function procEraseAll(locationId) {
         return require("./modules/instance_operation")("eraseAll", envVars,
-          { "location_id": locationId });
+          { "location_str_id": locationId });
       }
 
       await runCommand(progress(processAllLocations(envVars, locationIdInput, procEraseAll)));
@@ -256,21 +256,21 @@ function processCommander() {
       });
 
   commander
-    .command('add-location <location id>')
+    .command('add-location <locationId>')
       .description('Add a new location')
       .action(async function(locationId) {
         let [envVars, ] = await prepareAuth();
         await runCommand(progress(require("./modules/instance_operation")("addLocation", envVars,
-          { locationId } )));
+          { "location_str_id": locationId } )));
       });
 
   commander
-    .command('del-location <location id>')
+    .command('del-location <locationId>')
       .description('Remove a location')
       .action(async function(locationId) {
         let [envVars, ] = await prepareAuth();
         await runCommand(progress(require("./modules/instance_operation")("removeLocation", envVars,
-          { locationId } )));
+          { "location_str_id": locationId } )));
       });
 
   commander

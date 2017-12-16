@@ -44,10 +44,16 @@ function localFilesListing(dir, files2Ignore, firstLevel = false) {
 }
 
 
-function findChanges(files, config) {
+function findChanges(files, config, options) {
   return new Promise((resolve, reject) => {
 
     let url = API_URL + 'instances/' + config.site_name + "/changes";
+
+    console.log("find changes..")
+    console.log(options)
+
+    let form = Object.assign({}, { "files": JSON.stringify(files) });
+    form.location_str_id = options.location_str_id;
 
     request.post({
       headers: {
@@ -55,10 +61,9 @@ function findChanges(files, config) {
       },
       url: url,
       json: true,
-      formData: {
-        "files": JSON.stringify(files)
-      }
+      formData: form
     }, function optionalCallback(err, httpResponse, body) {
+
       if (err) {
         reject("failed to obtain changes");
       } else {
@@ -183,11 +188,12 @@ function deleteLocalArchive(env) {
   });
 }
 
-async function execSyncFiles(env) {
+async function execSyncFiles(env, options) {
   try {
     const localFiles = localFilesListing(".", env.files2Ignore, true);
 
-    let resChanges = await findChanges(localFiles, env);
+    console.log("in execcc 1")
+    let resChanges = await findChanges(localFiles, env, options);
     let changes = JSON.parse(resChanges);
     let files2Modify = changes.filter(f => f.change == 'M' || f.change == 'C');
     let files2Delete = changes.filter(f => f.change == 'D');
@@ -214,23 +220,35 @@ async function deploy(env, options) {
       const leastLoaded = await locationsModule.leastLoadedLocation(env);
 
       if (leastLoaded) {
-        console.log("adding location " + leastLoaded.id);
         options.locationId = leastLoaded.id;
         await instanceOperation("addLocation", env, options);
       }
     }
-    return;
-
+    console.log("done deploy 1")
 
     const locations2Clean = await locationsModule.getLocations2Clean(locations2Deploy, env);
 
     for (const location of locations2Clean) {
-      await instanceOperation("eraseAll", env, { "location_id": location.id });
+    console.log("done deploy 3")
+      await instanceOperation("eraseAll", env, { "location_str_id": location.id });
     }
 
-    await execSyncFiles(env);
+    const result = [];
 
-    return await instanceOperation("restart", env, options);
+    for (const location of locations2Deploy) {
+      options.location_str_id = location.id;
+
+      await execSyncFiles(env, options);
+
+      const curRes = await instanceOperation("restart", env, options);
+
+      result.push({
+        location: location.id,
+        result: curRes
+      });
+    }
+
+    return result;
   } catch(err) {
     deleteLocalArchive(env);
     return err;
