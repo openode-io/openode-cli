@@ -49,9 +49,6 @@ function findChanges(files, config, options) {
 
     let url = API_URL + 'instances/' + config.site_name + "/changes";
 
-    console.log("find changes..")
-    console.log(options)
-
     let form = Object.assign({}, { "files": JSON.stringify(files) });
     form.location_str_id = options.location_str_id;
 
@@ -86,7 +83,7 @@ function genFile2Send(f) {
   }
 }
 
-function sendFiles(files, config) {
+function sendFiles(files, config, options) {
   return new Promise((resolve, reject) => {
 
     if ( ! files || files.length == 0) {
@@ -96,7 +93,7 @@ function sendFiles(files, config) {
     var output = fs.createWriteStream(config.token + ".zip");
 
     output.on('close', function() {
-      sendFile(config.token + ".zip", config).then((result) => {
+      sendFile(config.token + ".zip", config, options).then((result) => {
         resolve();
       }).catch((err) => {
         reject(err);
@@ -122,12 +119,13 @@ function sendFiles(files, config) {
   });
 }
 
-function sendFile(file, config) {
+function sendFile(file, config, options) {
   return new Promise((resolve, reject) => {
 
     let formData = {
       "info": JSON.stringify({"path": file}),
-      "version": config.version
+      "version": config.version,
+      "location_str_id": options.location_str_id
     };
 
     let file2Upload = fs.createReadStream(file);
@@ -152,7 +150,7 @@ function sendFile(file, config) {
   });
 }
 
-function deleteFiles(files, config) {
+function deleteFiles(files, config, options) {
   return new Promise((resolve, reject) => {
     if ( ! files || files.length == 0) {
       return resolve();
@@ -160,6 +158,7 @@ function deleteFiles(files, config) {
 
     let formData = {
       "filesInfo": JSON.stringify(files),
+      "location_str_id": options.location_str_id
     };
 
     let url = API_URL + 'instances/' + config.site_name +
@@ -198,8 +197,8 @@ async function execSyncFiles(env, options) {
     let files2Modify = changes.filter(f => f.change == 'M' || f.change == 'C');
     let files2Delete = changes.filter(f => f.change == 'D');
 
-    await deleteFiles(files2Delete, env);
-    await sendFiles(files2Modify, env);
+    await deleteFiles(files2Delete, env, options);
+    await sendFiles(files2Modify, env, options);
     deleteLocalArchive(env);
 
     return {
