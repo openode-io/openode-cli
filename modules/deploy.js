@@ -197,8 +197,11 @@ async function execSyncFiles(env, options) {
     let files2Modify = changes.filter(f => f.change == 'M' || f.change == 'C');
     let files2Delete = changes.filter(f => f.change == 'D');
 
+    console.log("in execcc 2")
     await deleteFiles(files2Delete, env, options);
+    console.log("in execcc 3")
     await sendFiles(files2Modify, env, options);
+    console.log("in execcc 4")
     deleteLocalArchive(env);
 
     return {
