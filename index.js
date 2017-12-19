@@ -135,7 +135,13 @@ function processCommander() {
     .description('Stop your opeNode instance')
     .action(async function() {
       let [envVars, ] = await prepareAuth();
-      await runCommand(progress(require("./modules/instance_operation")("stop", envVars)));
+
+      function procStop(locationId) {
+        return require("./modules/instance_operation")("stop", envVars,
+          { "location_str_id": locationId });
+      }
+
+      await runCommand(progress(processAllLocations(envVars, null, procStop)));
     });
 
   commander

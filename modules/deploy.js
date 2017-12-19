@@ -191,17 +191,13 @@ async function execSyncFiles(env, options) {
   try {
     const localFiles = localFilesListing(".", env.files2Ignore, true);
 
-    console.log("in execcc 1")
     let resChanges = await findChanges(localFiles, env, options);
     let changes = JSON.parse(resChanges);
     let files2Modify = changes.filter(f => f.change == 'M' || f.change == 'C');
     let files2Delete = changes.filter(f => f.change == 'D');
 
-    console.log("in execcc 2")
     await deleteFiles(files2Delete, env, options);
-    console.log("in execcc 3")
     await sendFiles(files2Modify, env, options);
-    console.log("in execcc 4")
     deleteLocalArchive(env);
 
     return {
@@ -216,7 +212,7 @@ async function execSyncFiles(env, options) {
 
 async function deploy(env, options) {
   try {
-    const locations2Deploy = await locationsModule.getLocations(env);
+    let locations2Deploy = await locationsModule.getLocations(env);
 
     if ( ! locations2Deploy || locations2Deploy.length == 0) {
       const leastLoaded = await locationsModule.leastLoadedLocation(env);
@@ -224,14 +220,13 @@ async function deploy(env, options) {
       if (leastLoaded) {
         options.locationId = leastLoaded.id;
         await instanceOperation("addLocation", env, options);
+        locations2Deploy = await locationsModule.getLocations(env);
       }
     }
-    console.log("done deploy 1")
 
     const locations2Clean = await locationsModule.getLocations2Clean(locations2Deploy, env);
 
     for (const location of locations2Clean) {
-    console.log("done deploy 3")
       await instanceOperation("eraseAll", env, { "location_str_id": location.id });
     }
 

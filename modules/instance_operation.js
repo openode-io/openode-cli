@@ -69,7 +69,7 @@ module.exports = async function(operation, env, options = {}) {
         return await getOp("logs", env.site_name, env);
         break;
       case "stop":
-        return await getOp("stop", env.site_name, env);
+        return await getOp("stop", env.site_name, env, options);
         break;
       case "restart":
         return await getOp("restart", env.site_name, env, options);
