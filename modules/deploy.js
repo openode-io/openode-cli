@@ -252,9 +252,9 @@ async function deploy(env, options) {
   }
 }
 
-async function syncFiles(env) {
+async function syncFiles(env, options) {
   try {
-    let res = await execSyncFiles(env);
+    let res = await execSyncFiles(env, options);
 
     return {
       "result": "success",

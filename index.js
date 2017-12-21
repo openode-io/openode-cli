@@ -87,15 +87,20 @@ function processCommander() {
     });
 
   commander
-    .command('sync')
+    .command('sync [locationId]')
     .description('Send the changed/new files to opeNode without deployment')
-    .action(async function() {
+    .action(async function(locationIdInput) {
       let [envVars, ] = await prepareAuth();
-      await runCommand(progress(require("./modules/deploy").syncFiles(envVars), envVars));
+
+      function proc(locationId) {
+        return require("./modules/deploy").syncFiles(envVars, { "location_str_id": locationId })
+      }
+
+      await runCommand(progress(processAllLocations(envVars, locationIdInput, proc)));
     });
 
   commander
-    .command('pull')
+    .command('pull') // TODO
     .description('Pull your website from opeNode to your local disk')
     //.option("-s, --setup_mode [mode]", "Which setup mode to use")
     .action(async function() {
@@ -120,7 +125,7 @@ function processCommander() {
     });
 
   commander
-    .command('logs')
+    .command('logs') // TODO
     .description('Print logs in realtime')
     .action(async function() {
       let [envVars, ] = await prepareAuth();
@@ -145,7 +150,7 @@ function processCommander() {
     });
 
   commander
-    .command('restart')
+    .command('restart') // TODO
     .description('Restart your opeNode instance')
     .action(async function() {
       let [envVars, ] = await prepareAuth();
