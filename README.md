@@ -8,7 +8,7 @@
 
 [opeNode](https://www.openode.io/) is a reliable and fast Cloud Node.js hosting service to deploy your Node.js app instantly.
 
-## Installation
+## Installation 
 
 ```
 npm install -g openode
