@@ -134,14 +134,19 @@ function processCommander() {
     });
 
   commander
-    .command('logs') // TODO
+    .command('logs')
     .description('Print logs in realtime')
     .action(async function() {
       let [envVars, ] = await prepareAuth();
-      await runCommand(
-        progress(require("./modules/instance_operation")("logs", envVars), envVars, false),
-        { "keepIo": false }
-      );
+
+      function proc(locationId) {
+        return require("./modules/instance_operation")("logs", envVars,
+          { "location_str_id": locationId }
+        );
+      }
+
+      await runCommand(progress(processAllLocations(envVars, null, proc), envVars, false),
+      { "keepIo": false });
     });
 
   commander
@@ -159,11 +164,17 @@ function processCommander() {
     });
 
   commander
-    .command('restart') // TODO
+    .command('restart')
     .description('Restart your opeNode instance')
     .action(async function() {
       let [envVars, ] = await prepareAuth();
-      await runCommand(progress(require("./modules/instance_operation")("restart", envVars)));
+
+      function proc(locationId) {
+        return require("./modules/instance_operation")("restart", envVars,
+          { "location_str_id": locationId });
+      }
+
+      await runCommand(progress(processAllLocations(envVars, null, proc)));
     });
 
   // aliases (custom domain)
