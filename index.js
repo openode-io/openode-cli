@@ -35,7 +35,7 @@ async function prepareAuth() {
   }
 }
 
-async function processAllLocations(envVars, locationIdInput, callbackProcess) {
+async function processAllLocations(envVars, locationIdInput, callbackProcess, maxNbLocations = null) {
   try {
     const locationIds = await moduleLocations.locations2Process(envVars, locationIdInput);
     const results = [];
@@ -46,6 +46,10 @@ async function processAllLocations(envVars, locationIdInput, callbackProcess) {
         let resultCurrent = await callbackProcess(locationId);
         resultCurrent.location = locationId;
         results.push(resultCurrent);
+
+        if (maxNbLocations && maxNbLocations >= results.length) {
+          break;
+        }
       } catch(err) {
         throw new Error(err);
       }
@@ -93,19 +97,24 @@ function processCommander() {
       let [envVars, ] = await prepareAuth();
 
       function proc(locationId) {
-        return require("./modules/deploy").syncFiles(envVars, { "location_str_id": locationId })
+        return require("./modules/deploy").syncFiles(envVars, { "location_str_id": locationId });
       }
 
       await runCommand(progress(processAllLocations(envVars, locationIdInput, proc)));
     });
 
   commander
-    .command('pull') // TODO
+    .command('pull [locationId]')
     .description('Pull your website from opeNode to your local disk')
     //.option("-s, --setup_mode [mode]", "Which setup mode to use")
-    .action(async function() {
+    .action(async function(locationIdInput) {
       let [envVars, ] = await prepareAuth();
-      await runCommand(progress(require("./modules/deploy").pull(envVars), envVars));
+
+      function proc(locationId) {
+        return require("./modules/deploy").pull(envVars, { "location_str_id": locationId });
+      }
+
+      await runCommand(progress(processAllLocations(envVars, locationIdInput, proc, 1)));
     });
 
   commander

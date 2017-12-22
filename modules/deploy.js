@@ -265,7 +265,7 @@ async function syncFiles(env, options) {
   }
 }
 
-function pullAll(config) {
+function pullAll(config, options) {
   return new Promise((resolve, reject) => {
 
     let formData = {
@@ -273,7 +273,12 @@ function pullAll(config) {
     };
 
     let url = API_URL + 'instances/' + config.site_name +
-      "/pull";
+      "/pull?";
+
+    const params = Object.assign({}, formData, options);
+
+    const strParams = Object.keys(params).map(k => k + '=' + params[k]).join("&");
+    url += strParams;
 
     request.get({
       headers: {
@@ -306,9 +311,9 @@ function unzipRepo(env) {
   });
 }
 
-async function pull(env) {
+async function pull(env, options) {
   try {
-    await pullAll(env);
+    await pullAll(env, options);
 
     await unzipRepo(env);
 
