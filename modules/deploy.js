@@ -218,7 +218,7 @@ async function deploy(env, options) {
       const leastLoaded = await locationsModule.leastLoadedLocation(env);
 
       if (leastLoaded) {
-        options.locationId = leastLoaded.id;
+        options.location_str_id = leastLoaded.id;
         await instanceOperation("addLocation", env, options);
         locations2Deploy = await locationsModule.getLocations(env);
       }
