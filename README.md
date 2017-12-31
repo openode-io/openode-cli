@@ -8,7 +8,7 @@
 
 [opeNode](https://www.openode.io/) is a reliable and fast Cloud Node.js hosting service to deploy your Node.js app instantly.
 
-## Installation 
+## Installation
 
 ```
 npm install -g openode
@@ -196,6 +196,34 @@ openode del-storage-area [relative-folder]
 ```
 
 Exemple [relative-folder]: db/
+
+### Locations
+
+The following commands allow to manage locations where your website is deployed.
+
+#### List available locations
+
+```
+openode available-locations
+```
+
+#### Currently active locations
+
+```
+openode locations
+```
+
+#### Add a location
+
+```
+openode add-location [location-id]
+```
+
+#### Remove a location
+
+```
+openode del-location [location-id]
+```
 
 ## License
 
