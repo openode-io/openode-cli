@@ -4,6 +4,7 @@ const nock = require("nock");
 const cliConfs = require("../modules/cliConfs");
 const proc = require('child_process');
 const envModule = require("../modules/env");
+const fs = require("fs");
 
 function findFiles(files, fPath) {
   return files.filter(f => f.path == fPath);
@@ -80,9 +81,13 @@ describe('Deploy', function() {
 
     afterEach(function() {
       try {
-        //proc.execSync("rm -f 12354asdfasdfasdf.zip").toString();
+        fs.unlinkSync("./12354asdfasdfasdf.zip", function(err) {
+          if (err) {
+            console.error("issue deleting test zip");
+          }
+        })
       } catch(err) {
-
+        console.log(err)
       }
     });
   });
