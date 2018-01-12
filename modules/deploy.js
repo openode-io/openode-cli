@@ -36,6 +36,7 @@ function localFilesListing(dir, files2Ignore, firstLevel = false) {
     } else {
       fInfo.type = "F";
       fInfo.mtime = fStat.mtime;
+      fInfo.size = fStat.size;
       allFiles.push(fInfo);
     }
   }
