@@ -9,7 +9,7 @@ const ora = require('ora')({
   "stream": process.stdout
 });
 
-const version = "1.3.0"
+const version = "1.3.1"
 
 async function runCommand(promisedCmd, options = {}) {
   try {
@@ -72,6 +72,8 @@ function processCommander() {
     .option("-s <site name>", "Instance site name.")
     .description('Deploy your website on opeNode')
     .action(async function(opts) {
+      main.checkCurrentRepositoryValid();
+
       const options = {
         "clearNpm": opts && opts.clearNpm === true
       };
@@ -94,6 +96,8 @@ function processCommander() {
     .command('sync [locationId]')
     .description('Send the changed/new files to opeNode without deployment')
     .action(async function(locationIdInput) {
+      main.checkCurrentRepositoryValid();
+
       let [envVars, ] = await prepareAuth();
 
       function proc(locationId) {
@@ -352,6 +356,7 @@ async function progress(promise, env, withProgressLoader = true) {
 
   return result;
 }
+
 
 if (main.isFirstRun()) {
   console.log("Welcome to...")

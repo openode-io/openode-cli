@@ -1,3 +1,4 @@
+const fs = require("fs");
 const env = require("./env");
 const auth = require("./auth");
 const instance = require("./instance");
@@ -40,8 +41,16 @@ function terminate() {
   socketIo.disconnect();
 }
 
+function checkCurrentRepositoryValid() {
+  if ( ! fs.existsSync("./package.json")) {
+    console.error("package.json missing. Make sure to be in the right path with a valid package.json file.")
+    process.exit()
+  }
+}
+
 module.exports = {
   isFirstRun,
   prepareAuthenticatedCommand,
-  terminate
+  terminate,
+  checkCurrentRepositoryValid
 };
