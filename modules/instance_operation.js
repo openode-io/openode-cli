@@ -21,6 +21,7 @@ function getOp(operation, sitename, config, options = {}) {
         "x-auth-token": config.token
       },
       url: url,
+      timeout: 300000,
       json: true,
     }, function optionalCallback(err, httpResponse, body) {
       if (err || httpResponse.statusCode != 200) {
@@ -47,6 +48,7 @@ function postOp(operation, sitename, form, config) {
       },
       url: url,
       json: true,
+      timeout: 300000,
       form: form
     }, function optionalCallback(err, httpResponse, body) {
       if (err || httpResponse.statusCode != 200) {
