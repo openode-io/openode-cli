@@ -1,6 +1,8 @@
 const fs = require("fs");
 const env = require("./env");
 const auth = require("./auth");
+const req = require("./req");
+const log = require("./log");
 const instance = require("./instance");
 const cliConfs = require("./cliConfs");
 const socketIo = require('socket.io-client')(cliConfs.API_URL);
@@ -48,9 +50,29 @@ function checkCurrentRepositoryValid() {
   }
 }
 
+function checkSomeOpenodeServicesDown() {
+  return new Promise((resolve) => {
+    req.get('global/services/down', {}).then((result) => {
+
+      if (result && result.length && result.length > 0) {
+        console.log("**********");
+        console.log("*** One are many services are currently down! See below.");
+        log.prettyPrint(result);
+        console.log("**********\n");
+      }
+
+      resolve();
+    }).catch((err) => {
+
+      resolve()
+    });
+  });
+}
+
 module.exports = {
   isFirstRun,
   prepareAuthenticatedCommand,
   terminate,
-  checkCurrentRepositoryValid
+  checkCurrentRepositoryValid,
+  checkSomeOpenodeServicesDown
 };

@@ -357,13 +357,14 @@ async function progress(promise, env, withProgressLoader = true) {
   return result;
 }
 
-
-if (main.isFirstRun()) {
-  console.log("Welcome to...")
-  asciify('opeNode.io', {color: 'white', font: "big"}, function (err, asciiArt) {
-    console.log(asciiArt);
+main.checkSomeOpenodeServicesDown().then(() => {
+  if (main.isFirstRun()) {
+    console.log("Welcome to...")
+    asciify('opeNode.io', {color: 'white', font: "big"}, function (err, asciiArt) {
+      console.log(asciiArt);
+      processCommander();
+    });
+  } else {
     processCommander();
-  });
-} else {
-  processCommander();
-}
+  }
+});
