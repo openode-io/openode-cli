@@ -9,7 +9,7 @@ const ora = require('ora')({
   "stream": process.stdout
 });
 
-const version = "1.3.3"
+const version = "1.3.4"
 
 async function runCommand(promisedCmd, options = {}) {
   try {
@@ -139,13 +139,15 @@ function processCommander() {
 
   commander
     .command('logs')
+    .option("-n <nb-lines>", "Number of lines")
     .description('Print logs in realtime')
-    .action(async function() {
+    .action(async function(opts) {
       let [envVars, ] = await prepareAuth();
+      let nbLines = opts.N;
 
       function proc(locationId) {
         return require("./modules/instance_operation")("logs", envVars,
-          { "location_str_id": locationId }
+          { "location_str_id": locationId, nbLines }
         );
       }
 
