@@ -211,19 +211,25 @@ async function execSyncFiles(env, options) {
   }
 }
 
+async function ensureOneLocation(env, options) {
+  let locations2Deploy = await locationsModule.getLocations(env);
+
+  if ( ! locations2Deploy || locations2Deploy.length == 0) {
+    const leastLoaded = await locationsModule.leastLoadedLocation(env);
+
+    if (leastLoaded) {
+      options.location_str_id = leastLoaded.id;
+      await instanceOperation("addLocation", env, options);
+      locations2Deploy = await locationsModule.getLocations(env);
+    }
+  }
+
+  return locations2Deploy;
+}
+
 async function deploy(env, options) {
   try {
-    let locations2Deploy = await locationsModule.getLocations(env);
-
-    if ( ! locations2Deploy || locations2Deploy.length == 0) {
-      const leastLoaded = await locationsModule.leastLoadedLocation(env);
-
-      if (leastLoaded) {
-        options.location_str_id = leastLoaded.id;
-        await instanceOperation("addLocation", env, options);
-        locations2Deploy = await locationsModule.getLocations(env);
-      }
-    }
+    let locations2Deploy = await ensureOneLocation(env, options);
 
     const locations2Clean = await locationsModule.getLocations2Clean(locations2Deploy, env);
 
@@ -331,5 +337,6 @@ module.exports = {
   sendFiles,
   deploy,
   syncFiles,
-  pull
+  pull,
+  ensureOneLocation
 }

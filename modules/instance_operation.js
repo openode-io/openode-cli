@@ -76,6 +76,9 @@ module.exports = async function(operation, env, options = {}) {
       case "restart":
         return await getOp("restart", env.site_name, env, options);
         break;
+      case "deployPreBuilt":
+        return await postOp("deploy-pre-built", env.site_name, options, env);
+        break;
       case "listAliases":
         let statusResult = await getOp("", env.site_name, env);
 
