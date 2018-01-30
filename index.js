@@ -9,7 +9,7 @@ const ora = require('ora')({
   "stream": process.stdout
 });
 
-const version = "1.3.4"
+const version = "1.3.5"
 
 async function runCommand(promisedCmd, options = {}) {
   try {
