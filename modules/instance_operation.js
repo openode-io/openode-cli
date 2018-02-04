@@ -109,6 +109,20 @@ module.exports = async function(operation, env, options = {}) {
           "location_str_id": options.location_str_id
         }, env);
         break;
+
+      case "increaseStorage":
+        return await postOp("increase-storage", env.site_name, {
+          "location_str_id": options.location_str_id,
+          "amount_gb": options.amountGB
+        }, env);
+        break;
+      case "decreaseStorage":
+        return await postOp("decrease-storage", env.site_name, {
+          "location_str_id": options.location_str_id,
+          "amount_gb": options.amountGB
+        }, env);
+        break;
+
       case "locations":
         return await getOp("locations", env.site_name, env);
         break;

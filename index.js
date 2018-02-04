@@ -311,6 +311,33 @@ function processCommander() {
       });
 
   commander
+    .command('increase-storage <amountGB> [locationId]')
+      .description('Increase the extra storage capacity')
+      .action(async function(amountGB, locationIdInput) {
+        let [envVars, ] = await prepareAuth();
+
+        function proc(locationId) {
+          return require("./modules/instance_operation")("increaseStorage", envVars,
+            { "location_str_id": locationId, amountGB } );
+        }
+
+        await runCommand(progress(processAllLocations(envVars, locationIdInput, proc)));
+      });
+  commander
+    .command('decrease-storage <amountGB> [locationId]')
+      .description('Decrease the extra storage capacity')
+      .action(async function(amountGB, locationIdInput) {
+        let [envVars, ] = await prepareAuth();
+
+        function proc(locationId) {
+          return require("./modules/instance_operation")("decreaseStorage", envVars,
+            { "location_str_id": locationId, amountGB } );
+        }
+
+        await runCommand(progress(processAllLocations(envVars, locationIdInput, proc)));
+      });
+
+  commander
     .command('*')
     .description('')
     .action(async function() {
