@@ -197,6 +197,23 @@ openode del-storage-area [relative-folder]
 
 Exemple [relative-folder]: db/
 
+#### Manage storage size limits
+
+Extra storage capacity can be increased/decreased. To increase the storage limit
+you can do the following command:
+
+```
+openode increase-storage [Amount GB]
+```
+
+and
+
+```
+openode decrease-storage [Amount GB]
+```
+
+to decrease the storage limit.
+
 ### Locations
 
 The following commands allow to manage locations where your website is deployed.
