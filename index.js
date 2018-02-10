@@ -9,7 +9,7 @@ const ora = require('ora')({
   "stream": process.stdout
 });
 
-const version = "1.3.6"
+const version = "1.3.7"
 
 async function runCommand(promisedCmd, options = {}) {
   try {
@@ -154,6 +154,20 @@ function processCommander() {
       await runCommand(progress(processAllLocations(envVars, null, proc), envVars, false),
       { "keepIo": false });
     });
+
+  commander
+    .command('cmd <myCmd>')
+      .description('Execute a command in your container instance')
+      .action(async function(myCmd) {
+        let [envVars, ] = await prepareAuth();
+
+        function proc(locationId) {
+          return require("./modules/instance_operation")("cmd", envVars,
+            { "location_str_id": locationId, cmd: myCmd });
+        }
+
+        await runCommand(progress(processAllLocations(envVars, null, proc), envVars));
+      });
 
   commander
     .command('stop')

@@ -89,6 +89,11 @@ module.exports = async function(operation, env, options = {}) {
           return [];
         }
         break;
+
+      case "cmd":
+        return await postOp("cmd", env.site_name, options, env);
+        break;
+
       case "addAlias":
         return await postOp("add-alias", env.site_name, options, env);
         break;
@@ -116,6 +121,7 @@ module.exports = async function(operation, env, options = {}) {
           "amount_gb": options.amountGB
         }, env);
         break;
+
       case "decreaseStorage":
         return await postOp("decrease-storage", env.site_name, {
           "location_str_id": options.location_str_id,

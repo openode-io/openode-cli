@@ -25,6 +25,24 @@ describe('Instance Operation', function() {
 
   });
 
+  describe('cmd', function() {
+    it("should return success with valid cmd", function(done) {
+      nock(cliConfs.API_URL)
+        .post('/instances/mysite/cmd')
+        .reply(200, {
+          "status": "success"
+         });
+
+      instanceModule("cmd", {"site_name": "mysite", "token": "asfd"}).then((result) => {
+        expect(result.status).to.equal("success");
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+  });
+
   describe('stop', function() {
     it("should return status with valid instance", function(done) {
       nock(cliConfs.API_URL)
