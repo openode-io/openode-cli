@@ -103,6 +103,9 @@ module.exports = async function(operation, env, options = {}) {
       case "eraseAll":
         return await postOp("erase-all", env.site_name, options, env);
         break;
+      case "eraseLogs":
+        return await postOp("erase-logs", env.site_name, options, env);
+        break;
 
       case "addLocation":
         return await postOp("add-location", env.site_name, {

@@ -237,6 +237,21 @@ function processCommander() {
       await runCommand(progress(processAllLocations(envVars, locationIdInput, procEraseAll)));
     });
 
+  commander
+    .command('erase-logs [locationId]')
+    .description('Erase the logs in the remote repository')
+    .action(async function(locationIdInput) {
+      let [envVars, ] = await prepareAuth();
+
+
+      function procEraseAll(locationId) {
+        return require("./modules/instance_operation")("eraseLogs", envVars,
+          { "location_str_id": locationId });
+      }
+
+      await runCommand(progress(processAllLocations(envVars, locationIdInput, procEraseAll)));
+    });
+
   // storage areas
   commander
     .command('storage-areas')

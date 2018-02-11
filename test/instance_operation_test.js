@@ -40,7 +40,23 @@ describe('Instance Operation', function() {
         done(err);
       });
     });
+  });
 
+  describe('erase-logs', function() {
+    it("should return success with erase logs", function(done) {
+      nock(cliConfs.API_URL)
+        .post('/instances/mysite/erase-logs')
+        .reply(200, {
+          "status": "success"
+         });
+
+      instanceModule("eraseLogs", {"site_name": "mysite", "token": "asfd"}).then((result) => {
+        expect(result.status).to.equal("success");
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
   });
 
   describe('stop', function() {
