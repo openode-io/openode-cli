@@ -136,6 +136,15 @@ the following operation must done:
 openode erase-all
 ```
 
+### Erase logs
+
+In order to clear your logs in your cloud repository, the following operation
+can be done:
+
+```
+openode erase-logs
+```
+
 ### Custom Domain
 
 To enable a custom domain, make sure to enter your custom domain while running
