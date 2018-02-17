@@ -71,55 +71,6 @@ function findChanges(files, config, options) {
   });
 }
 
-function genFile2Send(f) {
-  if (f.type == "D" && f.change == "C") {
-    return {
-      "target": f.path
-    };
-  } else {
-    return {
-      "source": f.path,
-      "target": f.path
-    };
-  }
-}
-
-function sendFiles(files, config, options) {
-  return new Promise((resolve, reject) => {
-
-    if ( ! files || files.length == 0) {
-      resolve();
-    }
-
-    var output = fs.createWriteStream(config.token + ".zip");
-
-    output.on('close', function() {
-      sendFile(config.token + ".zip", config, options).then((result) => {
-        resolve();
-      }).catch((err) => {
-        reject(err);
-      });
-    });
-
-    zipArchive.pipe(output);
-
-    const files2Send =
-      files.filter(f => !(f.type == "D" && f.change == "C"))
-      .map(f => genFile2Send(f));
-
-    for (let f of files2Send) {
-      zipArchive.file(f.target, { name: f.target });
-    }
-
-    zipArchive.finalize(function(err, bytes) {
-        if(err) {
-          reject(err);
-        }
-    });
-
-  });
-}
-
 function sendFile(file, config, options) {
   return new Promise((resolve, reject) => {
 
@@ -133,7 +84,7 @@ function sendFile(file, config, options) {
     formData.file = file2Upload
 
     let url = API_URL + 'instances/' + config.site_name +
-      "/sendCompressedFile";
+      "/sendFile";
 
     request.post({
       headers: {
@@ -143,7 +94,7 @@ function sendFile(file, config, options) {
       formData: formData
     }, function optionalCallback(err, httpResponse, body) {
       if (err || httpResponse.statusCode != 200) {
-        reject(body);
+        reject(err);
       } else {
         resolve(body);
       }
@@ -194,19 +145,26 @@ async function execSyncFiles(env, options) {
 
     let resChanges = await findChanges(localFiles, env, options);
     let changes = JSON.parse(resChanges);
-    let files2Modify = changes.filter(f => f.change == 'M' || f.change == 'C');
+    let files2Modify = changes.filter(f => (f.change == 'M' || f.change == 'C') && f.type === 'F');
     let files2Delete = changes.filter(f => f.change == 'D');
 
     await deleteFiles(files2Delete, env, options);
-    await sendFiles(files2Modify, env, options);
-    deleteLocalArchive(env);
+
+    let curFileIndex = 1;
+
+    for (let f of files2Modify) {
+      console.log(`Sending files ${curFileIndex}/${files2Modify.length} - file=${f.path} size=${f.size} operation=${f.change}`)
+      await sendFile(f.path, env, options);
+
+      curFileIndex += 1;
+    }
 
     return {
       files2Delete,
       files2Modify
     };
   } catch(err) {
-    deleteLocalArchive(env);
+    console.log(err);
     throw err;
   }
 }
@@ -334,7 +292,6 @@ async function pull(env, options) {
 module.exports = {
   localFilesListing,
   sendFile,
-  sendFiles,
   deploy,
   syncFiles,
   pull,
