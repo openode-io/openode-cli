@@ -4,12 +4,12 @@ const asciify = require("asciify");
 const log = require("./modules/log");
 const ciConf = require("./modules/ciConf");
 const moduleLocations = require("./modules/locations");
+const packageJson = require("./package.json")
+
 const ora = require('ora')({
   "color": "red",
   "stream": process.stdout
 });
-
-const version = "1.4.0"
 
 async function runCommand(promisedCmd, options = {}) {
   try {
@@ -29,7 +29,7 @@ async function runCommand(promisedCmd, options = {}) {
 
 async function prepareAuth() {
   try {
-    return await main.prepareAuthenticatedCommand(version);
+    return await main.prepareAuthenticatedCommand(packageJson.version);
   } catch(err) {
     return [{}, ];
   }
@@ -63,7 +63,7 @@ async function processAllLocations(envVars, locationIdInput, callbackProcess, ma
 
 function processCommander() {
   commander
-    .version(version);
+    .version(packageJson.version);
 
   commander
     .command('deploy')
@@ -86,7 +86,7 @@ function processCommander() {
       } else {
         envVars.token = opts.T;
         envVars.site_name = opts.S;
-        envVars.version = version;
+        envVars.version = packageJson.version;
       }
 
       await runCommand(progress(require("./modules/deploy").deploy(envVars, options), envVars));
@@ -365,6 +365,20 @@ function processCommander() {
 
         await runCommand(progress(processAllLocations(envVars, locationIdInput, proc)));
       });
+  commander
+    .command('set-config <variable> <value>')
+      .description('Decrease the extra storage capacity')
+      .action(async function(variable, value) {
+        let [envVars, ] = await prepareAuth();
+
+        function proc(locationId) {
+          return require("./modules/instance_operation")("setConfig", envVars,
+            { "location_str_id": locationId, variable, value } );
+        }
+
+        await runCommand(progress(processAllLocations(envVars, locationIdInput, proc)));
+      });
+
 
   commander
     .command('*')
