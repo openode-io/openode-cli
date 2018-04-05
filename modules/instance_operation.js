@@ -135,6 +135,14 @@ module.exports = async function(operation, env, options = {}) {
       case "locations":
         return await getOp("locations", env.site_name, env);
         break;
+
+
+      case "setConfig":
+        return await postOp("set-config", env.site_name, {
+          "location_str_id": options.location_str_id,
+          "variable": options.variable,
+          "value": options.value
+        }, env);
     }
 
   } catch(err) {

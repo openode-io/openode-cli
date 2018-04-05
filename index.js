@@ -4,6 +4,7 @@ const asciify = require("asciify");
 const log = require("./modules/log");
 const ciConf = require("./modules/ciConf");
 const moduleLocations = require("./modules/locations");
+const req = require("./modules/req");
 const packageJson = require("./package.json")
 
 const ora = require('ora')({
@@ -371,12 +372,15 @@ function processCommander() {
       .action(async function(variable, value) {
         let [envVars, ] = await prepareAuth();
 
-        function proc(locationId) {
-          return require("./modules/instance_operation")("setConfig", envVars,
-            { "location_str_id": locationId, variable, value } );
-        }
-
-        await runCommand(progress(processAllLocations(envVars, locationIdInput, proc)));
+        await runCommand(progress(require("./modules/instance_operation")("setConfig", envVars,
+          { variable, value } )));
+      });
+  commander
+    .command('available-configs')
+      .description('List the available configs (used by set-config)')
+      .action(async function() {
+        let [envVars, ] = await prepareAuth();
+        await runCommand(progress(req.get('global/available-configs', envVars)));
       });
 
 

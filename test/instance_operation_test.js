@@ -25,6 +25,25 @@ describe('Instance Operation', function() {
 
   });
 
+  describe('set-config', function() {
+    it("should return result success", function(done) {
+      nock(cliConfs.API_URL)
+        .post('/instances/mysite/set-config')
+        .reply(200, {
+          "result": "success",
+          "configs": {}
+         });
+
+      instanceModule("setConfig", {"site_name": "mysite"}, { variable: 'var', value: 'val' }).then((result) => {
+        expect(result.result).to.equal("success");
+        done();
+      }).catch(err => {
+        done(err);
+      });
+    });
+
+  });
+
   describe('cmd', function() {
     it("should return success with valid cmd", function(done) {
       nock(cliConfs.API_URL)
