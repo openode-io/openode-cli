@@ -264,7 +264,7 @@ openode available-configs
 #### Set a config
 
 ```
-openode set-config [variable] [variable]
+openode set-config [variable] [value]
 ```
 
 ## License
