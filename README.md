@@ -251,6 +251,22 @@ openode add-location [location-id]
 openode del-location [location-id]
 ```
 
+### Configs
+
+Website configs, such as the build script path, can be managed via the CLI.
+
+#### List available config variables
+
+```
+openode available-configs
+```
+
+#### Set a config
+
+```
+openode set-config [variable] [variable]
+```
+
 ## License
 
 ISC
