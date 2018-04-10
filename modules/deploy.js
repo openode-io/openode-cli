@@ -153,8 +153,19 @@ async function execSyncFiles(env, options) {
     let curFileIndex = 1;
 
     for (let f of files2Modify) {
-      console.log(`Sending files ${curFileIndex}/${files2Modify.length} - file=${f.path} size=${f.size} operation=${f.change}`)
-      await sendFile(f.path, env, options);
+      for (let trial = 0; trial <= 2; ++trial) {
+        try {
+          console.log(`Sending files ${curFileIndex}/${files2Modify.length} - file=${f.path} size=${f.size} operation=${f.change}`)
+          await sendFile(f.path, env, options);
+          break;
+        } catch(err) {
+          if (trial === 2) {
+            throw new Error(`Failed sending ${f.path}`)
+          } else {
+            console.log('... failed, retrying')
+          }
+        }
+      }
 
       curFileIndex += 1;
     }
