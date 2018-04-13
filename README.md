@@ -112,8 +112,10 @@ openode status
 You can obtain realtime logs by using the following command:
 
 ```
-openode logs
+openode logs [-n nbLines]
 ```
+
+* *-n:* Returns the N last lines for all log types.
 
 ### Stopping an Instance
 
@@ -126,6 +128,16 @@ openode stop
 ```
 openode restart
 ```
+
+### Run a Remote Command
+
+The following command allows to run a command in your running container:
+
+```
+openode cmd [yourCmd]
+```
+
+For example, if you run openode `cmd "ls -la"`, the list of files will be listed.
 
 ### Erase all content
 
