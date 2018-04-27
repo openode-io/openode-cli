@@ -1,7 +1,6 @@
 const req = require("./req");
 
 module.exports = async function(operation, env, storageArea) {
-  //let currentValid = await sitenameValid(env.site_name, env);
   try {
     switch(operation) {
       case "list":

@@ -73,7 +73,6 @@ function processCommander() {
     .option("-s <site name>", "Instance site name.")
     .description('Deploy your website on opeNode')
     .action(async function(opts) {
-      main.checkCurrentRepositoryValid();
 
       const options = {
         "clearNpm": opts && opts.clearNpm === true
@@ -90,6 +89,10 @@ function processCommander() {
         envVars.version = packageJson.version;
       }
 
+      if (envVars.instance_type === 'server') {
+        main.checkCurrentRepositoryValid();
+      }
+
       await runCommand(progress(require("./modules/deploy").deploy(envVars, options), envVars));
     });
 
@@ -97,8 +100,6 @@ function processCommander() {
     .command('sync [locationId]')
     .description('Send the changed/new files to opeNode without deployment')
     .action(async function(locationIdInput) {
-      main.checkCurrentRepositoryValid();
-
       let [envVars, ] = await prepareAuth();
 
       function proc(locationId) {

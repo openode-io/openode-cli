@@ -4,11 +4,11 @@ const log = require("./log");
 const prompt = require("prompt");
 const promptUtil = require("./promptUtil");
 
-function sitenameValid(sitename, config) {
+function getWebsite(sitename, config) {
   return new Promise((resolve, reject) => {
 
     if (!sitename || sitename == "") {
-      resolve(false);
+      resolve(null);
     }
 
     let url = cliConfs.API_URL + 'instances/' + sitename + "/";
@@ -21,18 +21,18 @@ function sitenameValid(sitename, config) {
       json: true
     }, function optionalCallback(err, httpResponse, body) {
       if (err || httpResponse.statusCode != 200) {
-        resolve(false);
+        resolve(null);
       } else {
-        resolve(true);
+        resolve(body);
       }
     });
   });
 }
 
-function createInstance(sitename, config) {
+function createInstance(opts, config) {
   return new Promise((resolve, reject) => {
 
-    if (!sitename || sitename == "") {
+    if ( ! opts.sitename || opts.sitename == "") {
       resolve(false);
     }
 
@@ -45,7 +45,8 @@ function createInstance(sitename, config) {
       url: url,
       json: true,
       form: {
-        "site_name": sitename
+        "site_name": opts.sitename,
+        "instance_type": opts.instanceType
       }
     }, function optionalCallback(err, httpResponse, body) {
       if (err || httpResponse.statusCode != 200) {
@@ -84,7 +85,32 @@ function sitenames(config) {
   });
 }
 
+async function promptInstanceType() {
+  while (true) {
+    const schema = {
+      properties: {
+        instanceType: {
+          description: 'Instance type, [S]erver or Server[L]ess',
+          message: 'Invalid input, please enter either S for Server or L for Serverless.',
+          required: true,
+          default: "S"
+        }
+      }
+    };
+
+    let result = await promptUtil.promisifyPrompt(schema);
+
+    if (["s", "l"].includes(result.instanceType.toLowerCase())) {
+      const finalInstanceType = { "s": "server", "l": "serverless"}[result.instanceType.toLowerCase()];
+
+      return finalInstanceType;
+    }
+  }
+}
+
 async function selectExistingOrCreate(env) {
+
+  let instanceType = await promptInstanceType();
 
   let selectedSitename = null;
 
@@ -99,7 +125,8 @@ async function selectExistingOrCreate(env) {
     const schema = {
       properties: {
         sitename: {
-          description: 'Type your subdomain sitename (Example: my-site) OR custom domain (mysite.com)',
+          description: 'Type your subdomain sitename (Example: my-site)' +
+             instanceType === 'server' ? ' OR custom domain (mysite.com)' : '',
           message: 'Invalid input, please enter a sitename or custom domain.',
           required: true,
           default: defaultSitename
@@ -114,15 +141,23 @@ async function selectExistingOrCreate(env) {
 
     let result = await promptUtil.promisifyPrompt(schema);
 
-    let siteExists = await sitenameValid(result.sitename, env);
+    if (result.sitename.includes(".") && instanceType === 'serverless') {
+      log.out("serverless instances can't be a custom domain currently.");
+      continue;
+    }
+
+    let siteExists = await getWebsite(result.sitename, env);
 
     if (siteExists) {
-      log.out("using existing site " + result.sitename)
+      log.out("using existing site " + result.sitename);
       return result.sitename;
     } else {
       log.out("creating website...")
       // try to create it!
-      let siteCreated = await createInstance(result.sitename, env);
+      let siteCreated = await createInstance({ 
+        sitename: result.sitename,
+        instanceType
+      }, env);
 
       if (siteCreated) {
         return siteCreated.site_name;
@@ -136,12 +171,15 @@ async function selectExistingOrCreate(env) {
 }
 
 module.exports = async function(env) {
-  let currentValid = await sitenameValid(env.site_name, env);
+  let website = await getWebsite(env.site_name, env);
 
-  if (currentValid) {
-    return env.site_name;
-  } else {
+  if ( ! website) {
     let site_name = await selectExistingOrCreate(env);
-    return site_name;
+    website = await getWebsite(site_name, env);
+  }
+
+  return {
+    site_name: website.site_name,
+    instance_type: website.instance_type,
   }
 };

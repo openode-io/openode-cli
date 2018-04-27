@@ -25,8 +25,9 @@ async function prepareAuthenticatedCommand(version) {
     envs.token = token;
     env.set(envs);
 
-    let site_name = await instance(envs);
-    envs.site_name = site_name;
+    let opts = await instance(envs);
+    envs.site_name = opts.site_name;
+    envs.instance_type = opts.instance_type;
     env.set(envs);
 
     envs.io = socketIo;
