@@ -25,6 +25,7 @@ async function runCommand(promisedCmd, options = {}) {
   } catch(err) {
     console.error("Unhandled error, please report this bug:");
     console.error(err);
+    process.exit();
   }
 }
 
@@ -52,13 +53,17 @@ async function processAllLocations(envVars, locationIdInput, callbackProcess, ma
           break;
         }
       } catch(err) {
-        throw new Error(err);
+        throw err;
       }
     }
 
     return results;
   } catch(err) {
-    throw new Error("Issue while processing a location");
+    if (err) {
+      throw err;
+    } else {
+      throw new Error("Issue while processing a location");
+    }
   }
 }
 
@@ -94,6 +99,7 @@ function processCommander() {
       }
 
       await runCommand(progress(require("./modules/deploy").deploy(envVars, options), envVars));
+      console.log('hello')
     });
 
   commander
