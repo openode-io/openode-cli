@@ -375,7 +375,7 @@ function processCommander() {
       });
   commander
     .command('set-config <variable> <value>')
-      .description('Decrease the extra storage capacity')
+      .description('Set a website configuration')
       .action(async function(variable, value) {
         let [envVars, ] = await prepareAuth();
 
