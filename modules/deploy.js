@@ -7,10 +7,10 @@ const cliConfs = require("./cliConfs");
 const instanceOperation = require("./instance_operation");
 const locationsModule = require("./locations");
 const archiver = require("archiver");
-const zipArchive = archiver('zip');
 const unzip = require("unzip");
 
 const API_URL = cliConfs.API_URL;
+const LIMIT_BYTES_PER_ARCHIVE = 1000000;
 
 function localFilesListing(dir, files2Ignore, firstLevel = false) {
   const files = fs.readdirSync(dir);
@@ -64,6 +64,37 @@ function findChanges(files, config, options) {
 
       if (err) {
         reject("failed to obtain changes");
+      } else {
+        resolve(body);
+      }
+    });
+  });
+}
+
+function sendCompressedFile(file, config, options) {
+  return new Promise((resolve, reject) => {
+
+    let formData = {
+      "info": JSON.stringify({"path": file}),
+      "version": config.version,
+      "location_str_id": options.location_str_id
+    };
+
+    let file2Upload = fs.createReadStream(file);
+    formData.file = file2Upload
+
+    let url = API_URL + 'instances/' + config.site_name +
+      "/sendCompressedFile";
+
+    request.post({
+      headers: {
+        "x-auth-token": config.token
+      },
+      url: url,
+      formData: formData
+    }, function optionalCallback(err, httpResponse, body) {
+      if (err || httpResponse.statusCode != 200) {
+        reject(body);
       } else {
         resolve(body);
       }
@@ -134,9 +165,90 @@ function deleteFiles(files, config, options) {
 }
 
 function deleteLocalArchive(env) {
-  fs.unlink(env.token + ".zip", function(err) {
+  return new Promise((resolve, reject) => {
+    fs.unlink(env.token + ".zip", function(err) {
+      if (err) {
+        resolve(err);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
+function genFile2Send(f) {
+  if (f.type == "D" && f.change == "C") {
+    return {
+      "target": f.path
+    };
+  } else {
+    return {
+      "source": f.path,
+      "target": f.path
+    };
+  }
+}
+
+function sendFiles(files, config, options) {
+  return new Promise((resolve, reject) => {
+    const zipArchive = archiver('zip');
+
+    if ( ! files || files.length == 0) {
+      resolve();
+    }
+
+    var output = fs.createWriteStream(config.token + ".zip");
+
+    output.on('close', function() {
+      sendCompressedFile(config.token + ".zip", config, options).then((result) => {
+        resolve();
+      }).catch((err) => {
+        reject(err);
+      });
+    });
+
+    zipArchive.pipe(output);
+
+    const files2Send =
+      files.filter(f => !(f.type == "D" && f.change == "C"))
+      .map(f => genFile2Send(f));
+
+    for (let f of files2Send) {
+      zipArchive.file(f.target, { name: f.target });
+    }
+
+
+    zipArchive.finalize(function(err, bytes) {
+        if(err) {
+          reject(err);
+        }
+    });
 
   });
+}
+
+function groupedFiles2Send(files) {
+  const result = [];
+  let curGroup = [];
+  let curGroupSize = 0;
+
+  for (let f of files) {
+    curGroup.push(f);
+    curGroupSize += f.size;
+
+    // LIMIT_BYTES_PER_ARCHIVE
+    if (curGroupSize >= LIMIT_BYTES_PER_ARCHIVE) {
+      result.push(curGroup);
+      curGroup = [];
+      curGroupSize = 0;
+    }
+  }
+
+  if (curGroup.length > 0) {
+    result.push(curGroup);
+  }
+
+  return result;
 }
 
 async function execSyncFiles(env, options) {
@@ -150,24 +262,38 @@ async function execSyncFiles(env, options) {
 
     await deleteFiles(files2Delete, env, options);
 
-    let curFileIndex = 1;
+    let curFileIndex = 0;
+    const groupsFiles = groupedFiles2Send(files2Modify);
 
-    for (let f of files2Modify) {
+    for (let groupFiles of groupsFiles) {
       for (let trial = 0; trial <= 2; ++trial) {
         try {
-          console.log(`Sending files ${curFileIndex}/${files2Modify.length} - file=${f.path} size=${f.size} operation=${f.change}`)
-          await sendFile(f.path, env, options);
+          await deleteLocalArchive(env);
+
+          for (const f of groupFiles) {
+            console.log(`Sending files (trial ${trial}) - file=${f.path} size=${f.size} operation=${f.change}`)
+          }
+
+          await sendFiles(groupFiles, env, options);
+
+          curFileIndex += groupFiles.length;
+
+          console.log(`${curFileIndex}/${files2Modify.length}`);
+
           break;
         } catch(err) {
+          console.log(err)
+
           if (trial === 2) {
-            throw new Error(`Failed sending ${f.path}`)
+            await deleteLocalArchive(env);
+            throw new Error(`Failed sending`)
           } else {
             console.log('... failed, retrying')
           }
         }
       }
 
-      curFileIndex += 1;
+      await deleteLocalArchive(env);
     }
 
     return {
@@ -223,7 +349,6 @@ async function deploy(env, options) {
 
     return result;
   } catch(err) {
-    deleteLocalArchive(env);
     return err;
   }
 }
@@ -277,7 +402,12 @@ function unzipRepo(env) {
     fs.createReadStream(env.token + ".zip").pipe(unzipExtractor);
 
     unzipExtractor.on('close', function() {
-      deleteLocalArchive(env);
+      deleteLocalArchive(env).then(() =>{
+
+      }).catch((err) => {
+        console.error(err);
+      });
+
       resolve();
     });
 
@@ -295,7 +425,12 @@ async function pull(env, options) {
 
     return {"result": "success"};
   } catch(err) {
-    deleteLocalArchive(env);
+    deleteLocalArchive(env).then(() => {
+
+    }).catch((err) => {
+      console.error(err);
+    });
+
     return err;
   }
 }
