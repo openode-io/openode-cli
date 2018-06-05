@@ -59,9 +59,9 @@ function createInstance(opts, config) {
   });
 }
 
-function sitenames(config) {
+function sitenames(config, instanceType = "server") {
   return new Promise((resolve, reject) => {
-    let url = cliConfs.API_URL + 'instances/';
+    let url = `${cliConfs.API_URL}instances/?instance_type=${instanceType}`;
 
     request.get({
       headers: {
@@ -115,7 +115,7 @@ async function selectExistingOrCreate(env) {
   let selectedSitename = null;
 
   while (selectedSitename == null) {
-    let sites = await sitenames(env);
+    let sites = await sitenames(env, instanceType);
     let defaultSitename = "";
 
     if (sites.length >= 1) {

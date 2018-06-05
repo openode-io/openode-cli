@@ -17,9 +17,9 @@ function isFirstRun() {
   }
 }
 
-async function prepareAuthenticatedCommand(version) {
+async function prepareAuthenticatedCommand(version, forceEnvs = null) {
   try {
-    let envs = env.get();
+    let envs = forceEnvs ? forceEnvs : env.get();
     env.set(envs);
     let token = await auth(envs);
     envs.token = token;

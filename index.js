@@ -29,9 +29,9 @@ async function runCommand(promisedCmd, options = {}) {
   }
 }
 
-async function prepareAuth() {
+async function prepareAuth(envs = null) {
   try {
-    return await main.prepareAuthenticatedCommand(packageJson.version);
+    return await main.prepareAuthenticatedCommand(packageJson.version, envs);
   } catch(err) {
     return [{}, ];
   }
@@ -92,6 +92,7 @@ function processCommander() {
         envVars.token = opts.T;
         envVars.site_name = opts.S;
         envVars.version = packageJson.version;
+        await prepareAuth(envVars);
       }
 
       if (envVars.instance_type === 'server') {
