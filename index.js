@@ -31,7 +31,17 @@ async function runCommand(promisedCmd, options = {}) {
 
 async function prepareAuth(envs = null) {
   try {
-    return await main.prepareAuthenticatedCommand(packageJson.version, envs);
+    const res = await main.prepareAuthenticatedCommand(packageJson.version, envs);
+
+    // make sure at the beginning it is clean
+    await main.beginEndCleanup(res)
+
+    process.on('SIGINT', async function() {
+      await main.beginEndCleanup(res); // ctrl+c -> clean
+      process.exit();
+    });
+
+    return res
   } catch(err) {
     return [{}, ];
   }

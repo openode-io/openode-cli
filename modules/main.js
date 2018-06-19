@@ -4,6 +4,7 @@ const auth = require("./auth");
 const req = require("./req");
 const log = require("./log");
 const instance = require("./instance");
+const deploy = require("./deploy");
 const cliConfs = require("./cliConfs");
 const socketIo = require('socket.io-client')(cliConfs.API_URL);
 
@@ -70,10 +71,15 @@ function checkSomeOpenodeServicesDown() {
   });
 }
 
+function beginEndCleanup(authConfig) {
+  return deploy.deleteLocalArchive(authConfig[0]);
+}
+
 module.exports = {
   isFirstRun,
   prepareAuthenticatedCommand,
   terminate,
   checkCurrentRepositoryValid,
-  checkSomeOpenodeServicesDown
+  checkSomeOpenodeServicesDown,
+  beginEndCleanup
 };

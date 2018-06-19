@@ -441,5 +441,6 @@ module.exports = {
   deploy,
   syncFiles,
   pull,
-  ensureOneLocation
+  ensureOneLocation,
+  deleteLocalArchive
 }
