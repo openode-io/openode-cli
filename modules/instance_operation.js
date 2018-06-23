@@ -71,10 +71,10 @@ module.exports = async function(operation, env, options = {}) {
         return await getOp("logs", env.site_name, env, options);
         break;
       case "stop":
-        return await getOp("stop", env.site_name, env, options);
+        return await postOp("stop", env.site_name, options, env);
         break;
       case "restart":
-        return await getOp("restart", env.site_name, env, options);
+        return await postOp("restart", env.site_name, options, env);
         break;
       case "deployPreBuilt":
         return await postOp("deploy-pre-built", env.site_name, options, env);

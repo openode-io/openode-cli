@@ -81,7 +81,7 @@ describe('Instance Operation', function() {
   describe('stop', function() {
     it("should return status with valid instance", function(done) {
       nock(cliConfs.API_URL)
-        .get('/instances/mysite/stop?')
+        .post('/instances/mysite/stop')
         .reply(200, {
           "result": "success"
          });
@@ -96,7 +96,7 @@ describe('Instance Operation', function() {
 
     it("should return 500 with invalid response", function(done) {
       nock(cliConfs.API_URL)
-        .get('/instances/mysite/stop?')
+        .post('/instances/mysite/stop')
         .reply(500, {
           "error": {}
          });
@@ -113,7 +113,7 @@ describe('Instance Operation', function() {
   describe('restart', function() {
     it("should return status with valid instance", function(done) {
       nock(cliConfs.API_URL)
-        .get('/instances/mysite/restart?')
+        .post('/instances/mysite/restart')
         .reply(200, {
           "result": "success"
          });
@@ -128,7 +128,7 @@ describe('Instance Operation', function() {
 
     it("should return 500 with invalid response", function(done) {
       nock(cliConfs.API_URL)
-        .get('/instances/mysite/restart?')
+        .post('/instances/mysite/restart')
         .reply(500, {
           "error": {}
          });
