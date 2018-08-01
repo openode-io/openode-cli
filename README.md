@@ -2,7 +2,7 @@
 
 [![NPM](https://nodei.co/npm/openode.png)](https://nodei.co/npm/openode/)
 
-[![Build status](https://travis-ci.org/martinlevesque/openode-cli.svg?branch=master)](https://travis-ci.org/martinlevesque/openode-cli)
+[![Build status](https://travis-ci.org/openode-io/openode-cli.svg?branch=master)](https://travis-ci.org/openode-io/openode-cli)
 
 [opeNode](https://www.openode.io/) (https://www.openode.io/) command line to control and manage your Node.js instances efficiently.
 
