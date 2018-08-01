@@ -1,6 +1,6 @@
 {
   "name": "openode",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "opeNode command line interface to control and manage instances.",
   "main": "index.js",
   "scripts": {
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/martinlevesque/openode-cli.git"
+    "url": "git+https://github.com/openode-io/openode-cli.git"
   },
   "keywords": [
     "openode",
@@ -25,9 +25,9 @@
   "author": "Martin Levesque",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/martinlevesque/openode-cli/issues"
+    "url": "https://github.com/openode-io/openode-cli/issues"
   },
-  "homepage": "https://github.com/martinlevesque/openode-cli#readme",
+  "homepage": "https://github.com/openode-io/openode-cli#readme",
   "devDependencies": {
     "expect.js": "^0.3.1",
     "mocha": "^3.4.2",
