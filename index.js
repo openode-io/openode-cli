@@ -109,8 +109,27 @@ function processCommander() {
         main.checkCurrentRepositoryValid();
       }
 
-      await runCommand(progress(require("./modules/deploy").deploy(envVars, options), envVars));
-      console.log('hello')
+      await runCommand(progress(
+        require("./modules/deploy").deploy(envVars, options)
+          .then((result) => {
+            return new Promise((resolve) => {
+              if (result && result.find(r => r && r.result && r.result.isFirstUp)) {
+                asciify('Now online!', {color: 'green', font: "big"}, function (err, asciiArt) {
+                  console.log(asciiArt);
+                  
+                  result.forEach(r => {
+                    if (r && r.result) {
+                      delete r.result.isFirstUp;
+                    }
+                  })
+
+                  resolve(result)
+                });
+              } else {
+                resolve(result)
+              }
+            });
+          }), envVars));
     });
 
   commander

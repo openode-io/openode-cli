@@ -271,7 +271,7 @@ async function execSyncFiles(env, options) {
           await deleteLocalArchive(env);
 
           for (const f of groupFiles) {
-            console.log(`Sending files (trial ${trial}) - file=${f.path} size=${f.size} operation=${f.change}`)
+            console.log(`Sending files (trial ${trial + 1}) - file=${f.path} size=${f.size} operation=${f.change}`)
           }
 
           await sendFiles(groupFiles, env, options);
