@@ -437,13 +437,19 @@ async function pull(env, options) {
 }
 
 function hasResultVariable(result, key) {
-  return result && result.find(r => r && r.result && r.result[key]);
+  return result && result.find(r => {
+    return r && r.result && (r.result[key] || (r.result.result && r.result.result[key]));
+  });
 }
 
 function removeResultVariable(result, key) {
   result.forEach(r => {
     if (r && r.result) {
       delete r.result[key];
+    }
+
+    if (r && r.result.result) {
+      delete r.result.result[key];
     }
   });
 }
@@ -453,7 +459,8 @@ function prepareFinalResult(result) {
     let bootLogs = "";
 
     if (bootLogs = hasResultVariable(result, "Boot Logs")) {
-      console.log(bootLogs.result["Boot Logs"]);
+      const resBoot = bootLogs.result["Boot Logs"] || (bootLogs.result && bootLogs.result.result["Boot Logs"]);
+      console.log(resBoot);
       removeResultVariable(result, "Boot Logs");
     }
 

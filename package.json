@@ -1,6 +1,6 @@
 {
   "name": "openode",
-  "version": "1.5.5",
+  "version": "1.5.6",
   "description": "opeNode command line interface to control and manage instances.",
   "main": "index.js",
   "scripts": {
