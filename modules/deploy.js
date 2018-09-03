@@ -8,6 +8,7 @@ const instanceOperation = require("./instance_operation");
 const locationsModule = require("./locations");
 const archiver = require("archiver");
 const unzip = require("unzip");
+const asciify = require("asciify");
 
 const API_URL = cliConfs.API_URL;
 const LIMIT_BYTES_PER_ARCHIVE = 1000000;
@@ -435,6 +436,41 @@ async function pull(env, options) {
   }
 }
 
+function hasResultVariable(result, key) {
+  return result && result.find(r => r && r.result && r.result[key]);
+}
+
+function removeResultVariable(result, key) {
+  result.forEach(r => {
+    if (r && r.result) {
+      delete r.result[key];
+    }
+  });
+}
+
+function prepareFinalResult(result) {
+  return new Promise((resolve) => {
+    let bootLogs = "";
+
+    if (bootLogs = hasResultVariable(result, "Boot Logs")) {
+      console.log(bootLogs.result["Boot Logs"]);
+      removeResultVariable(result, "Boot Logs");
+    }
+
+    if (hasResultVariable(result, "isFirstUp")) {
+      asciify('Now online!', {color: 'green', font: "big"}, function (err, asciiArt) {
+        console.log(asciiArt);
+
+        removeResultVariable(result, "isFirstUp");
+
+        resolve(result)
+      });
+    } else {
+      resolve(result)
+    }
+  });
+}
+
 module.exports = {
   localFilesListing,
   sendFile,
@@ -442,5 +478,6 @@ module.exports = {
   syncFiles,
   pull,
   ensureOneLocation,
-  deleteLocalArchive
+  deleteLocalArchive,
+  prepareFinalResult
 }

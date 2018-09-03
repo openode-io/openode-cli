@@ -5,7 +5,8 @@ const log = require("./modules/log");
 const ciConf = require("./modules/ciConf");
 const moduleLocations = require("./modules/locations");
 const req = require("./modules/req");
-const packageJson = require("./package.json")
+const packageJson = require("./package.json");
+const deployModule = require("./modules/deploy");
 
 const ora = require('ora')({
   "color": "red",
@@ -110,25 +111,9 @@ function processCommander() {
       }
 
       await runCommand(progress(
-        require("./modules/deploy").deploy(envVars, options)
+        deployModule.deploy(envVars, options)
           .then((result) => {
-            return new Promise((resolve) => {
-              if (result && result.find(r => r && r.result && r.result.isFirstUp)) {
-                asciify('Now online!', {color: 'green', font: "big"}, function (err, asciiArt) {
-                  console.log(asciiArt);
-                  
-                  result.forEach(r => {
-                    if (r && r.result) {
-                      delete r.result.isFirstUp;
-                    }
-                  })
-
-                  resolve(result)
-                });
-              } else {
-                resolve(result)
-              }
-            });
+            return deployModule.prepareFinalResult(result);
           }), envVars));
     });
 
