@@ -78,6 +78,22 @@ async function processAllLocations(envVars, locationIdInput, callbackProcess, ma
   }
 }
 
+async function auth(opts) {
+  let envVars = {};
+
+  if ( ! opts.T) {
+    // did not specify token, need to ask it/.openode
+    [envVars, ] = await prepareAuth();
+  } else {
+    envVars.token = opts.T;
+    envVars.site_name = opts.S;
+    envVars.version = packageJson.version;
+    await prepareAuth(envVars);
+  }
+
+  return envVars;
+}
+
 function processCommander() {
   commander
     .version(packageJson.version);
@@ -94,17 +110,7 @@ function processCommander() {
         "clearNpm": opts && opts.clearNpm === true
       };
 
-      let envVars = {};
-
-      if ( ! opts.T) {
-        // did not specify token, need to ask it/.openode
-        [envVars, ] = await prepareAuth();
-      } else {
-        envVars.token = opts.T;
-        envVars.site_name = opts.S;
-        envVars.version = packageJson.version;
-        await prepareAuth(envVars);
-      }
+      let envVars = await auth(opts);
 
       if (envVars.instance_type === 'server') {
         main.checkCurrentRepositoryValid();
@@ -118,6 +124,32 @@ function processCommander() {
     });
 
   commander
+    .command('reload')
+    .option("-t <token>", "User token used for authentication")
+    .option("-s <site name>", "Instance site name.")
+    .description('Reload your container instance')
+    .action(async function(opts) {
+
+      const options = {
+        "clearNpm": opts && opts.clearNpm === true
+      };
+
+      let envVars = await auth(opts);
+
+      if (envVars.instance_type === 'server') {
+        main.checkCurrentRepositoryValid();
+      }
+
+      function proc(locationId) {
+        return require("./modules/instance_operation")("reload", envVars,
+          { "location_str_id": locationId});
+      }
+
+      await runCommand(progress(processAllLocations(envVars, null, proc), envVars));
+    });
+
+
+  commander
     .command('sync [locationId]')
     .description('Send the changed/new files to opeNode without deployment')
     .action(async function(locationIdInput) {
@@ -128,6 +160,37 @@ function processCommander() {
       }
 
       await runCommand(progress(processAllLocations(envVars, locationIdInput, proc)));
+    });
+
+  commander
+    .command('sync-n-reload')
+    .option("-t <token>", "User token used for authentication")
+    .option("-s <site name>", "Instance site name.")
+    .description('Sync and then reload your instance')
+    .action(async function(opts) {
+
+      let envVars = await auth(opts);
+
+      if (envVars.instance_type === 'server') {
+        main.checkCurrentRepositoryValid();
+      }
+
+      function proc(locationId) {
+        return require("./modules/deploy").syncFiles(envVars, { "location_str_id": locationId })
+          .then((resultSync) => {
+
+            return require("./modules/instance_operation")("reload", envVars,
+              { "location_str_id": locationId}).then((resultReload) => {
+
+                return {
+                  sync: resultSync,
+                  reload: resultReload
+                };
+              });
+          });
+      }
+
+      await runCommand(progress(processAllLocations(envVars, null, proc), envVars));
     });
 
   commander

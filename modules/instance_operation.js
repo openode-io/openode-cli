@@ -76,6 +76,9 @@ module.exports = async function(operation, env, options = {}) {
       case "restart":
         return await postOp("restart", env.site_name, options, env);
         break;
+      case "reload":
+        return await postOp("reload", env.site_name, options, env);
+        break;
       case "deployPreBuilt":
         return await postOp("deploy-pre-built", env.site_name, options, env);
         break;

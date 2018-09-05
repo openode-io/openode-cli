@@ -50,12 +50,28 @@ openode deploy [--clearNpm] [-t TOKEN -s SITE_NAME]
 list of files provided in this file will get ignored (not sent). The format is the
 same as the well known .gitignore.
 
+### Reload
+
+For a lightweight and fast reloading (without rebuilding everything), a reload can be done:
+
+```
+openode reload
+```
+
 ### Sync - Send only the changed/new files
 
 If you only need to send new files without deploying, then you can simply run:
 
 ```
 openode sync
+```
+
+### Sync and Reload
+
+A shortcut to synchronize and reload can be used:
+
+```
+openode sync-n-reload
 ```
 
 ### Pull / Backup
