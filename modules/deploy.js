@@ -12,6 +12,7 @@ const asciify = require("asciify");
 
 const API_URL = cliConfs.API_URL;
 const LIMIT_BYTES_PER_ARCHIVE = 1000000;
+const LIMIT_BYTES_PER_FILE = 50000000;
 
 function localFilesListing(dir, files2Ignore, firstLevel = false) {
   const files = fs.readdirSync(dir);
@@ -258,7 +259,16 @@ async function execSyncFiles(env, options) {
 
     let resChanges = await findChanges(localFiles, env, options);
     let changes = JSON.parse(resChanges);
-    let files2Modify = changes.filter(f => (f.change == 'M' || f.change == 'C') && f.type === 'F');
+    let files2Modify = changes.filter(f => (f.change == 'M' || f.change == 'C') && f.type === 'F')
+      .filter(f => {
+
+        if (f.size > LIMIT_BYTES_PER_FILE) {
+          console.log(`WARNING: the file ${f.path} exceeds the max file size of ${LIMIT_BYTES_PER_FILE/1000/1000} MB`);
+        }
+
+        return f.size <= LIMIT_BYTES_PER_FILE;
+      });
+    
     let files2Delete = changes.filter(f => f.change == 'D');
 
     await deleteFiles(files2Delete, env, options);
