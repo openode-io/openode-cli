@@ -97,6 +97,18 @@ module.exports = async function(operation, env, options = {}) {
         return await postOp("cmd", env.site_name, options, env);
         break;
 
+      case "snapshots":
+        return await getOp("snapshots", env.site_name, env, options);
+        break;
+
+      case "create-snapshot":
+        return await postOp("snapshots/create", env.site_name, options, env);
+        break;
+
+      case "apply-snapshot":
+        return await postOp("snapshots/apply", env.site_name, options, env);
+        break;
+
       case "addAlias":
         return await postOp("add-alias", env.site_name, options, env);
         break;

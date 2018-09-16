@@ -363,6 +363,51 @@ function processCommander() {
         await runCommand(progress(require("./modules/storageAreas")("del", envVars, storageArea)));
       });
 
+  // snapshots
+  commander
+    .command('snapshots [locationId]')
+      .description('List all snapshots')
+      .action(async function(locationIdInput) {
+        let [envVars, ] = await prepareAuth();
+
+        function proc(locationId) {
+          return require("./modules/instance_operation")("snapshots", envVars,
+            { "location_str_id": locationId });
+        }
+
+        await runCommand(progress(processAllLocations(envVars, locationIdInput, proc)));
+      });
+
+  commander
+    .command('create-snapshot <name> [locationId]')
+      .description('Create a snapshot of your remote repository')
+      .action(async function(name, locationIdInput) {
+
+        let [envVars, ] = await prepareAuth();
+
+        function proc(locationId) {
+          return require("./modules/instance_operation")("create-snapshot", envVars,
+            { "location_str_id": locationId, name });
+        }
+
+        await runCommand(progress(processAllLocations(envVars, locationIdInput, proc)));
+      });
+
+  commander
+    .command('apply-snapshot <id> [locationId]')
+      .description('Copy an existing snapshot to the remote repository')
+      .action(async function(id, locationIdInput) {
+
+        let [envVars, ] = await prepareAuth();
+
+        function proc(locationId) {
+          return require("./modules/instance_operation")("apply-snapshot", envVars,
+            { "location_str_id": locationId, id });
+        }
+
+        await runCommand(progress(processAllLocations(envVars, locationIdInput, proc)));
+      });
+
   // plans
   commander
     .command('plans')
