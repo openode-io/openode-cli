@@ -256,7 +256,7 @@ openode create-snapshot [Name] [Location Id]
 and
 
 ```
-openode apply-snapshot [ID]
+openode apply-snapshot [ID] [Location Id]
 ```
 
 In order to use an existing snapshot to the remote repository.
