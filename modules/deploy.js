@@ -9,12 +9,25 @@ const locationsModule = require("./locations");
 const archiver = require("archiver");
 const unzip = require("unzip");
 const asciify = require("asciify");
+const sha1File = require("sha1-file");
 
 const API_URL = cliConfs.API_URL;
 const LIMIT_BYTES_PER_ARCHIVE = 1000000;
 const LIMIT_BYTES_PER_FILE = 50000000;
 
-function localFilesListing(dir, files2Ignore, firstLevel = false) {
+function promisifiedSha1File(path) {
+  return new Promise((resolve, reject) => {
+    sha1File(path, function(err, sum) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(sum);
+      }
+    })
+  });
+}
+
+async function localFilesListing(dir, files2Ignore, firstLevel = false) {
   const files = fs.readdirSync(dir);
   let allFiles = [];
 
@@ -31,14 +44,17 @@ function localFilesListing(dir, files2Ignore, firstLevel = false) {
     }
 
     if (fStat.isDirectory()) {
-      allFiles = allFiles.concat(localFilesListing(fInfo.path, files2Ignore));
+      allFiles = allFiles.concat((await localFilesListing(fInfo.path, files2Ignore)));
       fInfo.type = "D";
       fInfo.mtime = fStat.mtime;
       allFiles.push(fInfo);
     } else {
+      const checksum = await promisifiedSha1File(fInfo.path);
+      
       fInfo.type = "F";
       fInfo.mtime = fStat.mtime;
       fInfo.size = fStat.size;
+      fInfo.checksum = checksum;
       allFiles.push(fInfo);
     }
   }
@@ -255,7 +271,7 @@ function groupedFiles2Send(files) {
 
 async function execSyncFiles(env, options) {
   try {
-    const localFiles = localFilesListing(".", env.files2Ignore, true);
+    const localFiles = await localFilesListing(".", env.files2Ignore, true);
 
     let resChanges = await findChanges(localFiles, env, options);
     let changes = JSON.parse(resChanges);
@@ -268,7 +284,7 @@ async function execSyncFiles(env, options) {
 
         return f.size <= LIMIT_BYTES_PER_FILE;
       });
-    
+
     let files2Delete = changes.filter(f => f.change == 'D');
 
     await deleteFiles(files2Delete, env, options);

@@ -12,14 +12,14 @@ function findFiles(files, fPath) {
 
 describe('Deploy', function() {
   describe('find local files', function() {
-    it("basic repo", function() {
-      let files = deployModule.localFilesListing("./test/localRepos/basic");
+    it("basic repo", async function() {
+      let files = await deployModule.localFilesListing("./test/localRepos/basic");
       expect(files[0].path).to.equal("./test/localRepos/basic/test.js");
       expect(files[0].type).to.equal("F");
     });
 
-    it("repo with folders", function() {
-      let files = deployModule.localFilesListing("./test/localRepos/withFolders");
+    it("repo with folders", async function() {
+      let files = await deployModule.localFilesListing("./test/localRepos/withFolders");
 
       expect(findFiles(files, "./test/localRepos/withFolders/test1.js")[0].path)
         .to.equal("./test/localRepos/withFolders/test1.js");
@@ -47,8 +47,8 @@ describe('Deploy', function() {
         .to.equal("F");
     });
 
-    it("repo with ignored files", function() {
-      let files = deployModule.localFilesListing("./test/localRepos/withIgnoredFiles",
+    it("repo with ignored files", async function() {
+      let files = await deployModule.localFilesListing("./test/localRepos/withIgnoredFiles",
         envModule.extractFiles2Ignore(), true);
 
       expect(files.length).to.equal(1);
