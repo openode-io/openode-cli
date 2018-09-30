@@ -42,6 +42,10 @@ function postOp(operation, sitename, form, config) {
 
     let url = cliConfs.API_URL + 'instances/' + sitename + "/" + operation;
 
+    if (config && config.version) {
+      url = `${url}?version=${config.version}`;
+    }
+
     request.post({
       headers: {
         "x-auth-token": config.token
