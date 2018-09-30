@@ -50,7 +50,7 @@ async function localFilesListing(dir, files2Ignore, firstLevel = false) {
       allFiles.push(fInfo);
     } else {
       const checksum = await promisifiedSha1File(fInfo.path);
-      
+
       fInfo.type = "F";
       fInfo.mtime = fStat.mtime;
       fInfo.size = fStat.size;
@@ -464,18 +464,18 @@ async function pull(env, options) {
 
 function hasResultVariable(result, key) {
   return result && result.find(r => {
-    return r && r.result && (r.result[key] || (r.result.result && r.result.result[key]));
+    return r && (r[key] || (r.result && r.result[key]));
   });
 }
 
 function removeResultVariable(result, key) {
   result.forEach(r => {
-    if (r && r.result) {
-      delete r.result[key];
+    if (r) {
+      delete r[key];
     }
 
-    if (r && r.result.result) {
-      delete r.result.result[key];
+    if (r && r.result) {
+      delete r.result[key];
     }
   });
 }
@@ -485,14 +485,12 @@ function prepareFinalResult(result) {
     let bootLogs = "";
 
     if (bootLogs = hasResultVariable(result, "Boot Logs")) {
-      const resBoot = bootLogs.result["Boot Logs"] || (bootLogs.result && bootLogs.result.result["Boot Logs"]);
-      console.log(resBoot);
+      const resBoot = bootLogs["Boot Logs"] || (bootLogs.result && bootLogs.result["Boot Logs"]);
       removeResultVariable(result, "Boot Logs");
     }
 
     if (hasResultVariable(result, "isFirstUp")) {
       asciify('Now online!', {color: 'green', font: "big"}, function (err, asciiArt) {
-        console.log(asciiArt);
 
         removeResultVariable(result, "isFirstUp");
 

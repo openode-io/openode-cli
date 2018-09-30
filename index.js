@@ -22,7 +22,9 @@ async function runCommand(promisedCmd, options = {}) {
       main.terminate();
     }
 
-    process.exit();
+    if ( ! options.keepUntilDeployed) {
+      process.exit();
+    }
   } catch(err) {
     console.error("Unhandled error, please report this bug:");
     console.error(err);
@@ -119,8 +121,8 @@ function processCommander() {
       await runCommand(progress(
         deployModule.deploy(envVars, options)
           .then((result) => {
-            return deployModule.prepareFinalResult(result);
-          }), envVars));
+            return result;
+          }), envVars), { keepUntilDeployed: true });
     });
 
   commander
@@ -543,9 +545,20 @@ async function progress(promise, env, withProgressLoader = true) {
     // join socket io to receive notifications
     env.io.emit('room', env.site_name + "/" + env.token);
 
-    env.io.on('message', function(data) {
+    env.io.on('message', async function(data) {
       if (withProgressLoader) {
-        console.log(data);
+
+        if (data && data.indexOf("deployment-result=") === 0) {
+          const partsResult = data.split("deployment-result=");
+
+          if (partsResult && partsResult.length === 2) {
+            const result = JSON.parse(partsResult[1]);
+
+            console.log((await deployModule.prepareFinalResult([result])));
+          }
+        } else {
+          console.log(data);
+        }
       } else {
         process.stdout.write(data)
       }
