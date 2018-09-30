@@ -554,7 +554,11 @@ async function progress(promise, env, withProgressLoader = true) {
           if (partsResult && partsResult.length === 2) {
             const result = JSON.parse(partsResult[1]);
 
-            console.log((await deployModule.prepareFinalResult([result])));
+            const finalResult = await deployModule.prepareFinalResult([result]);
+            log.prettyPrint(finalResult);
+
+            // to refactor if we have more than 1 deployment
+            process.exit();
           }
         } else {
           console.log(data);
