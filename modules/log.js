@@ -11,15 +11,17 @@ function err(msg) {
 }
 
 function prettyPrint(json) {
-  if (typeof(json) == 'string') {
+  if (typeof(json) === 'object') {
     try {
       json = JSON.parse(json);
     } catch(err) {
 
     }
+    
+    console.log(util.inspect(json, {depth: null, colors: true}));
+  } else {
+    console.log(json);
   }
-
-  console.log(util.inspect(json, {depth: null, colors: true}));
 }
 
 module.exports = {

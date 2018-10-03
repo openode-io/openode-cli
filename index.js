@@ -473,6 +473,29 @@ function processCommander() {
       });
 
   commander
+    .command('list-templates')
+      .description('Currently available templates')
+      .action(async function() {
+        let [envVars, ] = await prepareAuth();
+        await runCommand(progress(require("./modules/templates")("list-templates", envVars,
+          { } )).then((result) => {
+            log.prettyPrint(`*** to show the readme of a template, type 'openode template-info [template name]'`);
+
+            return result;
+          }));
+
+      });
+
+  commander
+    .command('template-info <template-name>')
+      .description('Shows the template readme.')
+      .action(async function(name) {
+        let [envVars, ] = await prepareAuth();
+        await runCommand(progress(require("./modules/templates")("template-info", envVars,
+          { name } )));
+      });
+
+  commander
     .command('increase-storage <amountGB> [locationId]')
       .description('Increase the extra storage capacity')
       .action(async function(amountGB, locationIdInput) {
