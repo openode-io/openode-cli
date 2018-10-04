@@ -1,6 +1,7 @@
 const cliConfs = require("./cliConfs");
 const request = require("request");
 const log = require("./log");
+const fs = require("fs");
 
 function getBuildTemplatesFilesList() {
   return new Promise((resolve, reject) => {
@@ -25,10 +26,10 @@ function getBuildTemplatesFilesList() {
   })
 }
 
-function getTemplateReadme(template) {
+function getTemplateFile(template, filename) {
   return new Promise((resolve, reject) => {
 
-    const url = `https://raw.githubusercontent.com/openode-io/build-templates/master/${template.path}/README.md`;
+    const url = `https://raw.githubusercontent.com/openode-io/build-templates/master/${template.path}/${filename}`;
 
     request.get({
       headers: {
@@ -64,20 +65,68 @@ async function templates() {
   return templates;
 }
 
+function templateUrlOf(template) {
+  return `https://github.com/openode-io/build-templates/tree/master/${template.path}/Dockerfile`;
+}
+
+function determineDefaultTemplate() {
+  if (fs.existsSync("./package.json")) {
+    return `node-all-in-one`;
+  }
+
+  return undefined;
+}
+
 module.exports = async function(operation, env, options = {}) {
   try {
     switch(operation) {
       case "list-templates":
         return (await templates()).map(t => t.name);
         break;
-      case "template-info":
-        const template =  (await templates()).find(t => t.name === options.name);
-        let readme = await getTemplateReadme(template);
-        const templateUrl = `https://github.com/openode-io/build-templates/tree/master/${template.path}/Dockerfile`;
+      case "template-info": {
+        const template = (await templates()).find(t => t.name === options.name);
+        let readme = await getTemplateFile(template, "README.md");
+        const templateUrl = templateUrlOf(template);
         readme += `\n\nTemplate Source (Dockerfile): ${templateUrl}\n`;
 
         return readme
         break;
+      }
+      case "template": {
+
+        if (fs.existsSync("./Dockerfile")) {
+          throw new Error('A Dockerfile already exists. Make sure to remove it before applying a template.');
+        }
+
+        const allTemplates = await templates();
+        let template =  allTemplates.find(t => t.name === options.name);
+
+        if ( ! template) {
+          if (options.name) {
+            throw new Error(`Invalid template name ${options.name}`)
+          } else {
+            const defaultTemplateName = determineDefaultTemplate()
+
+            if (defaultTemplateName) {
+              template = allTemplates.find(t => t.name === determineDefaultTemplate());
+            } else {
+              log.prettyPrint('Could not automatically find a template for this project. ' +
+                'Available templates are listed below. ');
+
+              return allTemplates.map(t => t.name);
+            }
+
+          }
+        }
+
+        let dockerfile = await getTemplateFile(template, "Dockerfile");
+        fs.writeFileSync("./Dockerfile", dockerfile)
+
+        return {
+          result: 'Successfully applied to ./Dockerfile. Run *openode deploy* to deploy.'
+        }
+        break;
+      }
     }
 
   } catch(err) {

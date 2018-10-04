@@ -46,8 +46,8 @@ function terminate() {
 }
 
 function checkCurrentRepositoryValid() {
-  if ( ! fs.existsSync("./package.json")) {
-    console.error("package.json missing. Make sure to be in the right path with a valid package.json file.")
+  if ( ! fs.existsSync("./Dockerfile")) {
+    console.error("Dockerfile missing. Type *openode template* to generate automatically a Dockerfile")
     process.exit()
   }
 }

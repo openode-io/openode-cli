@@ -483,7 +483,6 @@ function processCommander() {
 
             return result;
           }));
-
       });
 
   commander
@@ -492,6 +491,15 @@ function processCommander() {
       .action(async function(name) {
         let [envVars, ] = await prepareAuth();
         await runCommand(progress(require("./modules/templates")("template-info", envVars,
+          { name } )));
+      });
+
+  commander
+    .command('template [template-name]')
+      .description('Retrieve the template Dockerfile.')
+      .action(async function(name) {
+        let [envVars, ] = await prepareAuth();
+        await runCommand(progress(require("./modules/templates")("template", envVars,
           { name } )));
       });
 
