@@ -18,10 +18,6 @@ async function runCommand(promisedCmd, options = {}) {
     let result = await promisedCmd;
     log.prettyPrint(result);
 
-    if (options.keepIo) {
-      main.terminate();
-    }
-
     if ( ! options.keepUntilDeployed) {
       process.exit();
     }
@@ -102,14 +98,12 @@ function processCommander() {
 
   commander
     .command('deploy')
-    .option("--clearNpm", "Clear node_modules before deploying")
     .option("-t <token>", "User token used for authentication")
     .option("-s <site name>", "Instance site name.")
     .description('Deploy your website on opeNode')
     .action(async function(opts) {
 
       const options = {
-        "clearNpm": opts && opts.clearNpm === true
       };
 
       let envVars = await auth(opts);
@@ -133,7 +127,6 @@ function processCommander() {
     .action(async function(opts) {
 
       const options = {
-        "clearNpm": opts && opts.clearNpm === true
       };
 
       let envVars = await auth(opts);
@@ -239,8 +232,7 @@ function processCommander() {
         );
       }
 
-      await runCommand(progress(processAllLocations(envVars, null, proc), envVars, false),
-      { "keepIo": false });
+      await runCommand(progress(processAllLocations(envVars, null, proc), envVars));
     });
 
   commander
@@ -269,20 +261,6 @@ function processCommander() {
       }
 
       await runCommand(progress(processAllLocations(envVars, null, procStop)));
-    });
-
-  commander
-    .command('restart')
-    .description('Restart your opeNode instance')
-    .action(async function() {
-      let [envVars, ] = await prepareAuth();
-
-      function proc(locationId) {
-        return require("./modules/instance_operation")("restart", envVars,
-          { "location_str_id": locationId });
-      }
-
-      await runCommand(progress(processAllLocations(envVars, null, proc)));
     });
 
   // aliases (custom domain)
@@ -319,21 +297,6 @@ function processCommander() {
 
       function procEraseAll(locationId) {
         return require("./modules/instance_operation")("eraseAll", envVars,
-          { "location_str_id": locationId });
-      }
-
-      await runCommand(progress(processAllLocations(envVars, locationIdInput, procEraseAll)));
-    });
-
-  commander
-    .command('erase-logs [locationId]')
-    .description('Erase the logs in the remote repository')
-    .action(async function(locationIdInput) {
-      let [envVars, ] = await prepareAuth();
-
-
-      function procEraseAll(locationId) {
-        return require("./modules/instance_operation")("eraseLogs", envVars,
           { "location_str_id": locationId });
       }
 
@@ -586,7 +549,8 @@ async function progress(promise, env, withProgressLoader = true) {
             const result = JSON.parse(partsResult[1]);
 
             const finalResult = await deployModule.prepareFinalResult([result]);
-            log.prettyPrint(finalResult);
+            log.prettyPrint(finalResult.logs);
+            log.prettyPrint(finalResult.result);
 
             // to refactor if we have more than 1 deployment
             process.exit();

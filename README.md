@@ -39,10 +39,9 @@ Note that when you run *openode deploy* and your website is already running, it 
 #### Options
 
 ```
-openode deploy [--clearNpm] [-t TOKEN -s SITE_NAME]
+openode deploy [-t TOKEN -s SITE_NAME]
 ```
 
-* *--clearNpm:* Remove the node_modules folder before deploying.
 * *-t:* Provide an API token used for authentication.
 * *-s:* Provide a site name.
 
@@ -162,15 +161,6 @@ the following operation must done:
 
 ```
 openode erase-all
-```
-
-### Erase logs
-
-In order to clear your logs in your cloud repository, the following operation
-can be done:
-
-```
-openode erase-logs
 ```
 
 ### Custom Domain

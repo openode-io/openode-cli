@@ -71,7 +71,7 @@ function templateUrlOf(template) {
 
 function determineDefaultTemplate() {
   if (fs.existsSync("./package.json")) {
-    return `node-all-in-one`;
+    return `node-minimal`;
   }
 
   return undefined;

@@ -71,9 +71,12 @@ module.exports = async function(operation, env, options = {}) {
       case "status":
         return await getOp("", env.site_name, env);
         break;
-      case "logs":
-        return await getOp("logs", env.site_name, env, options);
+      case "logs": {
+        const result = await getOp("logs", env.site_name, env, options);
+        log.prettyPrint(result.logs);
+        return {};
         break;
+      }
       case "stop":
         return await postOp("stop", env.site_name, options, env);
         break;
@@ -121,9 +124,6 @@ module.exports = async function(operation, env, options = {}) {
         break;
       case "eraseAll":
         return await postOp("erase-all", env.site_name, options, env);
-        break;
-      case "eraseLogs":
-        return await postOp("erase-logs", env.site_name, options, env);
         break;
 
       case "addLocation":

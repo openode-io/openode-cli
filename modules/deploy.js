@@ -483,9 +483,12 @@ function removeResultVariable(result, key) {
 function prepareFinalResult(result) {
   return new Promise((resolve) => {
     let bootLogs = "";
+    let logs = "";
 
     if (bootLogs = hasResultVariable(result, "Boot Logs")) {
       const resBoot = bootLogs["Boot Logs"] || (bootLogs.result && bootLogs.result["Boot Logs"]);
+      logs = resBoot;
+
       removeResultVariable(result, "Boot Logs");
     }
 
@@ -494,10 +497,16 @@ function prepareFinalResult(result) {
 
         removeResultVariable(result, "isFirstUp");
 
-        resolve(result)
+        resolve({
+          result,
+          logs
+        })
       });
     } else {
-      resolve(result)
+      resolve({
+        result,
+        logs
+      })
     }
   });
 }

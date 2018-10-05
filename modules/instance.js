@@ -85,32 +85,9 @@ function sitenames(config, instanceType = "server") {
   });
 }
 
-async function promptInstanceType() {
-  while (true) {
-    const schema = {
-      properties: {
-        instanceType: {
-          description: 'Instance type, [S]erver or Server[L]ess',
-          message: 'Invalid input, please enter either S for Server or L for Serverless.',
-          required: true,
-          default: "S"
-        }
-      }
-    };
-
-    let result = await promptUtil.promisifyPrompt(schema);
-
-    if (["s", "l"].includes(result.instanceType.toLowerCase())) {
-      const finalInstanceType = { "s": "server", "l": "serverless"}[result.instanceType.toLowerCase()];
-
-      return finalInstanceType;
-    }
-  }
-}
-
 async function selectExistingOrCreate(env) {
 
-  let instanceType = await promptInstanceType();
+  let instanceType = "docker";
 
   let selectedSitename = null;
 
@@ -140,11 +117,6 @@ async function selectExistingOrCreate(env) {
     }
 
     let result = await promptUtil.promisifyPrompt(schema);
-
-    if (result.sitename.includes(".") && instanceType === 'serverless') {
-      log.out("serverless instances can't be a custom domain currently.");
-      continue;
-    }
 
     let siteExists = await getWebsite(result.sitename, env);
 

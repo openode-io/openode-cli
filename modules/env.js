@@ -30,7 +30,6 @@ function extractFiles2Ignore(path = "./.openodeignore") {
     ".openodeignore",
     "node_modules",
     ".git",
-    "Dockerfile",
     "openode_scripts"
   ];
 
