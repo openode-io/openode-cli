@@ -87,7 +87,7 @@ function sitenames(config, instanceType = "server") {
 
 async function selectExistingOrCreate(env) {
 
-  let instanceType = "docker";
+  let instanceType = "server";
 
   let selectedSitename = null;
 
