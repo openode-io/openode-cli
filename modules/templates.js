@@ -84,6 +84,16 @@ function determineDefaultTemplate() {
   return undefined;
 }
 
+async function getTemplateByName(name) {
+  const template = (await templates()).find(t => t.name === name);
+
+  if ( ! template) {
+    throw new Error(`Template ${name} not found`);
+  }
+
+  return template;
+}
+
 module.exports = async function(operation, env, options = {}) {
   try {
     switch(operation) {
@@ -91,7 +101,7 @@ module.exports = async function(operation, env, options = {}) {
         return (await templates()).map(t => t.name);
         break;
       case "template-info": {
-        const template = (await templates()).find(t => t.name === options.name);
+        const template = await getTemplateByName(options.name);
         let readme = await getTemplateFile(template, "README.md");
         const templateUrl = templateUrlOf(template);
         readme += `\n\nTemplate Source (Dockerfile): ${templateUrl}\n`;
@@ -106,7 +116,7 @@ module.exports = async function(operation, env, options = {}) {
         }
 
         const allTemplates = await templates();
-        let template =  allTemplates.find(t => t.name === options.name);
+        let template =  await getTemplateByName(options.name);
 
         if ( ! template) {
           if (options.name) {
