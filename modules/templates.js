@@ -69,9 +69,16 @@ function templateUrlOf(template) {
   return `https://github.com/openode-io/build-templates/tree/master/${template.path}/Dockerfile`;
 }
 
+function anyFilesExist(listFiles) {
+  return listFiles.some(f => fs.existsSync(f));
+}
+
 function determineDefaultTemplate() {
   if (fs.existsSync("./package.json")) {
     return `node-minimal`;
+  }
+  else if (anyFilesExist(["./index.html", "./index.htm"])) {
+    return `nginx-static`;
   }
 
   return undefined;
