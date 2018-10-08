@@ -87,7 +87,7 @@ function determineDefaultTemplate() {
 async function getTemplateByName(name) {
   const template = (await templates()).find(t => t.name === name);
 
-  if ( ! template) {
+  if ( ! template && name) {
     throw new Error(`Template ${name} not found`);
   }
 
