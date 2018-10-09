@@ -3,6 +3,7 @@ const request = require("request");
 const log = require("./log");
 const prompt = require("prompt");
 const promptUtil = require("./promptUtil");
+const packageJson = require("../package.json");
 
 function getOp(operation, sitename, config, options = {}) {
   return new Promise((resolve, reject) => {
@@ -42,9 +43,7 @@ function postOp(operation, sitename, form, config) {
 
     let url = cliConfs.API_URL + 'instances/' + sitename + "/" + operation;
 
-    if (config && config.version) {
-      url = `${url}?version=${config.version}`;
-    }
+    url = `${url}?version=${packageJson.version}`;
 
     request.post({
       headers: {

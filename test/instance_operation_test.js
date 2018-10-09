@@ -2,6 +2,9 @@ const expect = require('expect.js');
 const instanceModule = require("../modules/instance_operation.js");
 const nock = require("nock");
 const cliConfs = require("../modules/cliConfs");
+const packageJson = require("../package.json");
+
+const version = packageJson.version;
 
 describe('Instance Operation', function() {
 
@@ -28,7 +31,7 @@ describe('Instance Operation', function() {
   describe('set-config', function() {
     it("should return result success", function(done) {
       nock(cliConfs.API_URL)
-        .post('/instances/mysite/set-config')
+        .post('/instances/mysite/set-config?version=' + version)
         .reply(200, {
           "result": "success",
           "configs": {}
@@ -47,7 +50,7 @@ describe('Instance Operation', function() {
   describe('cmd', function() {
     it("should return success with valid cmd", function(done) {
       nock(cliConfs.API_URL)
-        .post('/instances/mysite/cmd')
+        .post('/instances/mysite/cmd?version=' + version)
         .reply(200, {
           "status": "success"
          });
@@ -64,7 +67,7 @@ describe('Instance Operation', function() {
   describe('stop', function() {
     it("should return status with valid instance", function(done) {
       nock(cliConfs.API_URL)
-        .post('/instances/mysite/stop')
+        .post('/instances/mysite/stop?version=' + version)
         .reply(200, {
           "result": "success"
          });
@@ -79,7 +82,7 @@ describe('Instance Operation', function() {
 
     it("should return 500 with invalid response", function(done) {
       nock(cliConfs.API_URL)
-        .post('/instances/mysite/stop')
+        .post('/instances/mysite/stop?version=' + version)
         .reply(500, {
           "error": {}
          });
@@ -96,7 +99,7 @@ describe('Instance Operation', function() {
   describe('restart', function() {
     it("should return status with valid instance", function(done) {
       nock(cliConfs.API_URL)
-        .post('/instances/mysite/restart')
+        .post('/instances/mysite/restart?version=' + version)
         .reply(200, {
           "result": "success"
          });
@@ -111,7 +114,7 @@ describe('Instance Operation', function() {
 
     it("should return 500 with invalid response", function(done) {
       nock(cliConfs.API_URL)
-        .post('/instances/mysite/restart')
+        .post('/instances/mysite/restart?version=' + version)
         .reply(500, {
           "error": {}
          });
@@ -143,7 +146,7 @@ describe('Instance Operation', function() {
 
     it("should call proper api when adding location", function(done) {
       nock(cliConfs.API_URL)
-        .post('/instances/mysite/add-location')
+        .post('/instances/mysite/add-location?version=' + version)
         .reply(200, {
           "result": "success"
          });
@@ -158,7 +161,7 @@ describe('Instance Operation', function() {
 
     it("should call proper api when removing location", function(done) {
       nock(cliConfs.API_URL)
-        .post('/instances/mysite/remove-location')
+        .post('/instances/mysite/remove-location?version=' + version)
         .reply(200, {
           "result": "success"
          });
@@ -192,7 +195,7 @@ describe('Instance Operation', function() {
   describe('add-alias', function() {
     it("should add alias", function(done) {
       nock(cliConfs.API_URL)
-        .post('/instances/my.site/add-alias')
+        .post('/instances/my.site/add-alias?version=' + version)
         .reply(200, {
           "result": "success"
          });
@@ -209,7 +212,7 @@ describe('Instance Operation', function() {
   describe('del-alias', function() {
     it("should del alias", function(done) {
       nock(cliConfs.API_URL)
-        .post('/instances/my.site/del-alias')
+        .post('/instances/my.site/del-alias?version=' + version)
         .reply(200, {
           "result": "success"
          });
