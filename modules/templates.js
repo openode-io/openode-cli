@@ -74,7 +74,10 @@ function anyFilesExist(listFiles) {
 }
 
 function determineDefaultTemplate() {
-  if (fs.existsSync("./package.json")) {
+  if (fs.existsSync("./Gemfile")) {
+    return `ruby-on-rails-minimal`;
+  }
+  else if (fs.existsSync("./package.json")) {
     return `node-minimal`;
   }
   else if (anyFilesExist(["./index.html", "./index.htm"])) {
