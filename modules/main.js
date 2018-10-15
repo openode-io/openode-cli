@@ -52,6 +52,31 @@ function checkCurrentRepositoryValid() {
   }
 }
 
+function checkGlobalNotice() {
+  return new Promise((resolve) => {
+    req.get('global/settings', {}).then((result) => {
+      if (result && result.global_msg) {
+        switch(result.global_msg_class) {
+          case "alert-danger":
+            log.alertError(`** ${result.global_msg} **`);
+            break;
+          case "alert-warning":
+            log.alertWarning(`** ${result.global_msg} **`);
+            break;
+          case "alert-info":
+            log.alertInfo(`** ${result.global_msg} **`);
+            break;
+        }
+      }
+
+      resolve();
+    }).catch((err) => {
+
+      resolve()
+    });
+  });
+}
+
 function checkSomeOpenodeServicesDown() {
   return new Promise((resolve) => {
     req.get('global/services/down', {}).then((result) => {
@@ -71,6 +96,11 @@ function checkSomeOpenodeServicesDown() {
   });
 }
 
+async function checkOpenodeStatus() {
+  await checkGlobalNotice();
+  await checkSomeOpenodeServicesDown();
+}
+
 function beginEndCleanup(authConfig) {
   return deploy.deleteLocalArchive(authConfig[0]);
 }
@@ -80,6 +110,6 @@ module.exports = {
   prepareAuthenticatedCommand,
   terminate,
   checkCurrentRepositoryValid,
-  checkSomeOpenodeServicesDown,
+  checkOpenodeStatus,
   beginEndCleanup
 };

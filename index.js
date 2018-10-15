@@ -575,7 +575,7 @@ async function progress(promise, env, withProgressLoader = true) {
   return result;
 }
 
-main.checkSomeOpenodeServicesDown().then(() => {
+main.checkOpenodeStatus().then(() => {
   if (main.isFirstRun()) {
     console.log("Welcome to...")
     asciify('opeNode.io', {color: 'white', font: "big"}, function (err, asciiArt) {
