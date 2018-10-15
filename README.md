@@ -279,6 +279,39 @@ openode add-location [location-id]
 openode del-location [location-id]
 ```
 
+### Templates
+
+Templates are Dockerfile which can be copied to your local. The Dockerfile is
+what we use to deploy your instances. You are free to use as is a Dockerfile
+template or adapt it to your needs.
+
+#### List templates
+
+To view the list of all available templates, type:
+
+```
+openode list-templates
+```
+
+#### Get info about a template
+
+To get the template description:
+
+```
+openode template-info [template-name]
+```
+
+#### Retrieve a template
+
+To get a copy of a template, just do:
+
+```
+openode template [template-name]
+```
+
+Note that if you do not specify a template name, the CLI will get the most
+appropriate template based on your local repository.
+
 ### Configs
 
 Website configs, such as the build script path, can be managed via the CLI.
