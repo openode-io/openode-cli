@@ -140,10 +140,13 @@ module.exports = async function(operation, env, options = {}) {
         }
 
         let dockerfile = await getTemplateFile(template, "Dockerfile");
+        const readme = await getTemplateFile(template, "README.md");
         fs.writeFileSync("./Dockerfile", dockerfile)
 
+        log.prettyPrint(readme);
+
         return {
-          result: 'Successfully applied to ./Dockerfile. Run *openode deploy* to deploy.'
+          result: `Successfully applied template ${template.name} to ./Dockerfile. Run *openode deploy* to deploy.`
         }
         break;
       }
