@@ -4,9 +4,9 @@
 
 [![Build status](https://travis-ci.org/openode-io/openode-cli.svg?branch=master)](https://travis-ci.org/openode-io/openode-cli)
 
-[opeNode](https://www.openode.io/) (https://www.openode.io/) command line to control and manage your Node.js instances efficiently.
+[opeNode](https://www.openode.io/) (https://www.openode.io/) command line to control and manage your application instances efficiently.
 
-[opeNode](https://www.openode.io/) is a reliable and fast Cloud Node.js hosting service to deploy your Node.js app instantly.
+[opeNode](https://www.openode.io/) provides reliable and fast Platform As A Services (PaaS) to deploy your web applications instantly.
 
 ## Installation
 
