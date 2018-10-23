@@ -83,6 +83,9 @@ function determineDefaultTemplate() {
   else if (anyFilesExist(["./index.html", "./index.htm"])) {
     return `nginx-static`;
   }
+  else if (anyFilesExist(["./index.php"])) {
+    return `php-apache-minimal`;
+  }
 
   return undefined;
 }
