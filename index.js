@@ -273,7 +273,7 @@ function processCommander() {
     });
 
   commander
-    .command('add-alias <hostname>')
+    .command('add-alias <domainName>')
     .description('Add hostname alias')
     .action(async function(hostname) {
       let [envVars, ] = await prepareAuth();
@@ -281,11 +281,36 @@ function processCommander() {
     });
 
   commander
-    .command('del-alias <hostname>')
+    .command('del-alias <domainName>')
     .description('Delete hostname alias')
     .action(async function(hostname) {
       let [envVars, ] = await prepareAuth();
       await runCommand(progress(require("./modules/instance_operation")("delAlias", envVars, { hostname } )));
+    });
+
+  // dns (custom domain)
+  commander
+    .command('list-dns')
+    .description('List DNS configurations for a given domain name')
+    .action(async function(domainName) {
+      let [envVars, ] = await prepareAuth();
+      await runCommand(progress(require("./modules/instance_operation")("listDns", envVars)));
+    });
+
+  commander
+    .command('add-dns <domainName> <type> <value>')
+    .description('Add custom domain name DNS setting')
+    .action(async function(domainName, type, value) {
+      let [envVars, ] = await prepareAuth();
+      await runCommand(progress(require("./modules/instance_operation")("addDns", envVars, { hostname } )));
+    });
+
+  commander
+    .command('del-dns <domainName>')
+    .description('Add custom domain name DNS setting')
+    .action(async function(domainName, type, value) {
+      let [envVars, ] = await prepareAuth();
+      await runCommand(progress(require("./modules/instance_operation")("delDns", envVars, { hostname } )));
     });
 
   commander
