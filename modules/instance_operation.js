@@ -121,6 +121,9 @@ module.exports = async function(operation, env, options = {}) {
       case "delAlias":
         return await postOp("del-alias", env.site_name, options, env);
         break;
+      case "listDns":
+        return await getOp("list-dns", env.site_name, env);
+        break;
       case "eraseAll":
         return await postOp("erase-all", env.site_name, options, env);
         break;
