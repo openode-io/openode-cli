@@ -63,6 +63,34 @@ function postOp(operation, sitename, form, config) {
   });
 }
 
+function delOp(operation, sitename, id, config) {
+  return new Promise((resolve, reject) => {
+
+    if (!sitename || sitename == "") {
+      reject({});
+    }
+
+    let url = cliConfs.API_URL + 'instances/' + sitename + "/" + operation;
+
+    url = `${url}?version=${packageJson.version}&id=${id}`;
+
+    request.delete({
+      headers: {
+        "x-auth-token": config.token
+      },
+      url: url,
+      json: true,
+      timeout: 300000
+    }, function optionalCallback(err, httpResponse, body) {
+      if (err || httpResponse.statusCode != 200) {
+        reject(body);
+      } else {
+        resolve(body);
+      }
+    });
+  });
+}
+
 
 module.exports = async function(operation, env, options = {}) {
   try {
@@ -123,6 +151,12 @@ module.exports = async function(operation, env, options = {}) {
         break;
       case "listDns":
         return await getOp("list-dns", env.site_name, env);
+        break;
+      case "addDns":
+        return await postOp("add-dns", env.site_name, options, env);
+        break;
+      case "delDns":
+        return await delOp("del-dns", env.site_name, options.id, env);
         break;
       case "eraseAll":
         return await postOp("erase-all", env.site_name, options, env);

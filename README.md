@@ -197,6 +197,35 @@ to this instance.
 openode del-alias [hostname]
 ```
 
+#### list-dns
+
+To list all DNS settings
+
+```
+openode list-dns
+```
+
+#### add-dns
+
+A new DNS entry can be added with:
+
+```
+openode add-dns [domainName] [type] [value]
+```
+
+where the domainName is the domain name, type is the DNS entry type (A, TXT, etc.), and finally
+a value must be set.
+
+#### del-dns
+
+To delete a DNS entry:
+
+```
+openode del-dns [id]
+```
+
+where id corresponds to the id returned by list-dns.
+
 ### Defining storage areas
 
 The storage areas are folders which will never be deleted. Those folders can

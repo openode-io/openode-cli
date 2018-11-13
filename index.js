@@ -302,15 +302,16 @@ function processCommander() {
     .description('Add custom domain name DNS setting')
     .action(async function(domainName, type, value) {
       let [envVars, ] = await prepareAuth();
-      await runCommand(progress(require("./modules/instance_operation")("addDns", envVars, { hostname } )));
+      await runCommand(progress(require("./modules/instance_operation")("addDns", envVars,
+        { domainName, type, value } )));
     });
 
   commander
-    .command('del-dns <domainName>')
+    .command('del-dns <id>')
     .description('Add custom domain name DNS setting')
-    .action(async function(domainName, type, value) {
+    .action(async function(id) {
       let [envVars, ] = await prepareAuth();
-      await runCommand(progress(require("./modules/instance_operation")("delDns", envVars, { hostname } )));
+      await runCommand(progress(require("./modules/instance_operation")("delDns", envVars, { id } )));
     });
 
   commander
