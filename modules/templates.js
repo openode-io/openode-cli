@@ -77,6 +77,9 @@ function determineDefaultTemplate() {
   if (fs.existsSync("./Gemfile")) {
     return `ruby-on-rails-minimal`;
   }
+  else if (fs.existsSync("./shard.yml")) {
+    return `crystal-amber`;
+  }
   else if (fs.existsSync("./package.json")) {
     return `node-minimal`;
   }
