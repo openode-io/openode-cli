@@ -80,6 +80,9 @@ function determineDefaultTemplate() {
   else if (fs.existsSync("./shard.yml")) {
     return `crystal-amber`;
   }
+  else if (fs.existsSync("./project.clj")) {
+    return `clojure`;
+  }
   else if (fs.existsSync("./package.json")) {
     return `node-minimal`;
   }
