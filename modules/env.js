@@ -37,8 +37,8 @@ function extractFiles2Ignore(path = "./.openodeignore") {
     result = defaultList2Ignore;
   } else {
     try {
-      result = gitignore(openodeIgnoreFile, defaultList2Ignore).filter((f) => {
-        return f.indexOf("/**") === -1;
+      result = gitignore(openodeIgnoreFile, defaultList2Ignore).map((f) => {
+        return f.replace("/**", "");
       });
     } catch(err) {
       result = defaultList2Ignore;
