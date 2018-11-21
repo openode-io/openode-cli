@@ -30,4 +30,29 @@ describe('Env', function() {
     });
 
   });
+
+  describe('Base Ignore files', function() {
+    it("with dot folder", function() {
+      let f2ignore = envModule.files2Ignore("./test/openodeIgnore/withDotFolder");
+      expect(f2ignore.indexOf("thisisatest")).to.not.equal(-1);
+    });
+
+    it("with folder starting with char", function() {
+      let f2ignore = envModule.files2Ignore("./test/openodeIgnore/withFolderStartingWithChar");
+      expect(f2ignore.indexOf("thisisatest")).to.not.equal(-1);
+    });
+
+    it("with folder starting with slash", function() {
+      let f2ignore = envModule.files2Ignore("./test/openodeIgnore/withFolderStartingWithSlash");
+      expect(f2ignore.indexOf("thisisatest")).to.not.equal(-1);
+    });
+
+    it("various", function() {
+      let f2ignore = envModule.files2Ignore("./test/openodeIgnore/various");
+      expect(f2ignore.indexOf("thisisatest1")).to.not.equal(-1);
+      expect(f2ignore.indexOf("thisisatest2")).to.not.equal(-1);
+      expect(f2ignore.indexOf("test3")).to.not.equal(-1);
+      expect(f2ignore.indexOf("test4/test3")).to.not.equal(-1);
+    });
+  })
 });

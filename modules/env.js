@@ -21,24 +21,18 @@ function set(envs) {
   }
 }
 
-function extractFiles2Ignore(path = "./.openodeignore") {
+function files2Ignore(path = "./.openodeignore", defaultList2Ignore = []) {
   let result = [];
 
   const openodeIgnoreFile = path;
-  const defaultList2Ignore = [
-    ".openode",
-    ".openodeignore",
-    "node_modules",
-    ".git",
-    "openode_scripts"
-  ];
 
   if ( ! fs.existsSync(path)) {
     result = defaultList2Ignore;
   } else {
     try {
       result = gitignore(openodeIgnoreFile, defaultList2Ignore).map((f) => {
-        return f.replace("/**", "");
+        return f.replace(/\/\*\*/g, "")
+          .replace(/\/\*/g, "");
       });
     } catch(err) {
       result = defaultList2Ignore;
@@ -51,8 +45,19 @@ function extractFiles2Ignore(path = "./.openodeignore") {
   return result;
 }
 
+function extractFiles2Ignore(path = "./.openodeignore") {
+  return files2Ignore(path, [
+    ".openode",
+    ".openodeignore",
+    "node_modules",
+    ".git",
+    "openode_scripts"
+  ]);
+}
+
 module.exports = {
   get,
   set,
-  extractFiles2Ignore
+  extractFiles2Ignore,
+  files2Ignore
 };
