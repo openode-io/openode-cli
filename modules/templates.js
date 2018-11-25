@@ -80,6 +80,9 @@ function determineDefaultTemplate() {
   else if (fs.existsSync("./Cargo.toml")) {
     return `rust-minimal`;
   }
+  else if (fs.existsSync("./build.sbt")) {
+    return `scala-sbt`;
+  }
   else if (fs.existsSync("./shard.yml")) {
     return `crystal-amber`;
   }
