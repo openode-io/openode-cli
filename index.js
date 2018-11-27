@@ -22,9 +22,8 @@ async function runCommand(promisedCmd, options = {}) {
       process.exit();
     }
   } catch(err) {
-    console.error("Unhandled error, please report this bug:");
     console.error(err);
-    process.exit();
+    process.exit(1);
   }
 }
 
@@ -578,8 +577,16 @@ async function progress(promise, env, withProgressLoader = true) {
             log.prettyPrint(finalResult.logs);
             log.prettyPrint(finalResult.result);
 
+            let codeExit = 0;
+
+            if (finalResult.result && finalResult.result.length > 0) {
+              if (finalResult.result.find(r => ! r.result || r.result !== 'success')) {
+                codeExit = 1;
+              }
+            }
+
             // to refactor if we have more than 1 deployment
-            process.exit();
+            process.exit(codeExit);
           }
         } else {
           console.log(data);
