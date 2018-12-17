@@ -38,7 +38,7 @@ async function locations2Process(env, locationId)  {
 
     return (await getLocations(env)).map((l) => l.id);
   } catch(err) {
-    console.error("Unable to process the location " + locationId);
+    throw new Error('Unable to process the location ' + locationId);
   }
 
   return [];
