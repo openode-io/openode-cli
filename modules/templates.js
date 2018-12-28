@@ -77,6 +77,9 @@ function determineDefaultTemplate() {
   if (fs.existsSync("./Gemfile")) {
     return `ruby-on-rails-minimal`;
   }
+  else if (fs.existsSync("./mix.exs")) {
+    return `elixir-phoenix`;
+  }
   else if (fs.existsSync("./Cargo.toml")) {
     return `rust-minimal`;
   }
