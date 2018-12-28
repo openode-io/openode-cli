@@ -135,6 +135,10 @@ module.exports = async function(operation, env, options = {}) {
         return await getOp("snapshots", env.site_name, env, options);
         break;
 
+      case "snapshot":
+        return await getOp(`snapshots/${options.id}`, env.site_name, env, options);
+        break;
+
       case "create-snapshot":
         return await postOp("snapshots/create", env.site_name, options, env);
         break;

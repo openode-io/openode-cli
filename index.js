@@ -369,6 +369,20 @@ function processCommander() {
       });
 
   commander
+    .command('snapshot [id] [locationId]')
+      .description('Get the snapshot details')
+      .action(async function(id, locationIdInput) {
+        let [envVars, ] = await prepareAuth();
+
+        function proc(locationId) {
+          return require("./modules/instance_operation")("snapshot", envVars,
+            { "location_str_id": locationId, id });
+        }
+
+        await runCommand(progress(processAllLocations(envVars, locationIdInput, proc)));
+      });
+
+  commander
     .command('create-snapshot <name> [locationId]')
       .description('Create a snapshot of your remote repository')
       .action(async function(name, locationIdInput) {
