@@ -188,20 +188,6 @@ function processCommander() {
     });
 
   commander
-    .command('pull [locationId]')
-    .description('Pull your website from opeNode to your local disk')
-    //.option("-s, --setup_mode [mode]", "Which setup mode to use")
-    .action(async function(locationIdInput) {
-      let [envVars, ] = await prepareAuth();
-
-      function proc(locationId) {
-        return require("./modules/deploy").pull(envVars, { "location_str_id": locationId });
-      }
-
-      await runCommand(progress(processAllLocations(envVars, locationIdInput, proc, 1)));
-    });
-
-  commander
     .command('ci-conf <token> <sitename>')
     .description('Write the confs for your continuous integration (CI) env')
     .action(async function(token, sitename) {

@@ -393,75 +393,6 @@ async function syncFiles(env, options) {
   }
 }
 
-function pullAll(config, options) {
-  return new Promise((resolve, reject) => {
-
-    let formData = {
-      "version": config.version
-    };
-
-    let url = API_URL + 'instances/' + config.site_name +
-      "/pull?";
-
-    const params = Object.assign({}, formData, options);
-
-    const strParams = Object.keys(params).map(k => k + '=' + params[k]).join("&");
-    url += strParams;
-
-    request.get({
-      headers: {
-        "x-auth-token": config.token
-      },
-      url: url
-    }, function optionalCallback(err, httpResponse, body) {
-      if (err || httpResponse.statusCode != 200) {
-        reject();
-      } else {
-        resolve();
-      }
-    }).pipe(fs.createWriteStream(config.token + '.zip'));
-  });
-}
-
-function unzipRepo(env) {
-  return new Promise((resolve, reject) => {
-    const unzipExtractor = unzip.Extract({ path: '.' });
-    fs.createReadStream(env.token + ".zip").pipe(unzipExtractor);
-
-    unzipExtractor.on('close', function() {
-      deleteLocalArchive(env).then(() =>{
-
-      }).catch((err) => {
-        console.error(err);
-      });
-
-      resolve();
-    });
-
-    unzipExtractor.on('error', function(err) {
-      reject(err);
-    });
-  });
-}
-
-async function pull(env, options) {
-  try {
-    await pullAll(env, options);
-
-    await unzipRepo(env);
-
-    return {"result": "success"};
-  } catch(err) {
-    deleteLocalArchive(env).then(() => {
-
-    }).catch((err) => {
-      console.error(err);
-    });
-
-    return err;
-  }
-}
-
 function hasResultVariable(result, key) {
   return result && result.find(r => {
     return r && (r[key] || (r.result && r.result[key]));
@@ -516,7 +447,6 @@ module.exports = {
   sendFile,
   deploy,
   syncFiles,
-  pull,
   ensureOneLocation,
   deleteLocalArchive,
   prepareFinalResult
