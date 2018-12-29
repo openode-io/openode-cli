@@ -73,16 +73,6 @@ A shortcut to synchronize and reload can be used:
 openode sync-n-reload
 ```
 
-### Pull / Backup
-
-If you need to get your remote repository to your local, or need to backup your live website, you need to use the pull command, just like that:
-
-```
-openode pull
-```
-
-This will take the remote files and copy all of them in the current folder. Note that it will overwrite files. Also, if a given local file is not present remotely, it will not be erased locally. Thus, if you need a fresh pull, first remove the local content (*rm -rf \**) and then run *openode pull*.
-
 ### Upgrading Your Plan
 
 In order to upgrade your plan, you first have to look at the possible plans using:
