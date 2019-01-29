@@ -517,6 +517,7 @@ function processCommander() {
 
         await runCommand(progress(processAllLocations(envVars, locationIdInput, proc)));
       });
+
   commander
     .command('set-config <variable> <value>')
       .description('Set a website configuration')
@@ -526,6 +527,17 @@ function processCommander() {
         await runCommand(progress(require("./modules/instance_operation")("setConfig", envVars,
           { variable, value } )));
       });
+
+  commander
+    .command('config <variable>')
+      .description('Get a configuration value')
+      .action(async function(variable) {
+        let [envVars, ] = await prepareAuth();
+        
+        await runCommand(progress(require("./modules/instance_operation")("getConfig", envVars,
+          { variable } )));
+      });
+
   commander
     .command('available-configs')
       .description('List the available configs (used by set-config)')
