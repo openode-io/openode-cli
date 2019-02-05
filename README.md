@@ -347,6 +347,12 @@ openode available-configs
 openode set-config [variable] [value]
 ```
 
+#### Get the value of a given variable
+
+```
+openode config [variable]
+```
+
 ## License
 
 ISC
