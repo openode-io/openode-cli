@@ -107,9 +107,7 @@ function processCommander() {
 
       let envVars = await auth(opts);
 
-      if (envVars.instance_type === 'server') {
-        main.checkCurrentRepositoryValid();
-      }
+      await main.checkCurrentRepositoryValid(envVars);
 
       await runCommand(progress(
         deployModule.deploy(envVars, options)
@@ -130,9 +128,7 @@ function processCommander() {
 
       let envVars = await auth(opts);
 
-      if (envVars.instance_type === 'server') {
-        main.checkCurrentRepositoryValid();
-      }
+      await main.checkCurrentRepositoryValid(envVars);
 
       function proc(locationId) {
         return require("./modules/instance_operation")("reload", envVars,
@@ -165,9 +161,7 @@ function processCommander() {
 
       let envVars = await auth(opts);
 
-      if (envVars.instance_type === 'server') {
-        main.checkCurrentRepositoryValid();
-      }
+      await main.checkCurrentRepositoryValid(envVars);
 
       function proc(locationId) {
         return require("./modules/deploy").syncFiles(envVars, { "location_str_id": locationId })
@@ -533,7 +527,7 @@ function processCommander() {
       .description('Get a configuration value')
       .action(async function(variable) {
         let [envVars, ] = await prepareAuth();
-        
+
         await runCommand(progress(require("./modules/instance_operation")("getConfig", envVars,
           { variable } )));
       });

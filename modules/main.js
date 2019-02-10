@@ -45,10 +45,19 @@ function terminate() {
   socketIo.disconnect();
 }
 
-function checkCurrentRepositoryValid() {
+async function checkCurrentRepositoryValid(envVars) {
   if ( ! fs.existsSync("./Dockerfile")) {
-    console.error("Dockerfile missing. Type *openode template* to generate automatically a Dockerfile")
-    process.exit()
+    log.prettyPrint('*** No Dockerfile found, generating one automatically, please double check your Dockerfile.')
+    const result = await require("./templates")("template", envVars, { name: null } )
+
+    // means that we are getting the list of templates
+    if (result.length) {
+      log.prettyPrint('*** Could not apply a template automatically. Please see the list of templates below. To use one, type openode template [the template name]')
+      log.prettyPrint(result)
+      process.exit(1)
+    }
+
+    log.prettyPrint(result)
   }
 }
 
