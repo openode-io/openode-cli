@@ -2,6 +2,7 @@ const cliConfs = require("./cliConfs");
 const request = require("request");
 const log = require("./log");
 const fs = require("fs");
+const instanceReq = require("./instanceRequest");
 
 function getBuildTemplatesFilesList() {
   return new Promise((resolve, reject) => {
@@ -26,10 +27,10 @@ function getBuildTemplatesFilesList() {
   })
 }
 
-function getTemplateFile(template, filename) {
+function getBuildTemplateProjectFile(path) {
   return new Promise((resolve, reject) => {
 
-    const url = `https://raw.githubusercontent.com/openode-io/build-templates/master/${template.path}/${filename}`;
+    const url = `https://raw.githubusercontent.com/openode-io/build-templates/master/${path}`;
 
     request.get({
       headers: {
@@ -60,6 +61,22 @@ async function templates() {
     const name = e.path.replace('/Dockerfile', '').replace('templates/', '');
 
     return { path, name };
+  });
+
+  return templates;
+}
+
+async function getServicesAvailable() {
+  const dumpDirContent = await getBuildTemplatesFilesList();
+
+  const templates = dumpDirContent.tree.filter(elem => {
+    return elem && elem.path && elem.path.indexOf('services/') === 0 &&
+      elem.path.includes('.yml');
+  })
+  .map(e => {
+    const path = e.path;
+
+    return { path };
   });
 
   return templates;
@@ -115,6 +132,44 @@ async function getTemplateByName(name) {
   return template;
 }
 
+async function getDockerComposeService(servicePath) {
+  return await getBuildTemplateProjectFile(servicePath);
+}
+
+async function dockerComposifyServices(services) {
+  const servicesAvailable = await getServicesAvailable();
+  let servicesDockerCompose = [];
+
+  for (const service of services) {
+    const serviceInfo = servicesAvailable.find(s => s && s.path && s.path.includes(`${service}.yml`));
+
+    if (serviceInfo) {
+      const composeContent = await getDockerComposeService(serviceInfo.path);
+
+      servicesDockerCompose.push({
+        content: composeContent,
+        serviceName: service
+      });
+    }
+  }
+
+  return servicesDockerCompose
+}
+
+async function getDockerCompose(env, options) {
+  const baseDockerCompose = await instanceReq.getOp("docker-compose", env.site_name, env);
+
+  const services = (options && options.withServices)
+    ? options.withServices.split(",")
+    : [];
+
+  let servicesDockerCompose = await dockerComposifyServices(services);
+
+  return `${baseDockerCompose.content}
+${servicesDockerCompose.map(s => s.content).join("\n")}
+`;
+}
+
 module.exports = async function(operation, env, options = {}) {
   try {
     switch(operation) {
@@ -123,7 +178,7 @@ module.exports = async function(operation, env, options = {}) {
         break;
       case "template-info": {
         const template = await getTemplateByName(options.name);
-        let readme = await getTemplateFile(template, "README.md");
+        let readme = await getBuildTemplateProjectFile(`${template.path}/README.md`);
         const templateUrl = templateUrlOf(template);
         readme += `\n\nTemplate Source (Dockerfile): ${templateUrl}\n`;
 
@@ -133,7 +188,11 @@ module.exports = async function(operation, env, options = {}) {
       case "template": {
 
         if (fs.existsSync("./Dockerfile")) {
-          throw new Error('A Dockerfile already exists. Make sure to remove it before applying a template.');
+          throw new Error('A Dockerfile already exists. Make sure to remove/move it before applying a template.');
+        }
+
+        if (fs.existsSync("./docker-compose.yml")) {
+          throw new Error('A docker-compose.yml already exists. Make sure to remove/move it before applying a template.');
         }
 
         const allTemplates = await templates();
@@ -157,11 +216,17 @@ module.exports = async function(operation, env, options = {}) {
           }
         }
 
-        let dockerfile = await getTemplateFile(template, "Dockerfile");
-        const readme = await getTemplateFile(template, "README.md");
+        let dockerfile = await getBuildTemplateProjectFile(`${template.path}/Dockerfile`);
+        const readme = await getBuildTemplateProjectFile(`${template.path}/README.md`);
         fs.writeFileSync("./Dockerfile", dockerfile)
 
         log.prettyPrint(readme);
+
+        const dockerCompose = await getDockerCompose(env, options);
+        fs.writeFileSync("./docker-compose.yml", dockerCompose);
+        log.prettyPrint(`docker-compose.yml:`)
+        log.prettyPrint(dockerCompose);
+
 
         return {
           result: `Successfully applied template ${template.name} to ./Dockerfile. Run *openode deploy* to deploy.`

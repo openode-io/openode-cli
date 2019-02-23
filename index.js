@@ -478,11 +478,13 @@ function processCommander() {
 
   commander
     .command('template [template-name]')
+    .option("--with-services <services>", "List of services required")
       .description('Retrieve the template Dockerfile.')
-      .action(async function(name) {
+      .action(async function(name, options) {
+
         let [envVars, ] = await prepareAuth();
         await runCommand(progress(require("./modules/templates")("template", envVars,
-          { name } )));
+          { name, withServices: options.withServices } )));
       });
 
   commander
