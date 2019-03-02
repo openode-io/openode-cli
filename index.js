@@ -215,14 +215,14 @@ function processCommander() {
     });
 
   commander
-    .command('cmd <myCmd>')
+    .command('cmd <service> <myCmd>')
       .description('Execute a command in your container instance')
-      .action(async function(myCmd) {
+      .action(async function(service, myCmd) {
         let [envVars, ] = await prepareAuth();
 
         function proc(locationId) {
           return require("./modules/instance_operation")("cmd", envVars,
-            { "location_str_id": locationId, cmd: myCmd });
+            { "location_str_id": locationId, cmd: myCmd, service });
         }
 
         await runCommand(progress(processAllLocations(envVars, null, proc), envVars));

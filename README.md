@@ -139,10 +139,10 @@ openode restart
 The following command allows to run a command in your running container:
 
 ```
-openode cmd [yourCmd]
+openode cmd [service] [yourCmd]
 ```
 
-For example, if you run openode `cmd "ls -la"`, the list of files will be listed.
+For example, if you run openode `cmd www "ls -la"`, the list of files will be listed in the www service.
 
 ### Erase all content
 
