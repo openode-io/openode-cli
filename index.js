@@ -335,31 +335,37 @@ function processCommander() {
 
   // snapshots
   commander
-    .command('snapshots [locationId]')
+    .command('snapshots')
       .description('List all snapshots')
-      .action(async function(locationIdInput) {
+      .action(async function() {
         let [envVars, ] = await prepareAuth();
 
-        function proc(locationId) {
-          return require("./modules/instance_operation")("snapshots", envVars,
-            { "location_str_id": locationId });
-        }
-
-        await runCommand(progress(processAllLocations(envVars, locationIdInput, proc)));
+        await runCommand(progress(require("./modules/instance_operation")("snapshots", envVars,
+          { })));
       });
 
   commander
-    .command('snapshot [id] [locationId]')
+    .command('snapshot [id]')
       .description('Get the snapshot details')
-      .action(async function(id, locationIdInput) {
+      .action(async function(id) {
         let [envVars, ] = await prepareAuth();
 
         function proc(locationId) {
-          return require("./modules/instance_operation")("snapshot", envVars,
-            { "location_str_id": locationId, id });
+          return ;
         }
 
-        await runCommand(progress(processAllLocations(envVars, locationIdInput, proc)));
+        await runCommand(progress(require("./modules/instance_operation")("snapshot", envVars,
+          { id })));
+      });
+
+  commander
+    .command('del-snapshot [id]')
+      .description('Delete a snapshot')
+      .action(async function(id) {
+        let [envVars, ] = await prepareAuth();
+
+        await runCommand(progress(require("./modules/instance_operation")("del-snapshot", envVars,
+          { id })));
       });
 
   commander

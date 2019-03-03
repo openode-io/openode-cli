@@ -48,6 +48,10 @@ module.exports = async function(operation, env, options = {}) {
         return await instanceReq.getOp(`snapshots/${options.id}`, env.site_name, env, options);
         break;
 
+      case "del-snapshot":
+        return await instanceReq.delOp(`snapshots/${options.id}`, env.site_name, options.id, env);
+        break;
+
       case "create-snapshot":
         return await instanceReq.postOp("snapshots/create", env.site_name, options, env);
         break;

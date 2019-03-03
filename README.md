@@ -254,6 +254,12 @@ in order to rollback.
 openode snapshots
 ```
 
+And to get the details for a specific snapshot:
+
+```
+openode snapshot [id]
+```
+
 #### Create a snapshot
 
 To create a snapshot, use the following command:
@@ -269,6 +275,14 @@ openode apply-snapshot [ID] [Location Id]
 ```
 
 In order to use an existing snapshot to the remote repository.
+
+#### Delete a snapshot
+
+To delete a snapshot, use the following command:
+
+```
+openode del-snapshot [id]
+```
 
 ### Locations
 
