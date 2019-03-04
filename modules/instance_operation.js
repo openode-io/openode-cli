@@ -104,6 +104,13 @@ module.exports = async function(operation, env, options = {}) {
         }, env);
         break;
 
+      case "setCpus":
+        return await instanceReq.postOp("set-cpus", env.site_name, {
+          "location_str_id": options.location_str_id,
+          "nb_cpus": options.nbCpus
+        }, env);
+        break;
+
       case "locations":
         return await instanceReq.getOp("locations", env.site_name, env);
         break;

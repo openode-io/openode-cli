@@ -506,6 +506,7 @@ function processCommander() {
 
         await runCommand(progress(processAllLocations(envVars, locationIdInput, proc)));
       });
+
   commander
     .command('decrease-storage <amountGB> [locationId]')
       .description('Decrease the extra storage capacity')
@@ -515,6 +516,20 @@ function processCommander() {
         function proc(locationId) {
           return require("./modules/instance_operation")("decreaseStorage", envVars,
             { "location_str_id": locationId, amountGB } );
+        }
+
+        await runCommand(progress(processAllLocations(envVars, locationIdInput, proc)));
+      });
+
+  commander
+    .command('set-cpus <nbCpus> [locationId]')
+      .description('Increase the extra storage capacity')
+      .action(async function(nbCpus, locationIdInput) {
+        let [envVars, ] = await prepareAuth();
+
+        function proc(locationId) {
+          return require("./modules/instance_operation")("setCpus", envVars,
+            { "location_str_id": locationId, nbCpus } );
         }
 
         await runCommand(progress(processAllLocations(envVars, locationIdInput, proc)));
