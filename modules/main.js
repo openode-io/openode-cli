@@ -22,7 +22,7 @@ function isFirstRun() {
 async function verifyNewVersion(versionClient) {
   const versionApi = await getApiVersion();
 
-  if (compareVersion(versionClient, versionApi) === -1) {
+  if (versionApi && compareVersion(versionClient, versionApi) === -1) {
     log.prettyPrint(`** WARNING! A new version of this CLI is available: \n` +
       ` - Your Version: ${versionClient}\n - Available Version: ${versionApi} \n\n` +
       ` Make sure to upgrade by running: npm install -g openode\n\n`);
