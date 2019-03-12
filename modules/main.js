@@ -7,6 +7,7 @@ const instance = require("./instance");
 const deploy = require("./deploy");
 const cliConfs = require("./cliConfs");
 const socketIo = require('socket.io-client')(cliConfs.API_URL);
+const compareVersion = require("compare-version");
 
 function isFirstRun() {
   try {
@@ -15,6 +16,16 @@ function isFirstRun() {
     return JSON.stringify(envs) == "{}"
   } catch(err) {
     return false;
+  }
+}
+
+async function verifyNewVersion(versionClient) {
+  const versionApi = await getApiVersion();
+
+  if (compareVersion(versionClient, versionApi) === -1) {
+    log.prettyPrint(`** WARNING! A new version of this CLI is available: \n` +
+      ` - Your Version: ${versionClient}\n - Available Version: ${versionApi} \n\n` +
+      ` Make sure to upgrade by running: npm install -g openode\n\n`);
   }
 }
 
@@ -34,6 +45,8 @@ async function prepareAuthenticatedCommand(version, forceEnvs = null) {
     envs.io = socketIo;
     envs.version = version;
     envs.files2Ignore = env.extractFiles2Ignore();
+
+    await verifyNewVersion("1.0");
 
     return [envs, socketIo];
   } catch(err) {
@@ -85,6 +98,19 @@ function checkGlobalNotice() {
     });
   });
 }
+
+function getApiVersion() {
+  return new Promise((resolve) => {
+    req.get('global/version', {}).then((result) => {
+
+      resolve(result.version);
+    }).catch((err) => {
+
+      resolve(null)
+    });
+  });
+}
+
 
 function checkSomeOpenodeServicesDown() {
   return new Promise((resolve) => {
