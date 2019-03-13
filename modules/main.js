@@ -46,7 +46,7 @@ async function prepareAuthenticatedCommand(version, forceEnvs = null) {
     envs.version = version;
     envs.files2Ignore = env.extractFiles2Ignore();
 
-    await verifyNewVersion("1.0");
+    await verifyNewVersion(version);
 
     return [envs, socketIo];
   } catch(err) {
