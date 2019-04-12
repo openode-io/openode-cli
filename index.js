@@ -215,6 +215,16 @@ function processCommander() {
     });
 
   commander
+    .command('stats')
+    .description('Get daily stats about the instance.')
+    .action(async function(opts) {
+      let [envVars, ] = await prepareAuth();
+
+      await runCommand(progress(
+        require("./modules/instanceRequest").getOp("stats", envVars.site_name, envVars)));
+    });
+
+  commander
     .command('cmd <service> <myCmd>')
       .description('Execute a command in your container instance')
       .action(async function(service, myCmd) {
