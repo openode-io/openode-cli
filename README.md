@@ -114,13 +114,21 @@ openode status
 
 ### Logs
 
-You can obtain realtime logs by using the following command:
+You can view the logs by using the following command:
 
 ```
 openode logs [-n nbLines]
 ```
 
-* *-n:* Returns the N last lines for all log types.
+* *-n:* (Optional) Returns the N last lines for all log types.
+
+### Stats
+
+You can obtain stats (CPU, RAM, disk, etc.) about your instance:
+
+```
+openode stats
+```
 
 ### Stopping an Instance
 
