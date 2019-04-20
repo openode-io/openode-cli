@@ -117,6 +117,24 @@ function processCommander() {
     });
 
   commander
+    .command('restart  [locationId]')
+    .description('Restart the instance without synchronizing the files.')
+    .action(async function(locationIdInput) {
+
+      let [envVars, ] = await prepareAuth();
+
+      function proc(locationId) {
+        return require("./modules/instance_operation")("restart", envVars,
+          { "location_str_id": locationId});
+      }
+
+      await runCommand(progress(
+        processAllLocations(envVars, locationIdInput, proc), envVars),
+        { keepUntilDeployed: true }
+      );
+    });
+
+  commander
     .command('reload')
     .option("-t <token>", "User token used for authentication")
     .option("-s <site name>", "Instance site name.")
