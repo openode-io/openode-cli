@@ -7,7 +7,6 @@ const cliConfs = require("./cliConfs");
 const instanceOperation = require("./instance_operation");
 const locationsModule = require("./locations");
 const archiver = require("archiver");
-const unzip = require("unzip");
 const asciify = require("asciify");
 const sha1File = require("sha1-file");
 
