@@ -6,7 +6,7 @@ const log = require("./log");
 const instance = require("./instance");
 const deploy = require("./deploy");
 const cliConfs = require("./cliConfs");
-const socketIo = require('socket.io-client')(cliConfs.API_URL);
+let socketIo = null;
 const compareVersion = require("compare-version");
 
 function isFirstRun() {
@@ -31,6 +31,11 @@ async function verifyNewVersion(versionClient) {
 
 async function prepareAuthenticatedCommand(version, forceEnvs = null) {
   try {
+
+    await cliConfs.determineClosestEndpoint();
+
+    socketIo = require('socket.io-client')(cliConfs.getApiUrl())
+
     let envs = forceEnvs ? forceEnvs : env.get();
     env.set(envs);
     let token = await auth(envs);
@@ -55,7 +60,9 @@ async function prepareAuthenticatedCommand(version, forceEnvs = null) {
 }
 
 function terminate() {
-  socketIo.disconnect();
+  if (socketIo) {
+    socketIo.disconnect();
+  }
 }
 
 async function checkCurrentRepositoryValid(envVars) {

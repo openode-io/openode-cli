@@ -11,7 +11,7 @@ function getWebsite(sitename, config) {
       resolve(null);
     }
 
-    let url = cliConfs.API_URL + 'instances/' + sitename + "/";
+    let url = cliConfs.getApiUrl() + 'instances/' + sitename + "/";
 
     request.get({
       headers: {
@@ -36,7 +36,7 @@ function createInstance(opts, config) {
       resolve(false);
     }
 
-    let url = cliConfs.API_URL + 'instances/create';
+    let url = cliConfs.getApiUrl() + 'instances/create';
 
     request.post({
       headers: {
@@ -61,7 +61,7 @@ function createInstance(opts, config) {
 
 function sitenames(config, instanceType = "server") {
   return new Promise((resolve, reject) => {
-    let url = `${cliConfs.API_URL}instances/?instance_type=${instanceType}`;
+    let url = `${cliConfs.getApiUrl()}instances/?instance_type=${instanceType}`;
 
     request.get({
       headers: {

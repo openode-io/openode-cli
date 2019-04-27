@@ -10,7 +10,6 @@ const archiver = require("archiver");
 const asciify = require("asciify");
 const sha1File = require("sha1-file");
 
-const API_URL = cliConfs.API_URL;
 const LIMIT_BYTES_PER_ARCHIVE = 1000000;
 const LIMIT_BYTES_PER_FILE = 50000000;
 
@@ -65,7 +64,7 @@ async function localFilesListing(dir, files2Ignore, firstLevel = false) {
 function findChanges(files, config, options) {
   return new Promise((resolve, reject) => {
 
-    let url = API_URL + 'instances/' + config.site_name + "/changes";
+    let url = cliConfs.getApiUrl() + 'instances/' + config.site_name + "/changes";
 
     let form = Object.assign({}, { "files": JSON.stringify(files) });
     form.location_str_id = options.location_str_id;
@@ -100,7 +99,7 @@ function sendCompressedFile(file, config, options) {
     let file2Upload = fs.createReadStream(file);
     formData.file = file2Upload
 
-    let url = API_URL + 'instances/' + config.site_name +
+    let url = cliConfs.getApiUrl() + 'instances/' + config.site_name +
       "/sendCompressedFile";
 
     request.post({
@@ -131,7 +130,7 @@ function sendFile(file, config, options) {
     let file2Upload = fs.createReadStream(file);
     formData.file = file2Upload
 
-    let url = API_URL + 'instances/' + config.site_name +
+    let url = cliConfs.getApiUrl() + 'instances/' + config.site_name +
       "/sendFile";
 
     request.post({
@@ -161,7 +160,7 @@ function deleteFiles(files, config, options) {
       "location_str_id": options.location_str_id
     };
 
-    let url = API_URL + 'instances/' + config.site_name +
+    let url = cliConfs.getApiUrl() + 'instances/' + config.site_name +
       "/deleteFiles";
 
     request.delete({

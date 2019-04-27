@@ -10,7 +10,7 @@ function getOp(operation, sitename, config, options = {}) {
       reject({});
     }
 
-    let url = cliConfs.API_URL + 'instances/' + sitename + "/" + operation + "?";
+    let url = cliConfs.getApiUrl() + 'instances/' + sitename + "/" + operation + "?";
 
     const params = Object.keys(options).map(k => k + '=' + options[k]).join("&");
     url += params;
@@ -39,7 +39,7 @@ function postOp(operation, sitename, form, config) {
       reject({});
     }
 
-    let url = cliConfs.API_URL + 'instances/' + sitename + "/" + operation;
+    let url = cliConfs.getApiUrl() + 'instances/' + sitename + "/" + operation;
 
     url = `${url}?version=${packageJson.version}`;
 
@@ -68,7 +68,7 @@ function delOp(operation, sitename, id, config) {
       reject({});
     }
 
-    let url = cliConfs.API_URL + 'instances/' + sitename + "/" + operation;
+    let url = cliConfs.getApiUrl() + 'instances/' + sitename + "/" + operation;
 
     url = `${url}?version=${packageJson.version}&id=${id}`;
 

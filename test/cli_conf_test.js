@@ -6,7 +6,7 @@ const proc = require('child_process');
 describe('CLI Conf', function() {
 
   it("should have the right api url", function() {
-    expect(cliConf.API_URL).to.equal("https://api.openode.io/");
+    expect(cliConf.getApiUrl()).to.equal("https://api.openode.io/");
   });
 
 });

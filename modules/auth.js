@@ -6,7 +6,7 @@ const promptUtil = require("./promptUtil")
 
 function tokenValid(token) {
   return new Promise((resolve, reject) => {
-    let url = cliConfs.API_URL + 'instances/';
+    let url = cliConfs.getApiUrl() + 'instances/';
 
     request.get({
       headers: {
@@ -26,7 +26,7 @@ function tokenValid(token) {
 
 function authenticate(email, password) {
   return new Promise((resolve, reject) => {
-    let url = cliConfs.API_URL + 'account/getToken';
+    let url = cliConfs.getApiUrl() + 'account/getToken';
 
     request.post({
       url: url,
@@ -48,7 +48,7 @@ function authenticate(email, password) {
 
 function signupApi(email, password, password_confirmation, newsletter) {
   return new Promise((resolve, reject) => {
-    let url = cliConfs.API_URL + 'account/register';
+    let url = cliConfs.getApiUrl() + 'account/register';
 
     request.post({
       url: url,

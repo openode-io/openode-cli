@@ -3,7 +3,7 @@ const request = require("request");
 
 function get(path, config) {
   return new Promise((resolve, reject) => {
-    let url = cliConfs.API_URL + path;
+    let url = cliConfs.getApiUrl() + path;
 
     request.get({
       headers: {
@@ -23,7 +23,7 @@ function get(path, config) {
 
 function post(path, params, config) {
   return new Promise((resolve, reject) => {
-    let url = cliConfs.API_URL + path;
+    let url = cliConfs.getApiUrl() + path;
 
     request.post({
       headers: {
