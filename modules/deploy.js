@@ -10,7 +10,7 @@ const archiver = require("archiver");
 const asciify = require("asciify");
 const sha1File = require("sha1-file");
 
-const LIMIT_BYTES_PER_ARCHIVE = 1000000;
+const LIMIT_BYTES_PER_ARCHIVE = 10000000;
 const LIMIT_BYTES_PER_FILE = 50000000;
 
 function promisifiedSha1File(path) {
