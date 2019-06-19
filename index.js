@@ -117,7 +117,28 @@ function processCommander() {
     });
 
   commander
-    .command('restart  [locationId]')
+    .command('allocate [locationId]')
+    .description('Allocate a private cloud server.')
+    .action(async function(locationIdInput) {
+
+      let [envVars, ] = await prepareAuth();
+
+      function proc(locationId) {
+        return require("./modules/instance_operation")("allocate", envVars,
+          { "location_str_id": locationId}).then((result) => {
+            return require("./modules/instance_operation")("wait-allocation", envVars,
+              { "location_str_id": locationId})
+          });
+      }
+
+      await runCommand(progress(
+        processAllLocations(envVars, locationIdInput, proc), envVars)
+      );
+    });
+
+
+  commander
+    .command('restart [locationId]')
     .description('Restart the instance without synchronizing the files.')
     .action(async function(locationIdInput) {
 

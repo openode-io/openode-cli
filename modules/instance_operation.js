@@ -1,6 +1,51 @@
 const log = require("./log");
 const instanceReq = require("./instanceRequest");
 
+function timeout(secs) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, secs * 1000);
+  })
+}
+
+async function waitForAllocation(siteName, env, options) {
+  let status = "";
+  let returnedResult = {};
+  let cpt = 0;
+
+  do {
+    ++cpt;
+    const result = await instanceReq.getOp("private-cloud-info", siteName, env, options)
+
+    const simplifiedResult = {
+      label: result.label,
+      installation_status: result.installation_status,
+      status: result.status,
+      state: result.server_state,
+      power: result.power_status,
+      ip: result.main_ip,
+      location: result.location,
+      os: result.os,
+
+    }
+
+    returnedResult = simplifiedResult;
+
+    log.prettyPrint(`-----`);
+    log.prettyPrint(simplifiedResult);
+
+    status = result.installation_status;
+
+    if (status !== 'ready') {
+      await timeout(5);
+    }
+  }
+  while (status !== 'ready' && cpt < 60)
+
+  return returnedResult;
+}
+
 module.exports = async function(operation, env, options = {}) {
   try {
     switch(operation) {
@@ -15,6 +60,12 @@ module.exports = async function(operation, env, options = {}) {
       }
       case "stop":
         return await instanceReq.postOp("stop", env.site_name, options, env);
+        break;
+      case "allocate":
+        return await instanceReq.postOp("allocate", env.site_name, options, env);
+        break;
+      case "wait-allocation":
+        return await waitForAllocation(env.site_name, env, options);
         break;
       case "restart":
         return await instanceReq.postOp("restart", env.site_name, options, env);
