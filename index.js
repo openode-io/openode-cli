@@ -136,6 +136,22 @@ function processCommander() {
       );
     });
 
+  commander
+    .command('apply [locationId]')
+    .description('Update the remote configurations before a deployment.')
+    .action(async function(locationIdInput) {
+
+      let [envVars, ] = await prepareAuth();
+
+      function proc(locationId) {
+        return require("./modules/instance_operation")("apply", envVars,
+          { "location_str_id": locationId});
+      }
+
+      await runCommand(progress(
+        processAllLocations(envVars, locationIdInput, proc), envVars)
+      );
+    });
 
   commander
     .command('restart [locationId]')

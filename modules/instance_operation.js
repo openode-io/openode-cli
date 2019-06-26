@@ -67,6 +67,9 @@ module.exports = async function(operation, env, options = {}) {
       case "wait-allocation":
         return await waitForAllocation(env.site_name, env, options);
         break;
+      case "apply":
+        return await instanceReq.postOp("apply", env.site_name, options, env);
+        break;
       case "restart":
         return await instanceReq.postOp("restart", env.site_name, options, env);
         break;
