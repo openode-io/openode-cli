@@ -483,7 +483,14 @@ function processCommander() {
       .description('Show the currently active plan')
       .action(async function() {
         let [envVars, ] = await prepareAuth();
-        await runCommand(progress(require("./modules/plans")("plan", envVars)));
+
+        function proc(locationId) {
+          return require("./modules/instance_operation")("plan", envVars,
+            { "location_str_id": locationId });
+        }
+
+        await runCommand(progress(processAllLocations(envVars, null, proc), envVars));
+
       });
 
   commander
@@ -491,7 +498,13 @@ function processCommander() {
       .description('Set the currently active plan')
       .action(async function(plan) {
         let [envVars, ] = await prepareAuth();
-        await runCommand(progress(require("./modules/plans")("set", envVars, plan)));
+        
+        function proc(locationId) {
+          return require("./modules/instance_operation")("set-plan", envVars,
+            { "location_str_id": locationId, plan });
+        }
+
+        await runCommand(progress(processAllLocations(envVars, null, proc), envVars));
       });
 
   // locations

@@ -73,6 +73,12 @@ module.exports = async function(operation, env, options = {}) {
       case "plans":
         return await instanceReq.getOp("plans", env.site_name, env, options);
         break;
+      case "plan":
+        return await instanceReq.getOp("plan", env.site_name, env, options);
+        break;
+      case "set-plan":
+        return await instanceReq.postOp("set-plan", env.site_name, options, env);
+        break;
       case "restart":
         return await instanceReq.postOp("restart", env.site_name, options, env);
         break;
