@@ -3,6 +3,9 @@ const request = require("request");
 const log = require("./log");
 const prompt = require("prompt");
 const promptUtil = require("./promptUtil");
+const instanceRequest = require("./instanceRequest");
+const instanceOp = require("./instance_operation");
+const modLocations = require("./locations");
 
 function getWebsite(sitename, config) {
   return new Promise((resolve, reject) => {
@@ -142,12 +145,69 @@ async function selectExistingOrCreate(env) {
   return selectedSitename;
 }
 
+async function selectLocation(env, allLocations) {
+
+  let selectedLocation = null;
+
+  while (selectedLocation == null) {
+    console.log(allLocations);
+    let defaultLocation = allLocations[0].id;
+
+    const schema = {
+      properties: {
+        location: {
+          description: 'Select a location (type the id)',
+          message: 'Invalid input, please enter a valid location.',
+          required: true,
+          default: defaultLocation
+        }
+      }
+    };
+
+    if (allLocations.length > 0) {
+      console.log("-----------------------------------------");
+      console.log(allLocations);
+      console.log("Select a location")
+    }
+
+    let result = await promptUtil.promisifyPrompt(schema);
+
+    let locationValid = allLocations.find(l => l.id === result.location);
+
+    if ( ! locationValid) {
+      log.out("Invalid location");
+    } else {
+      log.out("adding location...")
+
+      // try to create it!
+      await instanceOp("addLocation", env, { "location_str_id": result.location } );
+      selectedLocation = result.location;
+    }
+  }
+
+  return selectedLocation;
+}
+
+async function getLocations(sitename, env) {
+  return await instanceRequest.getOp("locations", sitename, env, {});
+}
+
 module.exports = async function(env) {
+  // first check if it has a sitename
   let website = await getWebsite(env.site_name, env);
 
   if ( ! website) {
     let site_name = await selectExistingOrCreate(env);
     website = await getWebsite(site_name, env);
+  }
+
+  // second: the location
+  const locations = await getLocations(env.site_name, env);
+
+  if ( ! locations || locations.length === 0) {
+    const allLocations = await modLocations.availableLocations(env);
+
+    await selectLocation(env, allLocations);
   }
 
   return {
