@@ -469,7 +469,13 @@ function processCommander() {
       .description('List the available plans')
       .action(async function() {
         let [envVars, ] = await prepareAuth();
-        await runCommand(progress(require("./modules/plans")("list", envVars)));
+
+        function proc(locationId) {
+          return require("./modules/instance_operation")("plans", envVars,
+            { "location_str_id": locationId });
+        }
+
+        await runCommand(progress(processAllLocations(envVars, null, proc), envVars));
       });
 
   commander
