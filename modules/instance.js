@@ -150,7 +150,6 @@ async function selectLocation(env, allLocations) {
   let selectedLocation = null;
 
   while (selectedLocation == null) {
-    console.log(allLocations);
     let defaultLocation = allLocations[0].id;
 
     const schema = {
@@ -188,6 +187,53 @@ async function selectLocation(env, allLocations) {
   return selectedLocation;
 }
 
+async function selectPlan(env, locationId, allPlans) {
+
+  let selectedPlan = null;
+
+
+  while (selectedPlan == null) {
+    let defaultPlan = allPlans[0].id;
+
+    const schema = {
+      properties: {
+        plan: {
+          description: 'Select a plan (type the id)',
+          message: 'Invalid input, please enter a valid plan.',
+          required: true,
+          default: defaultPlan
+        }
+      }
+    };
+
+    if (allPlans.length > 0) {
+      console.log("-----------------------------------------");
+      console.log(allPlans);
+      console.log("Select a plan");
+    }
+
+    let result = await promptUtil.promisifyPrompt(schema);
+
+    let planValid = allPlans.find(l => l.id === result.plan);
+
+    if ( ! planValid) {
+      log.out("Invalid plan");
+    } else {
+      log.out("setting plan...");
+
+      // try to create it!
+      await instanceOp("set-plan", env, {
+        location_str_id: locationId,
+        plan: result.plan
+      });
+      
+      selectedPlan = result.plan;
+    }
+  }
+
+  return selectedPlan;
+}
+
 async function getLocations(sitename, env) {
   return await instanceRequest.getOp("locations", sitename, env, {});
 }
@@ -201,13 +247,26 @@ module.exports = async function(env) {
     website = await getWebsite(site_name, env);
   }
 
+  env.site_name = website.site_name;
+
   // second: the location
   const locations = await getLocations(env.site_name, env);
+  let locationId = null;
 
   if ( ! locations || locations.length === 0) {
     const allLocations = await modLocations.availableLocations(env);
 
-    await selectLocation(env, allLocations);
+    locationId = await selectLocation(env, allLocations);
+  } else {
+    locationId = locations[0].id;
+  }
+
+  // third: the plan
+  const plan = await instanceOp("plan", env, { "location_str_id": locationId });
+
+  if ( ! plan) {
+    const availPlans = await instanceOp("plans", env, { "location_str_id": locationId });
+    await selectPlan(env, locationId, availPlans);
   }
 
   return {
