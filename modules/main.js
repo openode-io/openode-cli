@@ -29,7 +29,7 @@ async function verifyNewVersion(versionClient) {
   }
 }
 
-async function prepareAuthenticatedCommand(version, forceEnvs = null) {
+async function prepareAuthenticatedCommand(version, forceEnvs = null, dontPromptLocationPlan = false) {
   try {
 
     await cliConfs.determineClosestEndpoint();
@@ -42,7 +42,7 @@ async function prepareAuthenticatedCommand(version, forceEnvs = null) {
     envs.token = token;
     env.set(envs);
 
-    let opts = await instance(envs);
+    let opts = await instance(envs, dontPromptLocationPlan);
     envs.site_name = opts.site_name;
     envs.instance_type = opts.instance_type;
     env.set(envs);

@@ -27,9 +27,9 @@ async function runCommand(promisedCmd, options = {}) {
   }
 }
 
-async function prepareAuth(envs = null) {
+async function prepareAuth(envs = null, dontPromptLocationPlan = false) {
   try {
-    const res = await main.prepareAuthenticatedCommand(packageJson.version, envs);
+    const res = await main.prepareAuthenticatedCommand(packageJson.version, envs, dontPromptLocationPlan);
 
     // make sure at the beginning it is clean
     await main.beginEndCleanup(res)
@@ -498,7 +498,7 @@ function processCommander() {
       .description('Set the currently active plan')
       .action(async function(plan) {
         let [envVars, ] = await prepareAuth();
-        
+
         function proc(locationId) {
           return require("./modules/instance_operation")("set-plan", envVars,
             { "location_str_id": locationId, plan });
@@ -530,7 +530,8 @@ function processCommander() {
     .command('add-location <locationId>')
       .description('Add a new location')
       .action(async function(locationId) {
-        let [envVars, ] = await prepareAuth();
+        let [envVars, ] = await prepareAuth(null, true);
+
         await runCommand(progress(require("./modules/instance_operation")("addLocation", envVars,
           { "location_str_id": locationId } )));
       });

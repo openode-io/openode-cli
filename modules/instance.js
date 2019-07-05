@@ -238,7 +238,7 @@ async function getLocations(sitename, env) {
   return await instanceRequest.getOp("locations", sitename, env, {});
 }
 
-module.exports = async function(env) {
+module.exports = async function(env, dontPromptLocationPlan) {
   // first check if it has a sitename
   let website = await getWebsite(env.site_name, env);
 
@@ -249,24 +249,26 @@ module.exports = async function(env) {
 
   env.site_name = website.site_name;
 
-  // second: the location
-  const locations = await getLocations(env.site_name, env);
-  let locationId = null;
+  if ( ! dontPromptLocationPlan) {
+    // second: the location
+    const locations = await getLocations(env.site_name, env);
+    let locationId = null;
 
-  if ( ! locations || locations.length === 0) {
-    const allLocations = await modLocations.availableLocations(env);
+    if ( ! locations || locations.length === 0) {
+      const allLocations = await modLocations.availableLocations(env);
 
-    locationId = await selectLocation(env, allLocations);
-  } else {
-    locationId = locations[0].id;
-  }
+      locationId = await selectLocation(env, allLocations);
+    } else {
+      locationId = locations[0].id;
+    }
 
-  // third: the plan
-  const plan = await instanceOp("plan", env, { "location_str_id": locationId });
+    // third: the plan
+    const plan = await instanceOp("plan", env, { "location_str_id": locationId });
 
-  if ( ! plan) {
-    const availPlans = await instanceOp("plans", env, { "location_str_id": locationId });
-    await selectPlan(env, locationId, availPlans);
+    if ( ! plan) {
+      const availPlans = await instanceOp("plans", env, { "location_str_id": locationId });
+      await selectPlan(env, locationId, availPlans);
+    }
   }
 
   return {
