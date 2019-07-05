@@ -226,7 +226,7 @@ async function selectPlan(env, locationId, allPlans) {
         location_str_id: locationId,
         plan: result.plan
       });
-      
+
       selectedPlan = result.plan;
     }
   }
