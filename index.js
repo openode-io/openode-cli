@@ -108,6 +108,7 @@ function processCommander() {
       let envVars = await auth(opts);
 
       await main.checkCurrentRepositoryValid(envVars);
+      await deployModule.verifyServerAllocated(envVars);
 
       await runCommand(progress(
         deployModule.deploy(envVars, options)

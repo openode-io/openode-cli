@@ -5,6 +5,7 @@ const auth = require("./auth");
 const path = require("path");
 const cliConfs = require("./cliConfs");
 const instanceOperation = require("./instance_operation");
+const instanceRequest = require("./instanceRequest");
 const locationsModule = require("./locations");
 const archiver = require("archiver");
 const asciify = require("asciify");
@@ -440,6 +441,21 @@ function prepareFinalResult(result) {
   });
 }
 
+async function verifyServerAllocated(envVars) {
+  const statusResponse =
+    await instanceRequest.getOp("", envVars.site_name, envVars);
+
+  if (statusResponse.cloud_type === 'private-cloud') {
+    if ( ! statusResponse.data || ! statusResponse.data.privateCloudInfo) {
+      console.log(`*** No server yet allocated (private cloud), make sure to:\n` +
+        `  - openode allocate\n` +
+        `  - openode apply\n\n` +
+        `in order to prepare your private cloud.`)
+      process.exit(1);
+    }
+  }
+}
+
 module.exports = {
   localFilesListing,
   sendFile,
@@ -447,5 +463,6 @@ module.exports = {
   syncFiles,
   ensureOneLocation,
   deleteLocalArchive,
-  prepareFinalResult
+  prepareFinalResult,
+  verifyServerAllocated
 }
