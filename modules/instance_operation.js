@@ -12,6 +12,7 @@ function timeout(secs) {
 async function waitForAllocation(siteName, env, options) {
   let status = "";
   let returnedResult = {};
+  let previousResult = {};
   let cpt = 0;
 
   do {
@@ -32,9 +33,12 @@ async function waitForAllocation(siteName, env, options) {
 
     returnedResult = simplifiedResult;
 
-    log.prettyPrint(`-----`);
-    log.prettyPrint(simplifiedResult);
+    if (JSON.stringify(returnedResult) !== JSON.stringify(previousResult)) {
+      log.prettyPrint(`-----`);
+      log.prettyPrint(simplifiedResult);
+    }
 
+    previousResult = simplifiedResult;
     status = result.installation_status;
 
     if (status !== 'ready') {
