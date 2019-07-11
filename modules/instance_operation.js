@@ -9,11 +9,18 @@ function timeout(secs) {
   })
 }
 
+function genMinutesElapasedToS(timeStarted) {
+  const nbMinutes = (new Date() - timeStarted) / 1000.0 / 60.0;
+
+  return `${nbMinutes.toFixed(2)} minutes`
+}
+
 async function waitForAllocation(siteName, env, options) {
   let status = "";
   let returnedResult = {};
   let previousResult = {};
   let cpt = 0;
+  const timeStarted = new Date();
 
   do {
     ++cpt;
@@ -34,7 +41,7 @@ async function waitForAllocation(siteName, env, options) {
     returnedResult = simplifiedResult;
 
     if (JSON.stringify(returnedResult) !== JSON.stringify(previousResult)) {
-      log.prettyPrint(`-----`);
+      log.prettyPrint(`----- ${genMinutesElapasedToS(timeStarted)} elapsed`);
       log.prettyPrint(simplifiedResult);
     }
 
@@ -46,6 +53,10 @@ async function waitForAllocation(siteName, env, options) {
     }
   }
   while (status !== 'ready' && cpt < 60)
+
+
+  log.prettyPrint(`Instance up! It took ${genMinutesElapasedToS(timeStarted)}. ` +
+    `\n\n -> Run 'openode apply' to configure default settings automatically (NGINX, docker, etc.).\n\n`)
 
   return returnedResult;
 }

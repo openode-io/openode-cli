@@ -124,9 +124,14 @@ function processCommander() {
 
       let [envVars, ] = await prepareAuth();
 
+      log.prettyPrint(`*** Warning: This step can take up to 5-10 minutes.`);
+
       function proc(locationId) {
         return require("./modules/instance_operation")("allocate", envVars,
           { "location_str_id": locationId}).then((result) => {
+
+            log.prettyPrint(result);
+
             return require("./modules/instance_operation")("wait-allocation", envVars,
               { "location_str_id": locationId})
           });
@@ -146,7 +151,10 @@ function processCommander() {
 
       function proc(locationId) {
         return require("./modules/instance_operation")("apply", envVars,
-          { "location_str_id": locationId});
+          { "location_str_id": locationId}).then((result) => {
+            log.prettyPrint(`*** You can now deploy: openode deploy`)
+            return result;
+          });
       }
 
       await runCommand(progress(
