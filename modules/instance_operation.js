@@ -55,7 +55,7 @@ async function waitForAllocation(siteName, env, options) {
   while (status !== 'ready' && cpt < 60)
 
 
-  log.prettyPrint(`Instance up! It took ${genMinutesElapasedToS(timeStarted)}. ` +
+  log.prettyPrint(`\nInstance up! It took ${genMinutesElapasedToS(timeStarted)}. ` +
     `\n\n -> Run 'openode apply' to configure default settings automatically (NGINX, docker, etc.).\n\n`)
 
   return returnedResult;
