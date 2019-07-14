@@ -1,9 +1,8 @@
 const closestHttpEndpoint = require("closest-http-endpoint")({ timeoutRequest: 3 });
 
 const API_ENDPOINTS = [
-  "http://localhost:3180/global/test/"
-  // "https://api.openode.io/global/test/",
-  // "https://api2.openode.io/global/test/"
+  "https://api.openode.io/global/test/",
+  "https://api2.openode.io/global/test/"
 ]
 
 function normalizeApiUrl(url) {
