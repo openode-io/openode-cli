@@ -351,12 +351,12 @@ function processCommander() {
     });
 
   commander
-    .command('add-dns <domainName> <type> <value>')
+    .command('add-dns <domainName> <type> <value> [priority]')
     .description('Add custom domain name DNS setting')
-    .action(async function(domainName, type, value) {
+    .action(async function(domainName, type, value, priority) {
       let [envVars, ] = await prepareAuth();
       await runCommand(progress(require("./modules/instance_operation")("addDns", envVars,
-        { domainName, type, value } )));
+        { domainName, type, value, priority } )));
     });
 
   commander
