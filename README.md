@@ -216,11 +216,10 @@ openode list-dns
 A new DNS entry can be added with:
 
 ```
-openode add-dns [domainName] [type] [value]
+openode add-dns [domainName] [type] [value] [priority]
 ```
 
-where the domainName is the domain name, type is the DNS entry type (A, TXT, etc.), and finally
-a value must be set.
+where the domainName is the domain name, type is the DNS entry type (A, TXT, etc.), and finally a value must be set. A priority can be set for MX type records.
 
 #### del-dns
 
