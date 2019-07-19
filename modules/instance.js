@@ -149,7 +149,7 @@ async function selectLocation(env, allLocations) {
 
   let selectedLocation = null;
 
-  while (selectedLocation == null) {
+  while ( ! selectedLocation) {
     let defaultLocation = allLocations[0].id;
 
     const schema = {
@@ -179,8 +179,16 @@ async function selectLocation(env, allLocations) {
       log.out("adding location...")
 
       // try to create it!
-      await instanceOp("addLocation", env, { "location_str_id": result.location } );
-      selectedLocation = result.location;
+      const resultAddLocation =
+        await instanceOp("addLocation", env, { "location_str_id": result.location } );
+
+      if (resultAddLocation && resultAddLocation.error) {
+        log.out(resultAddLocation);
+      }
+
+      selectedLocation = resultAddLocation.result === 'success'
+        ? result.location
+        : null;
     }
   }
 
