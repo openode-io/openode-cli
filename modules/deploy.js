@@ -352,12 +352,6 @@ async function deploy(env, options) {
   try {
     let locations2Deploy = await ensureOneLocation(env, options);
 
-    const locations2Clean = await locationsModule.getLocations2Clean(locations2Deploy, env);
-
-    for (const location of locations2Clean) {
-      await instanceOperation("eraseAll", env, { "location_str_id": location.id });
-    }
-
     const result = [];
 
     for (const location of locations2Deploy) {
