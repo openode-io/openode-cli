@@ -101,6 +101,14 @@ You can always verify which plan is currently active with:
 openode plan
 ```
 
+### change-instance
+
+To change the currently active instance, type:
+
+```
+openode change-instance [SITENAME]
+```
+
 ### ci-conf
 
 To integrate with your favorite continuous integration (CI) tool, you can use the
