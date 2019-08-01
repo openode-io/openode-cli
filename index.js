@@ -3,6 +3,7 @@ const main = require('./modules/main');
 const asciify = require("asciify");
 const log = require("./modules/log");
 const ciConf = require("./modules/ciConf");
+const envModule = require("./modules/env");
 const moduleLocations = require("./modules/locations");
 const req = require("./modules/req");
 const packageJson = require("./package.json");
@@ -250,6 +251,25 @@ function processCommander() {
     .description('Write the confs for your continuous integration (CI) env')
     .action(async function(token, sitename) {
       ciConf(token, sitename);
+      process.exit();
+    });
+
+  commander
+    .command('change-instance [sitename]')
+    .description('Change the currently active instance.')
+    .action(async function(sitename) {
+      const currentEnv = envModule.get();
+
+      if (sitename) {
+        currentEnv.site_name = sitename;
+      } else {
+        // remove the site_name
+        delete currentEnv.site_name;
+      }
+
+      envModule.set(currentEnv);
+      await prepareAuth();
+      
       process.exit();
     });
 
