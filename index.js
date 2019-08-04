@@ -97,6 +97,18 @@ function processCommander() {
     .version(packageJson.version);
 
   commander
+    .command('login')
+    .description('Force login to your account.')
+    .action(async function() {
+
+      envModule.set({});
+
+      await prepareAuth();
+
+      process.exit();
+    });
+
+  commander
     .command('deploy')
     .option("-t <token>", "User token used for authentication")
     .option("-s <site name>", "Instance site name.")
@@ -269,7 +281,7 @@ function processCommander() {
 
       envModule.set(currentEnv);
       await prepareAuth();
-      
+
       process.exit();
     });
 
