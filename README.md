@@ -49,6 +49,14 @@ openode deploy [-t TOKEN -s SITE_NAME]
 list of files provided in this file will get ignored (not sent). The format is the
 same as the well known .gitignore.
 
+### Login
+
+If you want to switch to a different user, just use:
+
+```
+openode login
+```
+
 ### Restart
 
 If you would like to deploy without synchronizing the files, this is the right command to use:
