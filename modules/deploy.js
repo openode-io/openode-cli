@@ -273,7 +273,7 @@ async function execSyncFiles(env, options) {
     const localFiles = await localFilesListing(".", env.files2Ignore, true);
 
     let resChanges = await findChanges(localFiles, env, options);
-    let changes = JSON.parse(resChanges);
+    let changes = (typeof resChanges === 'object') ? resChanges : JSON.parse(resChanges);
     let files2Modify = changes.filter(f => (f.change == 'M' || f.change == 'C') && f.type === 'F')
       .filter(f => {
 

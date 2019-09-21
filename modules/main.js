@@ -9,6 +9,8 @@ const cliConfs = require("./cliConfs");
 let socketIo = null;
 const compareVersion = require("compare-version");
 
+const WebSocket = require("ws");
+
 function isFirstRun() {
   try {
     let envs = env.get();
@@ -31,10 +33,23 @@ async function verifyNewVersion(versionClient) {
 
 async function prepareAuthenticatedCommand(version, forceEnvs = null, dontPromptLocationPlan = false) {
   try {
-
     await cliConfs.determineClosestEndpoint();
 
-    socketIo = require('socket.io-client')(cliConfs.getApiUrl())
+    socketIo = require("socket.io-client")(cliConfs.getApiUrl());
+
+    // todo
+    // const ws = new WebSocket("ws://127.0.0.1:3000/streams");
+
+    /*
+    ws.on('open', function open() {
+      //ws.send('something');
+      console.log(`opened...`)
+      const otosend =
+        {"command": "subscribe", "identifier": JSON.stringify({ "channel": "NotificationsChannel" })}
+      ws.send(JSON.stringify(otosend))
+      // "{\"command\":\"subscribe\",\"identifier\":\"{\\\"channel\\\":\\\"NotificationsChannel\\\"}\"}"
+    });
+    */
 
     let envs = forceEnvs ? forceEnvs : env.get();
     env.set(envs);
@@ -55,6 +70,7 @@ async function prepareAuthenticatedCommand(version, forceEnvs = null, dontPrompt
 
     return [envs, socketIo];
   } catch(err) {
+    console.log(err);
     return [{}, ];
   }
 }
