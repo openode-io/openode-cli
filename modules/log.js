@@ -24,6 +24,21 @@ function prettyPrint(json) {
   }
 }
 
+// result: { stdout, stderr, exit_code }
+function printCmdDetails(result) {
+  if ( ! result) {
+    return console.log(`No result available.`)
+  }
+
+  if (result.stdout) {
+    console.log(result.stdout)
+  }
+
+  if (result.stderr) {
+    console.error(result.stderr)
+  }
+}
+
 function alertError(txt) {
   console.log("\x1b[41m\x1b[37m%s\x1b[0m", txt)
 }
@@ -42,5 +57,6 @@ module.exports = {
   alertError,
   alertWarning,
   alertInfo,
-  prettyPrint
+  prettyPrint,
+  printCmdDetails
 }

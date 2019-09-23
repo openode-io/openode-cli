@@ -17,7 +17,10 @@ const ora = require('ora')({
 async function runCommand(promisedCmd, options = {}) {
   try {
     let result = await promisedCmd;
-    log.prettyPrint(result);
+
+    if (options && ! options.avoidPrinting) {
+      log.prettyPrint(result);
+    }
 
     if ( ! options.keepUntilDeployed) {
       process.exit();
@@ -55,8 +58,11 @@ async function processAllLocations(envVars, locationIdInput, callbackProcess, ma
       try {
         console.log("Processing for " + locationId);
         let resultCurrent = await callbackProcess(locationId);
-        resultCurrent.location = locationId;
-        results.push(resultCurrent);
+
+        if (resultCurrent) {
+          resultCurrent.location = locationId;
+          results.push(resultCurrent);
+        }
 
         if (maxNbLocations && maxNbLocations >= results.length) {
           break;
@@ -328,10 +334,22 @@ function processCommander() {
 
         function proc(locationId) {
           return require("./modules/instance_operation")("cmd", envVars,
-            { "location_str_id": locationId, cmd: myCmd, service });
+            { "location_str_id": locationId, cmd: myCmd, service })
+          .then((result) => {
+            if (result && result.result) {
+              log.printCmdDetails(result.result);
+
+              if ( ! [undefined, null].includes(result.result.exit_code)) {
+                process.exit(result.result.exit_code);
+              }
+            }
+            return null;
+          });
         }
 
-        await runCommand(progress(processAllLocations(envVars, null, proc), envVars));
+        await runCommand(progress(processAllLocations(envVars, null, proc), envVars), {
+          avoidPrinting: true
+        });
       });
 
   commander

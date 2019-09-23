@@ -276,7 +276,6 @@ async function execSyncFiles(env, options) {
     let changes = (typeof resChanges === 'object') ? resChanges : JSON.parse(resChanges);
     let files2Modify = changes.filter(f => (f.change == 'M' || f.change == 'C') && f.type === 'F')
       .filter(f => {
-
         if (f.size > LIMIT_BYTES_PER_FILE) {
           console.log(`WARNING: the file ${f.path} exceeds the max file size of ${LIMIT_BYTES_PER_FILE/1000/1000} MB`);
         }
