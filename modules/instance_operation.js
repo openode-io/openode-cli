@@ -118,26 +118,6 @@ module.exports = async function(operation, env, options = {}) {
         return await instanceReq.postOp("cmd", env.site_name, options, env);
         break;
 
-      case "snapshots":
-        return await instanceReq.getOp("snapshots", env.site_name, env, options);
-        break;
-
-      case "snapshot":
-        return await instanceReq.getOp(`snapshots/${options.id}`, env.site_name, env, options);
-        break;
-
-      case "del-snapshot":
-        return await instanceReq.delOp(`snapshots/${options.id}`, env.site_name, options.id, env);
-        break;
-
-      case "create-snapshot":
-        return await instanceReq.postOp("snapshots/create", env.site_name, options, env);
-        break;
-
-      case "apply-snapshot":
-        return await instanceReq.postOp("snapshots/apply", env.site_name, options, env);
-        break;
-
       case "addAlias":
         return await instanceReq.postOp("add-alias", env.site_name, options, env);
         break;
