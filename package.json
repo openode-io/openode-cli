@@ -39,6 +39,7 @@
     "closest-http-endpoint": "0.0.4",
     "commander": "^2.20.0",
     "compare-version": "^0.1.2",
+    "lodash": "^4.17.15",
     "ora": "^3.4.0",
     "parse-gitignore": "^0.4.0",
     "prompt": "^1.0.0",

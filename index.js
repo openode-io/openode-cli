@@ -8,6 +8,7 @@ const moduleLocations = require("./modules/locations");
 const req = require("./modules/req");
 const packageJson = require("./package.json");
 const deployModule = require("./modules/deploy");
+const eventsStream = require("./modules/eventsStream");
 
 const ora = require('ora')({
   "color": "red",
@@ -26,6 +27,7 @@ async function runCommand(promisedCmd, options = {}) {
       process.exit();
     }
   } catch(err) {
+    console.log(`run command err`)
     console.error(err);
     process.exit(1);
   }
@@ -51,6 +53,7 @@ async function prepareAuth(envs = null, dontPromptLocationPlan = false) {
 
 async function processAllLocations(envVars, locationIdInput, callbackProcess, maxNbLocations = null) {
   try {
+    console.log(`proc all locs`)
     const locationIds = await moduleLocations.locations2Process(envVars, locationIdInput);
     const results = [];
 
@@ -132,7 +135,7 @@ function processCommander() {
       await runCommand(progress(
         deployModule.deploy(envVars, options)
           .then((result) => {
-            return result;
+            return eventsStream.deploymentStream(result, envVars.token)
           }), envVars), { keepUntilDeployed: true });
     });
 
@@ -190,7 +193,7 @@ function processCommander() {
 
       function proc(locationId) {
         return require("./modules/instance_operation")("restart", envVars,
-          { "location_str_id": locationId});
+          { "location_str_id": locationId})
       }
 
       await runCommand(progress(
@@ -667,44 +670,6 @@ function progressEnd() {
 }
 
 async function progress(promise, env, withProgressLoader = true) {
-
-  if (env && env.io) {
-    // join socket io to receive notifications
-    env.io.emit('room', env.site_name + "/" + env.token);
-
-    env.io.on('message', async function(data) {
-      if (withProgressLoader) {
-
-        if (data && data.indexOf("deployment-result=") === 0) {
-          const partsResult = data.split("deployment-result=");
-
-          if (partsResult && partsResult.length === 2) {
-            const result = JSON.parse(partsResult[1]);
-
-            const finalResult = await deployModule.prepareFinalResult([result]);
-            log.prettyPrint(finalResult.logs);
-            log.prettyPrint(finalResult.result);
-
-            let codeExit = 0;
-
-            if (finalResult.result && finalResult.result.length > 0) {
-              if (finalResult.result.find(r => ! r.result || r.result !== 'success')) {
-                codeExit = 1;
-              }
-            }
-
-            // to refactor if we have more than 1 deployment
-            process.exit(codeExit);
-          }
-        } else {
-          console.log(data);
-        }
-      } else {
-        process.stdout.write(data)
-      }
-    });
-  }
-
   if (withProgressLoader)
     progressBegin();
 

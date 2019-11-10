@@ -6,10 +6,7 @@ const log = require("./log");
 const instance = require("./instance");
 const deploy = require("./deploy");
 const cliConfs = require("./cliConfs");
-let socketIo = null;
 const compareVersion = require("compare-version");
-
-const WebSocket = require("ws");
 
 function isFirstRun() {
   try {
@@ -35,22 +32,6 @@ async function prepareAuthenticatedCommand(version, forceEnvs = null, dontPrompt
   try {
     await cliConfs.determineClosestEndpoint();
 
-    socketIo = require("socket.io-client")(cliConfs.getApiUrl());
-
-    // todo
-    // const ws = new WebSocket("ws://127.0.0.1:3000/streams");
-
-    /*
-    ws.on('open', function open() {
-      //ws.send('something');
-      console.log(`opened...`)
-      const otosend =
-        {"command": "subscribe", "identifier": JSON.stringify({ "channel": "NotificationsChannel" })}
-      ws.send(JSON.stringify(otosend))
-      // "{\"command\":\"subscribe\",\"identifier\":\"{\\\"channel\\\":\\\"NotificationsChannel\\\"}\"}"
-    });
-    */
-
     let envs = forceEnvs ? forceEnvs : env.get();
     env.set(envs);
     let token = await auth(envs);
@@ -62,13 +43,12 @@ async function prepareAuthenticatedCommand(version, forceEnvs = null, dontPrompt
     envs.instance_type = opts.instance_type;
     env.set(envs);
 
-    envs.io = socketIo;
     envs.version = version;
     envs.files2Ignore = env.extractFiles2Ignore();
 
     await verifyNewVersion(version);
 
-    return [envs, socketIo];
+    return [envs];
   } catch(err) {
     console.log(err);
     return [{}, ];
@@ -76,9 +56,7 @@ async function prepareAuthenticatedCommand(version, forceEnvs = null, dontPrompt
 }
 
 function terminate() {
-  if (socketIo) {
-    socketIo.disconnect();
-  }
+  // TODO ?
 }
 
 async function checkCurrentRepositoryValid(envVars) {
