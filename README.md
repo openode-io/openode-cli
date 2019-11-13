@@ -160,12 +160,6 @@ openode stats
 openode stop
 ```
 
-### Restart an Instance
-
-```
-openode restart
-```
-
 ### Run a Remote Command
 
 The following command allows to run a command in your running container:

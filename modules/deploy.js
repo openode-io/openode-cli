@@ -403,37 +403,6 @@ function removeResultVariable(result, key) {
   });
 }
 
-function prepareFinalResult(result) {
-  return new Promise((resolve) => {
-    let bootLogs = "";
-    let logs = "";
-
-    if (bootLogs = hasResultVariable(result, "Boot Logs")) {
-      const resBoot = bootLogs["Boot Logs"] || (bootLogs.result && bootLogs.result["Boot Logs"]);
-      logs = resBoot;
-
-      removeResultVariable(result, "Boot Logs");
-    }
-
-    if (hasResultVariable(result, "isFirstUp")) {
-      asciify('Now online!', {color: 'green', font: "big"}, function (err, asciiArt) {
-
-        removeResultVariable(result, "isFirstUp");
-
-        resolve({
-          result,
-          logs
-        })
-      });
-    } else {
-      resolve({
-        result,
-        logs
-      })
-    }
-  });
-}
-
 async function verifyServerAllocated(envVars) {
   const statusResponse =
     await instanceRequest.getOp("", envVars.site_name, envVars);
@@ -456,6 +425,5 @@ module.exports = {
   syncFiles,
   ensureOneLocation,
   deleteLocalArchive,
-  prepareFinalResult,
   verifyServerAllocated
 }
