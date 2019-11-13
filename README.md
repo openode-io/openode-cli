@@ -268,47 +268,6 @@ openode del-storage-area [relative-folder]
 
 Exemple [relative-folder]: db/
 
-### Snapshots
-
-Snapshots are copies of the remote repository which can be used for backups or
-in order to rollback.
-
-#### List snapshots
-
-```
-openode snapshots
-```
-
-And to get the details for a specific snapshot:
-
-```
-openode snapshot [id]
-```
-
-#### Create a snapshot
-
-To create a snapshot, use the following command:
-
-```
-openode create-snapshot [Name] [Location Id]
-```
-
-and
-
-```
-openode apply-snapshot [ID] [Location Id]
-```
-
-In order to use an existing snapshot to the remote repository.
-
-#### Delete a snapshot
-
-To delete a snapshot, use the following command:
-
-```
-openode del-snapshot [id]
-```
-
 ### Locations
 
 The following commands allow to manage locations where your website is deployed.
