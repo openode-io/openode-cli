@@ -194,12 +194,10 @@ module.exports = async function(operation, env, options = {}) {
       }
       case "template": {
 
-        if (fs.existsSync("./Dockerfile")) {
-          throw new Error('A Dockerfile already exists. Make sure to remove/move it before applying a template.');
-        }
-
-        if (fs.existsSync("./docker-compose.yml")) {
-          throw new Error('A docker-compose.yml already exists. Make sure to remove/move it before applying a template.');
+        if (fs.existsSync("./Dockerfile") && fs.existsSync("./docker-compose.yml")) {
+          return {
+            result: 'Warning: Dockerfile and docker-compose.yml already exist... skipping template.'
+          }
         }
 
         const allTemplates = await templates();
@@ -223,17 +221,24 @@ module.exports = async function(operation, env, options = {}) {
           }
         }
 
-        let dockerfile = await getBuildTemplateProjectFile(`${template.path}/Dockerfile`);
-        const readme = await getBuildTemplateProjectFile(`${template.path}/README.md`);
-        fs.writeFileSync("./Dockerfile", dockerfile)
+        if ( ! fs.existsSync("./Dockerfile")) {
+          log.prettyPrint(`Creating Dockerfile...`)
 
-        log.prettyPrint(readme);
+          let dockerfile = await getBuildTemplateProjectFile(`${template.path}/Dockerfile`);
+          const readme = await getBuildTemplateProjectFile(`${template.path}/README.md`);
+          fs.writeFileSync("./Dockerfile", dockerfile)
 
-        const dockerCompose = await getDockerCompose(env, options);
-        fs.writeFileSync("./docker-compose.yml", dockerCompose);
-        log.prettyPrint(`docker-compose.yml:`)
-        log.prettyPrint(dockerCompose);
+          log.prettyPrint(readme);
+        }
 
+        if ( ! fs.existsSync("./docker-compose.yml")) {
+          log.prettyPrint(`Creating docker-compose.yml...`)
+
+          const dockerCompose = await getDockerCompose(env, options);
+          fs.writeFileSync("./docker-compose.yml", dockerCompose);
+          log.prettyPrint(`docker-compose.yml:`)
+          log.prettyPrint(dockerCompose);
+        }
 
         return {
           result: `Successfully applied template ${template.name} to ./Dockerfile. Run *openode deploy* to deploy.`
