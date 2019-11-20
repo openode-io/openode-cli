@@ -107,7 +107,7 @@ module.exports = async function(operation, env, options = {}) {
         let statusResult = await instanceReq.getOp("", env.site_name, env);
 
         try {
-          return JSON.parse(statusResult.domains);
+          return statusResult.domains;
         } catch(err) {
           console.error(err);
           return [];

@@ -67,7 +67,13 @@ function deploymentStream(result, token) {
     initiate({ channel: "DeploymentsChannel", deployment_id: deploymentId }, {
       token,
       onMessage: function onMessage(msg) {
-        log.prettyPrint(`[${msg.level}] ${msg.update}`)
+
+        if ((typeof msg.update) === 'string') {
+          log.prettyPrint(`[${msg.level}] ${msg.update}`);
+        }
+        else if ((typeof msg.update) === 'object') {
+          log.prettyPrint(msg.update);
+        }
         
         if (['success', 'failed'].includes(msg.status) && msg.update === '...finalized.') {
           const exitCode = msg.status === 'failed' ? 1 : 0;

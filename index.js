@@ -53,7 +53,6 @@ async function prepareAuth(envs = null, dontPromptLocationPlan = false) {
 
 async function processAllLocations(envVars, locationIdInput, callbackProcess, maxNbLocations = null) {
   try {
-    console.log(`proc all locs`)
     const locationIds = await moduleLocations.locations2Process(envVars, locationIdInput);
     const results = [];
 

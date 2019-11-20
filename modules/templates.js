@@ -157,7 +157,14 @@ async function dockerComposifyServices(services) {
 }
 
 async function getDockerCompose(env, options) {
-  const baseDockerCompose = await instanceReq.getOp("docker-compose", env.site_name, env);
+
+  const reqOptions = {
+    has_env_file: fs.existsSync("./.env")
+  }
+
+  const baseDockerCompose = 
+    await instanceReq.getOp("docker-compose",
+                            env.site_name, env, reqOptions);
 
   const services = (options && options.withServices)
     ? options.withServices.split(",")
