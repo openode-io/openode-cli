@@ -54,10 +54,12 @@ function signupApi(email, password, password_confirmation, newsletter) {
       url: url,
       json: true,
       form: {
-        email,
-        password,
-        password_confirmation,
-        newsletter
+        account: {
+          email,
+          password,
+          password_confirmation,
+          newsletter
+        }
       }
     }, function optionalCallback(err, httpResponse, body) {
 
