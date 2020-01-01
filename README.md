@@ -65,14 +65,6 @@ If you would like to deploy without synchronizing the files, this is the right c
 openode restart
 ```
 
-### Reload
-
-For a lightweight and fast reloading (without rebuilding everything), a reload can be done:
-
-```
-openode reload
-```
-
 ### Sync - Send only the changed/new files
 
 If you only need to send new files without deploying, then you can simply run:
