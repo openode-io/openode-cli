@@ -311,7 +311,7 @@ function processCommander() {
 
       function proc(locationId) {
         return require("./modules/instance_operation")("logs", envVars,
-          { "location_str_id": locationId, nbLines }
+          { "location_str_id": locationId, nbLines: nbLines || 100 }
         );
       }
 
