@@ -157,14 +157,14 @@ openode stop
 The following command allows to run a command in your running container:
 
 ```
-openode cmd [service] [yourCmd]
+openode exec [yourCmd]
 ```
 
-For example, if you run openode `cmd www "ls -la"`, the list of files will be listed in the www service.
+For example, if you run openode `cmd "ls -la"`, the list of files will be listed.
 
-### Erase all content
+### Clear remote repository
 
-In order to clear all content of your cloud repository and stop your instance,
+In order to clear all content of your cloud repository (excluding persistent volumes),
 the following operation must done:
 
 ```
