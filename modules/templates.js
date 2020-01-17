@@ -28,10 +28,13 @@ function getBuildTemplatesFilesList() {
 }
 
 function getBuildTemplateProjectFile(path) {
+  const version = "v1";
+
   return new Promise((resolve, reject) => {
 
-    const url = `https://raw.githubusercontent.com/openode-io/build-templates/master/${path}`;
-
+    const url = `https://raw.githubusercontent.com/openode-io` +
+                `/build-templates/master/${version}/${path}`;
+    
     request.get({
       headers: {
         'User-Agent': 'express'
@@ -193,10 +196,9 @@ module.exports = async function(operation, env, options = {}) {
         break;
       }
       case "template": {
-
-        if (fs.existsSync("./Dockerfile") && fs.existsSync("./docker-compose.yml")) {
+        if (fs.existsSync("./Dockerfile")) {
           return {
-            result: 'Warning: Dockerfile and docker-compose.yml already exist... skipping template.'
+            result: 'Warning: Dockerfile already exist... skipping template.'
           }
         }
 
@@ -231,6 +233,7 @@ module.exports = async function(operation, env, options = {}) {
           log.prettyPrint(readme);
         }
 
+        /*
         if ( ! fs.existsSync("./docker-compose.yml")) {
           log.prettyPrint(`Creating docker-compose.yml...`)
 
@@ -239,6 +242,7 @@ module.exports = async function(operation, env, options = {}) {
           log.prettyPrint(`docker-compose.yml:`)
           log.prettyPrint(dockerCompose);
         }
+        */
 
         return {
           result: `Successfully applied template ${template.name} to ./Dockerfile. Run *openode deploy* to deploy.`

@@ -249,14 +249,6 @@ openode increase-storage [amountGB]
 
 where amountGB is the number of GBs to add.
 
-#### Decrease storage
-
-You can decrease your storage via:
-
-```
-openode decrease-storage [amountGB]
-```
-
 where amountGB is the number of GBs to decrease.
 
 #### Destroy storage

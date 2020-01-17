@@ -2,9 +2,9 @@ const req = require("./req");
 const instanceOperation = require("./instance_operation");
 const locationsModule = require("./locations");
 
-async function availableLocations(env) {
+async function availableLocations(env, type) {
   try {
-    return await req.get('global/available-locations', env);
+    return await req.get(`global/available-locations/?type=${type}`, env);
   } catch(err) {
     return err;
   }

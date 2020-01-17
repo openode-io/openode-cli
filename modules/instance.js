@@ -171,7 +171,7 @@ async function selectLocation(env, allLocations) {
 
     let result = await promptUtil.promisifyPrompt(schema);
 
-    let locationValid = allLocations.find(l => l.id === result.location);
+    let locationValid = allLocations.find(l => [l.id, l.str_id].includes(result.location));
 
     if ( ! locationValid) {
       log.out("Invalid location");
@@ -263,7 +263,7 @@ module.exports = async function(env, dontPromptLocationPlan) {
     let locationId = null;
 
     if ( ! locations || locations.length === 0) {
-      const allLocations = await modLocations.availableLocations(env);
+      const allLocations = await modLocations.availableLocations(env, website.type);
 
       locationId = await selectLocation(env, allLocations);
     } else {

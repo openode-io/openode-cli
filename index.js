@@ -615,14 +615,14 @@ function processCommander() {
       });
 
   commander
-    .command('decrease-storage <amountGB> [locationId]')
-      .description('Decrease the extra storage capacity')
-      .action(async function(amountGB, locationIdInput) {
+    .command('destroy-storage [locationId]')
+      .description('Destroy the persisted disk.')
+      .action(async function(locationIdInput) {
         let [envVars, ] = await prepareAuth();
 
         function proc(locationId) {
-          return require("./modules/instance_operation")("decreaseStorage", envVars,
-            { "location_str_id": locationId, amountGB } );
+          return require("./modules/instance_operation")("destroyStorage", envVars,
+            { "location_str_id": locationId } );
         }
 
         await runCommand(progress(processAllLocations(envVars, locationIdInput, proc)));

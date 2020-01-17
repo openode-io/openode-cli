@@ -155,6 +155,12 @@ module.exports = async function(operation, env, options = {}) {
         }, env);
         break;
 
+      case "destroyStorage":
+        return await instanceReq.postOp("destroy-storage", env.site_name, {
+          "location_str_id": options.location_str_id
+        }, env);
+        break;
+
       case "decreaseStorage":
         return await instanceReq.postOp("decrease-storage", env.site_name, {
           "location_str_id": options.location_str_id,
