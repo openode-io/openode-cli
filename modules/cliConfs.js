@@ -2,7 +2,7 @@ const closestHttpEndpoint = require("closest-http-endpoint")({ timeoutRequest: 3
 
 const API_ENDPOINTS = [
   "http://localhost:3000/global/test/",
-  // "https://api.openode.io/global/test/"
+  // "https://apitest.openode.io/global/test/"
 ]
 
 function normalizeApiUrl(url) {

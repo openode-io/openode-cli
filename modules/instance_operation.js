@@ -1,66 +1,6 @@
 const log = require("./log");
 const instanceReq = require("./instanceRequest");
 
-function timeout(secs) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve();
-    }, secs * 1000);
-  })
-}
-
-function genMinutesElapasedToS(timeStarted) {
-  const nbMinutes = (new Date() - timeStarted) / 1000.0 / 60.0;
-
-  return `${nbMinutes.toFixed(2)} minutes`
-}
-
-async function waitForAllocation(siteName, env, options) {
-  let status = "";
-  let returnedResult = {};
-  let previousResult = {};
-  let cpt = 0;
-  const timeStarted = new Date();
-
-  do {
-    ++cpt;
-    const result = await instanceReq.getOp("private-cloud-info", siteName, env, options)
-
-    const simplifiedResult = {
-      label: result.label,
-      installation_status: result.installation_status,
-      status: result.status,
-      state: result.server_state,
-      power: result.power_status,
-      ip: result.main_ip,
-      location: result.location,
-      os: result.os,
-
-    }
-
-    returnedResult = simplifiedResult;
-
-    if (JSON.stringify(returnedResult) !== JSON.stringify(previousResult)) {
-      log.prettyPrint(`----- ${genMinutesElapasedToS(timeStarted)} elapsed`);
-      log.prettyPrint(simplifiedResult);
-    }
-
-    previousResult = simplifiedResult;
-    status = result.installation_status;
-
-    if (status !== 'ready') {
-      await timeout(5);
-    }
-  }
-  while (status !== 'ready' && cpt < 60)
-
-
-  log.prettyPrint(`\nInstance up! It took ${genMinutesElapasedToS(timeStarted)}. ` +
-    `\n\n -> Run 'openode apply' to configure default settings automatically (NGINX, docker, etc.).\n\n`)
-
-  return returnedResult;
-}
-
 module.exports = async function(operation, env, options = {}) {
   try {
     switch(operation) {
@@ -75,15 +15,6 @@ module.exports = async function(operation, env, options = {}) {
       }
       case "stop":
         return await instanceReq.postOp("stop", env.site_name, options, env);
-        break;
-      case "allocate":
-        return await instanceReq.postOp("allocate", env.site_name, options, env);
-        break;
-      case "wait-allocation":
-        return await waitForAllocation(env.site_name, env, options);
-        break;
-      case "apply":
-        return await instanceReq.postOp("apply", env.site_name, options, env);
         break;
       case "plans":
         return await instanceReq.getOp("plans", env.site_name, env, options);

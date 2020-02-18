@@ -33,7 +33,7 @@ function getBuildTemplateProjectFile(path) {
   return new Promise((resolve, reject) => {
 
     const url = `https://raw.githubusercontent.com/openode-io` +
-                `/build-templates/master/${version}/${path}`;
+                `/build-templates/master/${path}`;
     
     request.get({
       headers: {
@@ -56,12 +56,12 @@ async function templates() {
   const dumpDirContent = await getBuildTemplatesFilesList();
 
   const templates = dumpDirContent.tree.filter(elem => {
-    return elem && elem.path && elem.path.indexOf('templates/') === 0 &&
+    return elem && elem.path && elem.path.indexOf('v1/templates/') === 0 &&
       elem.path.includes('Dockerfile');
   })
   .map(e => {
     const path = e.path.replace('/Dockerfile', '');
-    const name = e.path.replace('/Dockerfile', '').replace('templates/', '');
+    const name = e.path.replace('/Dockerfile', '').replace('v1/templates/', '');
 
     return { path, name };
   });
@@ -219,7 +219,6 @@ module.exports = async function(operation, env, options = {}) {
 
               return allTemplates.map(t => t.name);
             }
-
           }
         }
 
@@ -232,17 +231,6 @@ module.exports = async function(operation, env, options = {}) {
 
           log.prettyPrint(readme);
         }
-
-        /*
-        if ( ! fs.existsSync("./docker-compose.yml")) {
-          log.prettyPrint(`Creating docker-compose.yml...`)
-
-          const dockerCompose = await getDockerCompose(env, options);
-          fs.writeFileSync("./docker-compose.yml", dockerCompose);
-          log.prettyPrint(`docker-compose.yml:`)
-          log.prettyPrint(dockerCompose);
-        }
-        */
 
         return {
           result: `Successfully applied template ${template.name} to ./Dockerfile. Run *openode deploy* to deploy.`

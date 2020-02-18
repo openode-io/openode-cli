@@ -139,51 +139,6 @@ function processCommander() {
     });
 
   commander
-    .command('allocate [locationId]')
-    .description('Allocate a private cloud server.')
-    .action(async function(locationIdInput) {
-
-      let [envVars, ] = await prepareAuth();
-
-      log.prettyPrint(`*** Warning: This step can take up to 5-10 minutes.`);
-
-      function proc(locationId) {
-        return require("./modules/instance_operation")("allocate", envVars,
-          { "location_str_id": locationId}).then((result) => {
-
-            log.prettyPrint(result);
-
-            return require("./modules/instance_operation")("wait-allocation", envVars,
-              { "location_str_id": locationId})
-          });
-      }
-
-      await runCommand(progress(
-        processAllLocations(envVars, locationIdInput, proc), envVars)
-      );
-    });
-
-  commander
-    .command('apply [locationId]')
-    .description('Update the remote configurations before a deployment.')
-    .action(async function(locationIdInput) {
-
-      let [envVars, ] = await prepareAuth();
-
-      function proc(locationId) {
-        return require("./modules/instance_operation")("apply", envVars,
-          { "location_str_id": locationId}).then((result) => {
-            log.prettyPrint(`*** You can now deploy: openode deploy`)
-            return result;
-          });
-      }
-
-      await runCommand(progress(
-        processAllLocations(envVars, locationIdInput, proc), envVars)
-      );
-    });
-
-  commander
     .command('restart [locationId]')
     .description('Restart the instance without synchronizing the files.')
     .action(async function(locationIdInput) {
