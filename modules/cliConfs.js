@@ -1,8 +1,8 @@
 const closestHttpEndpoint = require("closest-http-endpoint")({ timeoutRequest: 3 });
 
 const API_ENDPOINTS = [
-  "http://localhost:3000/global/test/",
-  // "https://apitest.openode.io/global/test/"
+  // "http://localhost:3000/global/test/",
+  "https://apitest.openode.io/global/test/"
 ]
 
 function normalizeApiUrl(url) {
@@ -10,7 +10,8 @@ function normalizeApiUrl(url) {
 }
 
 const confs = {
-  "API_URL": normalizeApiUrl(API_ENDPOINTS[0])
+  "API_URL": normalizeApiUrl(API_ENDPOINTS[0]),
+  "WS_ADDR": "wss://apitest.openode.io/streams"
 };
 
 async function determineClosestEndpoint() {
@@ -23,6 +24,7 @@ function getApiUrl() {
 
 module.exports = {
   API_URL: confs.API_URL,
+  WS_ADDR: confs.WS_ADDR,
   getApiUrl,
   determineClosestEndpoint
 }

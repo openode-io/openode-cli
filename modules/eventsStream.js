@@ -2,8 +2,8 @@ const assert = require("assert");
 const WebSocket = require("ws");
 const log = require("./log");
 const _ = require("lodash");
+const cliConfs = require('./cliConfs')
 
-// params = { "channel": "DeploymentsChannel", "deployment_id": 5 }
 function listenOnOpen(ws, params) {
   ws.on('open', function open() {
     const msgToEstablish = { command: "subscribe", identifier: JSON.stringify(params) };
@@ -37,7 +37,7 @@ function listenMessages(ws, callback) {
 }
 
 function initiate(initParams, opts = {}) {
-  const ws = new WebSocket("ws://127.0.0.1:3000/streams", {
+  const ws = new WebSocket(cliConfs.WS_ADDR, {
     headers: { token: opts.token }
   });
 
