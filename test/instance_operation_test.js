@@ -184,7 +184,7 @@ describe('Instance Operation', function() {
          });
 
       instanceModule("listAliases", {"site_name": "my.site", "token": "asfd"}).then((result) => {
-        expect(JSON.stringify(result)).to.equal("[]");
+        expect(JSON.stringify(result)).to.equal("\"[]\"");
         done();
       }).catch(err => {
         done(err);
