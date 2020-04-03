@@ -60,6 +60,38 @@ describe('Deploy', function() {
     });
   });
 
+  describe('verifyReceivedChanges', function() {
+    it("with object", function() {
+      const result = deployModule.verifyReceivedChanges([{ result: 'this' }])
+
+      expect(result[0].result).to.equal('this');
+    });
+
+    it("with valid string json", function() {
+      const result = deployModule.verifyReceivedChanges("[{\"result\":\"this\"}]")
+
+      expect(result[0].result).to.equal('this');
+    });
+
+    it("invalid json string should gracefully exit", function() {
+      try {
+        deployModule.verifyReceivedChanges("invalid")
+      } catch(err) {
+        expect(`${err}`.includes('invalid')).to.equal(true);
+        expect(`${err}`.includes('Failed to retrieve')).to.equal(true);
+      }
+    });
+
+    it("if not an array, should fail", function() {
+      try {
+        deployModule.verifyReceivedChanges("{\"what\":\"is\"}")
+      } catch(err) {
+        expect(`${err}`.includes('what')).to.equal(true);
+        expect(`${err}`.includes('Failed to retrieve')).to.equal(true);
+      }
+    });
+  });
+
   describe('send files', function() {
     it("single file", function(done) {
       nock(cliConfs.API_URL)

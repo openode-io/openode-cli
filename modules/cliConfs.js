@@ -1,4 +1,3 @@
-const closestHttpEndpoint = require("closest-http-endpoint")({ timeoutRequest: 3 });
 
 const API_ENDPOINTS = [
   // "http://localhost:3000/global/test/",
@@ -16,7 +15,7 @@ const confs = {
 };
 
 async function determineClosestEndpoint() {
-  confs.API_URL = normalizeApiUrl(await closestHttpEndpoint(API_ENDPOINTS));
+  confs.API_URL = normalizeApiUrl(API_ENDPOINTS[0]);
 }
 
 function getApiUrl() {

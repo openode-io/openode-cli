@@ -79,7 +79,7 @@ function findChanges(files, config, options) {
       formData: form
     }, function optionalCallback(err, httpResponse, body) {
 
-      if (err) {
+      if (err || httpResponse.statusCode != 200) {
         reject("failed to obtain changes");
       } else {
         resolve(body);
@@ -268,12 +268,39 @@ function groupedFiles2Send(files) {
   return result;
 }
 
+function verifyReceivedChanges(changes) {
+  let result = null;
+
+  if (typeof changes === 'object') {
+    result = changes;
+  }
+  else {
+    try {
+      result = JSON.parse(changes);
+    } catch(err) {
+      result = null;
+    }
+  }
+  
+  if ( ! result || ! Array.isArray(result)) {
+    throw new Error(
+      `Failed to retrieve the files changes. *Changes* response -> ${changes}`
+    );
+  }
+
+
+
+  return result;
+}
+
 async function execSyncFiles(env, options) {
   try {
     const localFiles = await localFilesListing(".", env.files2Ignore, true);
 
     let resChanges = await findChanges(localFiles, env, options);
-    let changes = (typeof resChanges === 'object') ? resChanges : JSON.parse(resChanges);
+
+    let changes = verifyReceivedChanges(resChanges);
+
     let files2Modify = changes.filter(f => (f.change == 'M' || f.change == 'C') && f.type === 'F')
       .filter(f => {
         if (f.size > LIMIT_BYTES_PER_FILE) {
@@ -425,5 +452,6 @@ module.exports = {
   syncFiles,
   ensureOneLocation,
   deleteLocalArchive,
-  verifyServerAllocated
+  verifyServerAllocated,
+  verifyReceivedChanges
 }
