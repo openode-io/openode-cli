@@ -1,4 +1,5 @@
 const fs = require("fs");
+const request = require("request");
 const env = require("./env");
 const auth = require("./auth");
 const req = require("./req");
@@ -132,7 +133,29 @@ function checkSomeOpenodeServicesDown() {
   });
 }
 
-async function checkOpenodeStatus() {
+function verifyAsyncCLIVersion(version, callback) {
+  request.get({
+    url: "https://registry.npmjs.org/openode/latest",
+    timeout: 20000,
+    json: true,
+  }, function optionalCallback(err, httpResponse, body) {
+    if (!err && httpResponse.statusCode === 200 && typeof body === 'object') {
+      if (body.version && body.version !== version) {
+        callback(`\n\n***WARNING*** A new CLI version is available.\n\n` +
+          `Your current version: ${version}\nLatest version: ${body.version}\n\n` +
+          `For upgrading: npm install -g openode\n\n`)
+      } else {
+        callback()
+      }
+    }
+  });
+}
+
+async function checkOpenodeStatus({ version }) {
+  verifyAsyncCLIVersion(version, (msg) => {
+    if (msg) console.error(msg);
+  });
+
   await checkGlobalNotice();
   await checkSomeOpenodeServicesDown();
 }
@@ -147,5 +170,6 @@ module.exports = {
   terminate,
   checkCurrentRepositoryValid,
   checkOpenodeStatus,
-  beginEndCleanup
+  beginEndCleanup,
+  verifyAsyncCLIVersion
 };
