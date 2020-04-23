@@ -608,6 +608,35 @@ function processCommander() {
       });
 
   commander
+    .command('env')
+      .description('Retrieve the stored environment variables')
+      .action(async function(variable, value) {
+        let [envVars, ] = await prepareAuth();
+
+        await runCommand(progress(require("./modules/instance_operation")("env", envVars)));
+      });
+
+  commander
+    .command('set-env <variable> <value>')
+      .description('Set an environment variable')
+      .action(async function(variable, value) {
+        let [envVars, ] = await prepareAuth();
+
+        await runCommand(progress(require("./modules/instance_operation")("setEnv", envVars,
+          { variable, value } )));
+      });
+
+  commander
+    .command('del-env <variable>')
+      .description('Set an environment variable')
+      .action(async function(variable) {
+        let [envVars, ] = await prepareAuth();
+
+        await runCommand(progress(require("./modules/instance_operation")("delEnv", envVars,
+          { variable } )));
+      });
+
+  commander
     .command('config <variable>')
       .description('Get a configuration value')
       .action(async function(variable) {

@@ -117,8 +117,24 @@ module.exports = async function(operation, env, options = {}) {
           "value": options.value
         }, env);
 
+
+
       case "getConfig":
         return await instanceReq.getOp("get-config", env.site_name, env, options);
+
+      case "env":
+        return await instanceReq.getOp("env_variables", env.site_name, env, options);
+
+      case "setEnv":
+        return await instanceReq.postOp(`env_variables/${options.variable}`,
+                                        env.site_name, {
+          "location_str_id": options.location_str_id,
+          "value": options.value
+        }, env);
+
+      case "delEnv":
+        return await instanceReq.delOp(`env_variables/${options.variable}`,
+                                        env.site_name, '', env);
     }
 
   } catch(err) {
