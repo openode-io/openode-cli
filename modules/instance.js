@@ -1,7 +1,6 @@
 const cliConfs = require("./cliConfs");
 const request = require("request");
 const log = require("./log");
-const prompt = require("prompt");
 const promptUtil = require("./promptUtil");
 const instanceRequest = require("./instanceRequest");
 const instanceOp = require("./instance_operation");
@@ -115,8 +114,8 @@ async function selectExistingOrCreate(env) {
     };
 
     if (sites.length > 0) {
-      console.log("-----------------------------------------");
-      console.log("Your existing sites are: " + sites)
+      if (semver.gte(process.version, '10.16.0')) console.table(sites);
+      else console.log("Your existing sites are: " + sites)
     }
 
     let result = await promptUtil.promisifyPrompt(schema);
