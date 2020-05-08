@@ -39,11 +39,6 @@ async function prepareAuthenticatedCommand(version, forceEnvs = null, dontPrompt
     envs.token = token;
     env.set(envs);
 
-    let opts = await instance(envs, dontPromptLocationPlan);
-    envs.site_name = opts.site_name;
-    envs.instance_type = opts.instance_type;
-    env.set(envs);
-
     envs.version = version;
     envs.files2Ignore = env.extractFiles2Ignore();
 
