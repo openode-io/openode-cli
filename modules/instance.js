@@ -114,8 +114,17 @@ async function selectExistingOrCreate(env) {
     };
 
     if (sites.length > 0) {
-      if (semver.gte(process.version, '10.16.0')) console.table(sites);
-      else console.log("Your existing sites are: " + sites)
+      console.log('Existing sites:')
+
+      if (console.table) {
+        console.table(sites.map(s => {
+          return {
+            site_name: s
+          }
+        }));
+      } else {
+        console.log(JSON.stringify(sites, null, 2))
+      }
     }
 
     let result = await promptUtil.promisifyPrompt(schema);
