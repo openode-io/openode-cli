@@ -55,15 +55,6 @@ module.exports = async function(operation, env, options = {}) {
       case "delAlias":
         return await instanceReq.postOp("del-alias", env.site_name, options, env);
         break;
-      case "listDns":
-        return await instanceReq.getOp("list-dns", env.site_name, env);
-        break;
-      case "addDns":
-        return await instanceReq.postOp("add-dns", env.site_name, options, env);
-        break;
-      case "delDns":
-        return await instanceReq.delOp("del-dns", env.site_name, options.id, env);
-        break;
       case "eraseAll":
         return await instanceReq.postOp("erase-all", env.site_name, options, env);
         break;
