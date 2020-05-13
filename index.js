@@ -231,6 +231,7 @@ function processCommander() {
 
   commander
     .command('change-instance [sitename]')
+    .aliases(['switch','change'])
     .description('Change the currently active instance.')
     .action(async function(sitename) {
       const currentEnv = envModule.get();
