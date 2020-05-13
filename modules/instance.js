@@ -1,7 +1,6 @@
 const cliConfs = require("./cliConfs");
 const request = require("request");
 const log = require("./log");
-const prompt = require("prompt");
 const promptUtil = require("./promptUtil");
 const instanceRequest = require("./instanceRequest");
 const instanceOp = require("./instance_operation");
@@ -115,8 +114,17 @@ async function selectExistingOrCreate(env) {
     };
 
     if (sites.length > 0) {
-      console.log("-----------------------------------------");
-      console.log("Your existing sites are: " + sites)
+      console.log('Existing sites:')
+
+      if (console.table) {
+        console.table(sites.map(s => {
+          return {
+            site_name: s
+          }
+        }));
+      } else {
+        console.log(JSON.stringify(sites, null, 2))
+      }
     }
 
     let result = await promptUtil.promisifyPrompt(schema);

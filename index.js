@@ -374,32 +374,6 @@ function processCommander() {
       await runCommand(progress(require("./modules/instance_operation")("delAlias", envVars, { hostname } )));
     });
 
-  // dns (custom domain)
-  commander
-    .command('list-dns')
-    .description('List DNS configurations for a given domain name')
-    .action(async function(domainName) {
-      let [envVars, ] = await prepareAuth();
-      await runCommand(progress(require("./modules/instance_operation")("listDns", envVars)));
-    });
-
-  commander
-    .command('add-dns <domainName> <type> <value> [priority]')
-    .description('Add custom domain name DNS setting')
-    .action(async function(domainName, type, value, priority) {
-      let [envVars, ] = await prepareAuth();
-      await runCommand(progress(require("./modules/instance_operation")("addDns", envVars,
-        { domainName, type, value, priority } )));
-    });
-
-  commander
-    .command('del-dns <id>')
-    .description('Add custom domain name DNS setting')
-    .action(async function(id) {
-      let [envVars, ] = await prepareAuth();
-      await runCommand(progress(require("./modules/instance_operation")("delDns", envVars, { id } )));
-    });
-
   commander
     .command('erase-all [locationId]')
     .description('Erase all content in the remote repository')
