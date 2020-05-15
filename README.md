@@ -160,7 +160,7 @@ The following command allows to run a command in your running container:
 openode exec [yourCmd]
 ```
 
-For example, if you run openode `cmd "ls -la"`, the list of files will be listed.
+For example, if you run openode `exec "ls -la"`, the list of files will be listed.
 
 ### Clear remote repository
 

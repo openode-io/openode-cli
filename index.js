@@ -285,32 +285,6 @@ function processCommander() {
     });
 
   commander
-    .command('cmd <service> <myCmd>')
-      .description('Execute a command in your container instance (DEPRECATED - for legacy)')
-      .action(async function(service, myCmd) {
-        let [envVars, ] = await prepareAuth();
-
-        function proc(locationId) {
-          return require("./modules/instance_operation")("cmd", envVars,
-            { "location_str_id": locationId, cmd: myCmd, service })
-          .then((result) => {
-            if (result && result.result) {
-              log.printCmdDetails(result.result);
-
-              if ( ! [undefined, null].includes(result.result.exit_code)) {
-                process.exit(result.result.exit_code);
-              }
-            }
-            return null;
-          });
-        }
-
-        await runCommand(progress(processAllLocations(envVars, null, proc), envVars), {
-          avoidPrinting: true
-        });
-      });
-
-  commander
     .command('exec <myCmd>')
       .description('Execute a command in your container instance')
       .action(async function(myCmd) {

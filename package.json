@@ -1,6 +1,6 @@
 {
   "name": "openode",
-  "version": "2.0.21",
+  "version": "2.0.22",
   "description": "opeNode command line interface to control and manage instances.",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "openode": "./bin/index.js"
   },
   "engines": {
-    "node": ">=7.6.0"
+    "node": ">=8.0.0"
   },
   "repository": {
     "type": "git",
