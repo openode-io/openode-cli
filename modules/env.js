@@ -1,6 +1,6 @@
 const fs = require('fs');
 const log = require("./log");
-const gitignore = require('parse-gitignore');
+const gitignore = require('./utils/parse-gitignore');
 const pathModule = require("path");
 
 function get() {
