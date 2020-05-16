@@ -1,14 +1,10 @@
 const fs = require("fs");
-const log = require("./log");
-const request = require("request");
-const auth = require("./auth");
+const fetch = require("./req");
 const path = require("path");
-const cliConfs = require("./cliConfs");
 const instanceOperation = require("./instance_operation");
 const instanceRequest = require("./instanceRequest");
 const locationsModule = require("./locations");
 const archiver = require("archiver");
-const asciify = require("asciify");
 const sha1File = require("sha1-file");
 
 const LIMIT_BYTES_PER_ARCHIVE = 10000000;
@@ -16,7 +12,7 @@ const LIMIT_BYTES_PER_FILE = 100000000;
 
 function promisifiedSha1File(path) {
   return new Promise((resolve, reject) => {
-    sha1File(path, function(err, sum) {
+    sha1File(path, function (err, sum) {
       if (err) {
         reject(err);
       } else {
@@ -63,127 +59,52 @@ async function localFilesListing(dir, files2Ignore, firstLevel = false) {
 
 
 function findChanges(files, config, options) {
-  return new Promise((resolve, reject) => {
-
-    let url = cliConfs.getApiUrl() + 'instances/' + config.site_name + "/changes";
-
-    let form = Object.assign({}, { "files": JSON.stringify(files) });
-    form.location_str_id = options.location_str_id;
-
-    request.post({
-      headers: {
-        "x-auth-token": config.token
-      },
-      url: url,
-      json: true,
-      formData: form
-    }, function optionalCallback(err, httpResponse, body) {
-
-      if (err || httpResponse.statusCode != 200) {
-        reject("failed to obtain changes");
-      } else {
-        resolve(body);
-      }
-    });
+  let form = Object.assign({}, {
+    "files": JSON.stringify(files)
   });
+  form.location_str_id = options.location_str_id;
+  return fetch.post('instances/' + config.site_name + "/changes", form, config)
 }
 
 function sendCompressedFile(file, config, options) {
-  return new Promise((resolve, reject) => {
-
-    let formData = {
-      "info": JSON.stringify({"path": file}),
-      "version": config.version,
-      "location_str_id": options.location_str_id
-    };
-
-    let file2Upload = fs.createReadStream(file);
-    formData.file = file2Upload
-
-    let url = cliConfs.getApiUrl() + 'instances/' + config.site_name +
-      "/sendCompressedFile";
-
-    request.post({
-      headers: {
-        "x-auth-token": config.token
-      },
-      url: url,
-      formData: formData
-    }, function optionalCallback(err, httpResponse, body) {
-      if (err || httpResponse.statusCode != 200) {
-        reject(body);
-      } else {
-        resolve(body);
-      }
-    });
-  });
+  let formData = {
+    "info": JSON.stringify({
+      "path": file
+    }),
+    "version": config.version,
+    "location_str_id": options.location_str_id
+  };
+  let file2Upload = fs.createReadStream(file);
+  formData.file = file2Upload
+  return fetch.upload('instances/' + config.site_name + "/sendCompressedFile", formData, config)
 }
 
 function sendFile(file, config, options) {
-  return new Promise((resolve, reject) => {
-
-    let formData = {
-      "info": JSON.stringify({"path": file}),
-      "version": config.version,
-      "location_str_id": options.location_str_id
-    };
-
-    let file2Upload = fs.createReadStream(file);
-    formData.file = file2Upload
-
-    let url = cliConfs.getApiUrl() + 'instances/' + config.site_name +
-      "/sendFile";
-
-    request.post({
-      headers: {
-        "x-auth-token": config.token
-      },
-      url: url,
-      formData: formData
-    }, function optionalCallback(err, httpResponse, body) {
-      if (err || httpResponse.statusCode != 200) {
-        reject(err);
-      } else {
-        resolve(body);
-      }
-    });
-  });
+  let formData = {
+    "info": JSON.stringify({
+      "path": file
+    }),
+    "version": config.version,
+    "location_str_id": options.location_str_id
+  };
+  let file2Upload = fs.createReadStream(file);
+  formData.file = file2Upload
+  return fetch.upload('instances/' + config.site_name + "/sendFile", formData, config)
 }
 
 function deleteFiles(files, config, options) {
-  return new Promise((resolve, reject) => {
-    if ( ! files || files.length == 0) {
-      return resolve();
-    }
+  if (!files || files.length == 0) return;
+  let formData = {
+    "filesInfo": JSON.stringify(files),
+    "location_str_id": options.location_str_id
+  };
 
-    let formData = {
-      "filesInfo": JSON.stringify(files),
-      "location_str_id": options.location_str_id
-    };
-
-    let url = cliConfs.getApiUrl() + 'instances/' + config.site_name +
-      "/deleteFiles";
-
-    request.delete({
-      headers: {
-        "x-auth-token": config.token
-      },
-      url: url,
-      formData: formData
-    }, function optionalCallback(err, httpResponse, body) {
-      if (err) {
-        reject("failed to delete files");
-      } else {
-        resolve(body);
-      }
-    });
-
-  });
+  return fetch.remove('instances/' + config.site_name + "/deleteFiles", formData, config)
 }
 
 function deleteLocalArchive(env) {
   return new Promise((resolve, reject) => {
-    fs.unlink(env.token + ".zip", function(err) {
+    fs.unlink(env.token + ".zip", function (err) {
       if (err) {
         resolve(err);
       } else {
@@ -210,13 +131,13 @@ function sendFiles(files, config, options) {
   return new Promise((resolve, reject) => {
     const zipArchive = archiver('zip');
 
-    if ( ! files || files.length == 0) {
+    if (!files || files.length == 0) {
       resolve();
     }
 
     var output = fs.createWriteStream(config.token + ".zip");
 
-    output.on('close', function() {
+    output.on('close', function () {
       sendCompressedFile(config.token + ".zip", config, options).then((result) => {
         resolve();
       }).catch((err) => {
@@ -231,14 +152,16 @@ function sendFiles(files, config, options) {
       .map(f => genFile2Send(f));
 
     for (let f of files2Send) {
-      zipArchive.file(f.target, { name: f.target });
+      zipArchive.file(f.target, {
+        name: f.target
+      });
     }
 
 
-    zipArchive.finalize(function(err, bytes) {
-        if(err) {
-          reject(err);
-        }
+    zipArchive.finalize(function (err, bytes) {
+      if (err) {
+        reject(err);
+      }
     });
 
   });
@@ -270,43 +193,33 @@ function groupedFiles2Send(files) {
 
 function verifyReceivedChanges(changes) {
   let result = null;
-
   if (typeof changes === 'object') {
     result = changes;
-  }
-  else {
+  } else {
     try {
       result = JSON.parse(changes);
-    } catch(err) {
+    } catch (err) {
       result = null;
     }
   }
-  
-  if ( ! result || ! Array.isArray(result)) {
+  if (!result || !Array.isArray(result)) {
     throw new Error(
       `Failed to retrieve the files changes. *Changes* response -> ${changes}`
     );
   }
-
-
-
   return result;
 }
 
 async function execSyncFiles(env, options) {
   try {
     const localFiles = await localFilesListing(".", env.files2Ignore, true);
-
     let resChanges = await findChanges(localFiles, env, options);
-
     let changes = verifyReceivedChanges(resChanges);
-
     let files2Modify = changes.filter(f => (f.change == 'M' || f.change == 'C') && f.type === 'F')
       .filter(f => {
         if (f.size > LIMIT_BYTES_PER_FILE) {
           console.log(`WARNING: the file ${f.path} exceeds the max file size of ${LIMIT_BYTES_PER_FILE/1000/1000} MB`);
         }
-
         return f.size <= LIMIT_BYTES_PER_FILE;
       });
 
@@ -333,7 +246,7 @@ async function execSyncFiles(env, options) {
           console.log(`${curFileIndex}/${files2Modify.length}`);
 
           break;
-        } catch(err) {
+        } catch (err) {
           console.log(err)
 
           if (trial === 2) {
@@ -352,7 +265,7 @@ async function execSyncFiles(env, options) {
       files2Delete,
       files2Modify
     };
-  } catch(err) {
+  } catch (err) {
     console.log(err);
     throw err;
   }
@@ -361,7 +274,7 @@ async function execSyncFiles(env, options) {
 async function ensureOneLocation(env, options) {
   let locations2Deploy = await locationsModule.getLocations(env);
 
-  if ( ! locations2Deploy || locations2Deploy.length == 0) {
+  if (!locations2Deploy || locations2Deploy.length == 0) {
     const leastLoaded = await locationsModule.leastLoadedLocation(env);
 
     if (leastLoaded) {
@@ -394,7 +307,7 @@ async function deploy(env, options) {
     }
 
     return result;
-  } catch(err) {
+  } catch (err) {
     return err;
   }
 }
@@ -407,7 +320,7 @@ async function syncFiles(env, options) {
       "result": "success",
       "details": `${res.files2Modify.length} change(s), ${res.files2Delete.length} deletion(s)`
     }
-  } catch(err) {
+  } catch (err) {
     return err;
   }
 }
@@ -435,7 +348,7 @@ async function verifyServerAllocated(envVars) {
     await instanceRequest.getOp("", envVars.site_name, envVars);
 
   if (statusResponse.cloud_type === 'private-cloud') {
-    if ( ! statusResponse.data || ! statusResponse.data.privateCloudInfo) {
+    if (!statusResponse.data || !statusResponse.data.privateCloudInfo) {
       console.log(`*** No server yet allocated (private cloud), make sure to:\n` +
         `  - openode allocate\n` +
         `  - openode apply\n\n` +

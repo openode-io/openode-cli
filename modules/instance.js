@@ -1,5 +1,4 @@
-const cliConfs = require("./cliConfs");
-const request = require("request");
+const fetch = require("./req");
 const log = require("./log");
 const promptUtil = require("./promptUtil");
 const instanceRequest = require("./instanceRequest");
@@ -7,96 +6,32 @@ const instanceOp = require("./instance_operation");
 const modLocations = require("./locations");
 
 function getWebsite(sitename, config) {
-  return new Promise((resolve, reject) => {
-
-    if (!sitename || sitename == "") {
-      resolve(null);
-    }
-
-    let url = cliConfs.getApiUrl() + 'instances/' + sitename + "/";
-
-    request.get({
-      headers: {
-        "x-auth-token": config.token
-      },
-      url: url,
-      json: true
-    }, function optionalCallback(err, httpResponse, body) {
-      if (err || httpResponse.statusCode != 200) {
-        resolve(null);
-      } else {
-        resolve(body);
-      }
-    });
-  });
+  if (!sitename || sitename == "") return null
+  return fetch.get('instances/' + sitename + "/", config)
 }
 
 function createInstance(opts, config) {
-  return new Promise((resolve, reject) => {
-
-    if ( ! opts.sitename || opts.sitename == "") {
-      resolve(false);
-    }
-
-    let url = cliConfs.getApiUrl() + 'instances/create';
-
-    request.post({
-      headers: {
-        "x-auth-token": config.token
-      },
-      url: url,
-      json: true,
-      form: {
-        "site_name": opts.sitename,
-        "instance_type": opts.instanceType
-      }
-    }, function optionalCallback(err, httpResponse, body) {
-      if (err || httpResponse.statusCode != 200) {
-        log.err(body); // show error
-        resolve(null);
-      } else {
-        resolve(body); // returns the created website info
-      }
-    });
-  });
+    if ( ! opts.sitename || opts.sitename == "") resolve(false);
+    return fetch.post('instances/create', {
+      "site_name": opts.sitename,
+      "instance_type": opts.instanceType
+    }, config)
 }
 
 function sitenames(config, instanceType = "server") {
-  return new Promise((resolve, reject) => {
-    let url = `${cliConfs.getApiUrl()}instances/?instance_type=${instanceType}`;
-
-    request.get({
-      headers: {
-        "x-auth-token": config.token
-      },
-      url: url,
-      json: true
-    }, function optionalCallback(err, httpResponse, body) {
-      if (err || httpResponse.statusCode != 200) {
-        resolve([]);
-      } else {
-        try {
-          resolve(body.map(site => site.site_name));
-        } catch (err) {
-          log.err(err);
-          resolve([]);
-        }
-
-      }
-    });
-  });
+  return fetch.get('instances/?instance_type=' + instanceType, config)
+  .then(function (body) {
+    if (!body) return []
+    return body.map(site => site.site_name)
+  })
 }
 
 async function selectExistingOrCreate(env) {
-
   let instanceType = "server";
-
   let selectedSitename = null;
-
   while (selectedSitename == null) {
     let sites = await sitenames(env, instanceType);
     let defaultSitename = "";
-
     if (sites.length >= 1) {
       defaultSitename = sites[0];
     }

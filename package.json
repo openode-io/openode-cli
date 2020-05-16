@@ -42,7 +42,7 @@
     "ora": "^4.0.4",
     "parse-gitignore": "^0.4.0",
     "prompt": "^1.0.0",
-    "request": "^2.88.2",
+    "node-fetch": "*",
     "sha1-file": "^1.0.4",
     "ws": "^7.3.0"
   }
