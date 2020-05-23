@@ -69,15 +69,7 @@ function findChanges(files, config, options) {
 
 function sendCompressedFile(file, config, options) {
   let formData = new FormData()
-  /*let formData = {
-    "info": JSON.stringify({
-      "path": file
-    }),
-    "version": config.version,
-    "location_str_id": options.location_str_id
-  };*/
   let file2Upload = fs.createReadStream(file);
-  //formData.file = file2Upload
   formData.append('file', file2Upload)
   formData.append('info', JSON.stringify({
       "path": file
@@ -88,15 +80,14 @@ function sendCompressedFile(file, config, options) {
 }
 
 function sendFile(file, config, options) {
-  let formData = {
-    "info": JSON.stringify({
-      "path": file
-    }),
-    "version": config.version,
-    "location_str_id": options.location_str_id
-  };
+  let formData = new FormData()
   let file2Upload = fs.createReadStream(file);
-  formData.file = file2Upload
+  formData.append('file', file2Upload)
+  formData.append('info', JSON.stringify({
+      "path": file
+    }))
+  formData.append('version', config.version)
+  formData.append('location_str_id', options.location_str_id)
   return fetch.upload('instances/' + config.site_name + "/sendFile", formData, config, null, fs.statSync(file).size)
 }
 
