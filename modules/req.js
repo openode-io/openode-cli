@@ -68,14 +68,12 @@ function upload(path, params, config, url = null) {
     fetch(url, {
         method: 'POST',
         headers: {
-          "content-type": "application/json",
           "x-auth-token": config.token,
-          'User-Agent': 'express'
+          'User-Agent': 'express',
         },
-        body: JSON.stringify(params)
+        body: params
       })
       .then(response => {
-        console.log(response)
         if (response.ok) {
           response.text().then(function (data) {
             resolve(data);
