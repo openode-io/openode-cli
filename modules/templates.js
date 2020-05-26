@@ -1,14 +1,14 @@
-const fetch = require("./req");
+const apiRequest = require("./req");
 const log = require("./log");
 const fs = require("fs");
 const instanceReq = require("./instanceRequest");
 
 function getBuildTemplatesFilesList() {
-  return fetch.get('', { token: "" }, 'https://api.github.com/repos/openode-io/build-templates/git/trees/master?recursive=true')
+  return apiRequest.get('', { token: "" }, 'https://api.github.com/repos/openode-io/build-templates/git/trees/master?recursive=true')
 }
 
 function getBuildTemplateProjectFile(path) {
-    return fetch.get('', { token: '' }, 'https://raw.githubusercontent.com/openode-io/build-templates/master/' + path)
+    return apiRequest.get('', { token: '' }, 'https://raw.githubusercontent.com/openode-io/build-templates/master/' + path)
 }
 
 async function templates() {

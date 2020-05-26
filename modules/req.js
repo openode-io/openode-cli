@@ -68,10 +68,10 @@ function upload(path, params, config, url = null, Length = 0) {
     fetch(url, {
         method: 'POST',
         headers: {
-	  "contentType": "application/json",
+          "contentType": "application/json",
           "x-auth-token": config.token,
           'User-Agent': 'express',
-	  "Content-Length": Length 
+          "Content-Length": Length
         },
         body: params
       })

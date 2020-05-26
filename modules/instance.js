@@ -1,4 +1,4 @@
-const fetch = require("./req");
+const apiRequest = require("./req");
 const log = require("./log");
 const promptUtil = require("./promptUtil");
 const instanceRequest = require("./instanceRequest");
@@ -7,19 +7,19 @@ const modLocations = require("./locations");
 
 function getWebsite(sitename, config) {
   if (!sitename || sitename == "") return null
-  return fetch.get('instances/' + sitename + "/", config)
+  return apiRequest.get('instances/' + sitename + "/", config)
 }
 
 function createInstance(opts, config) {
     if ( ! opts.sitename || opts.sitename == "") resolve(false);
-    return fetch.post('instances/create', {
+    return apiRequest.post('instances/create', {
       "site_name": opts.sitename,
       "instance_type": opts.instanceType
     }, config)
 }
 
 function sitenames(config, instanceType = "server") {
-  return fetch.get('instances/?instance_type=' + instanceType, config)
+  return apiRequest.get('instances/?instance_type=' + instanceType, config)
   .then(function (body) {
     if (!body) return []
     return body.map(site => site.site_name)

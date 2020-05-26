@@ -1,9 +1,8 @@
 const fs = require("fs");
 const compareVersion = require("compare-version");
-const fetch = require("./req");
+const apiRequest = require("./req");
 const env = require("./env");
 const auth = require("./auth");
-const req = require("./req");
 const log = require("./log");
 const instance = require("./instance");
 const deploy = require("./deploy");
@@ -76,7 +75,7 @@ async function checkCurrentRepositoryValid(envVars) {
 
 function checkGlobalNotice() {
   return new Promise((resolve) => {
-    req.get('global/settings', {}).then((result) => {
+    apiRequest.get('global/settings', {}).then((result) => {
       if (result && result.global_msg) {
         switch(result.global_msg_class) {
           case "alert-danger":
@@ -101,7 +100,7 @@ function checkGlobalNotice() {
 
 function getApiVersion() {
   return new Promise((resolve) => {
-    fetch.get('global/version', {}).then((result) => {
+    apiRequest.get('global/version', {}).then((result) => {
       resolve(result.version);
     }).catch((err) => {
       resolve(null)
@@ -112,7 +111,7 @@ function getApiVersion() {
 
 function checkSomeOpenodeServicesDown() {
   return new Promise((resolve) => {
-    req.get('global/services/down', {}).then((result) => {
+    apiRequest.get('global/services/down', {}).then((result) => {
 
       if (result && result.length && result.length > 0) {
         console.log("**********");
@@ -130,7 +129,7 @@ function checkSomeOpenodeServicesDown() {
 }
 
 function verifyAsyncCLIVersion(version, callback) {
-  req.get('', { token: "" }, "https://registry.npmjs.org/openode/latest")
+  apiRequest.get('', { token: "" }, "https://registry.npmjs.org/openode/latest")
   .then (function(body) {
     if (body.version && body.version !== version) {
       callback(`\n\n***WARNING*** A new CLI version is available.\n\n` +

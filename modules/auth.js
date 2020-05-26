@@ -1,16 +1,17 @@
-const fetch = require("./req");
+const apiRequest = require("./req");
 const log = require("./log");
 const prompt = require("prompt");
 const promptUtil = require("./promptUtil")
 
+// TODO: use a faster route to verify the token
 function tokenValid(token) {
-  return fetch.get('instances/', {
+  return apiRequest.get('instances/', {
     token: token
   },null, true)
 }
 
 function authenticate(email, password) {
-  return fetch.post('account/getToken', {
+  return apiRequest.post('account/getToken', {
     email,
     password
   }, {
@@ -19,7 +20,7 @@ function authenticate(email, password) {
 }
 
 function signupApi(email, password, password_confirmation, newsletter) {
-  return fetch.post('account/register',{
+  return apiRequest.post('account/register',{
     account: {
       email,
       password,

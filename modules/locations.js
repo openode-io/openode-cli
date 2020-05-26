@@ -1,10 +1,9 @@
-const req = require("./req");
+const apiRequest = require("./req");
 const instanceOperation = require("./instance_operation");
-const locationsModule = require("./locations");
 
 async function availableLocations(env, type) {
   try {
-    return await req.get(`global/available-locations/?type=${type}`, env);
+    return await apiRequest.get(`global/available-locations/?type=${type}`, env);
   } catch(err) {
     return err;
   }
@@ -12,7 +11,7 @@ async function availableLocations(env, type) {
 
 async function leastLoadedLocation(env) {
   try {
-    return await req.get('global/least-loaded-location', env);
+    return await apiRequest.get('global/least-loaded-location', env);
   } catch(err) {
     return err;
   }
