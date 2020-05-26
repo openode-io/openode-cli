@@ -7,7 +7,7 @@ const modLocations = require("./locations");
 
 function getWebsite(sitename, config) {
   if (!sitename || sitename == "") return null
-  return apiRequest.get('instances/' + sitename + "/", config)
+  return apiRequest.get(`instances/${sitename}/`, config)
 }
 
 function createInstance(opts, config) {
@@ -21,7 +21,7 @@ function createInstance(opts, config) {
 }
 
 function sitenames(config, instanceType = "server") {
-  return apiRequest.get('instances/?instance_type=' + instanceType, config)
+  return apiRequest.get(`instances/?instance_type=${instanceType}`, config)
     .then(function (body) {
       if (!body) return []
       return body.map(site => site.site_name)
