@@ -62,14 +62,16 @@ function post(path, params, config, url = null) {
 }
 
 
-function upload(path, params, config, url = null) {
+function upload(path, params, config, url = null, Length = 0) {
   return new Promise((resolve, reject) => {
     if (url === null) url = cliConfs.getApiUrl() + path;
     fetch(url, {
         method: 'POST',
         headers: {
+	  "contentType": "application/json",
           "x-auth-token": config.token,
           'User-Agent': 'express',
+	  "Content-Length": Length 
         },
         body: params
       })

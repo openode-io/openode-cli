@@ -67,7 +67,7 @@ function findChanges(files, config, options) {
   return fetch.post('instances/' + config.site_name + "/changes", form, config)
 }
 
-function sendCompressedFile(file, config, options) {
+async function sendCompressedFile(file, config, options) {
   let formData = new FormData()
   let file2Upload = fs.createReadStream(file);
   formData.append('file', file2Upload)
@@ -76,10 +76,15 @@ function sendCompressedFile(file, config, options) {
     }))
   formData.append('version', config.version)
   formData.append('location_str_id', options.location_str_id)
-  return fetch.upload('instances/' + config.site_name + "/sendCompressedFile", formData, config, null)
+  const Length = await new Promise((resolve, reject) => {
+    formData.getLength(function(err, length) {
+      resolve(length)
+    })
+  })
+  return fetch.upload('instances/' + config.site_name + "/sendCompressedFile", formData, config, null, Length)
 }
 
-function sendFile(file, config, options) {
+async function sendFile(file, config, options) {
   let formData = new FormData()
   let file2Upload = fs.createReadStream(file);
   formData.append('file', file2Upload)
@@ -88,6 +93,11 @@ function sendFile(file, config, options) {
     }))
   formData.append('version', config.version)
   formData.append('location_str_id', options.location_str_id)
+  const Length = await new Promise((resolve, reject) => {
+    formData.getLength(function(err, length) {
+      resolve(length)
+    })
+  })
   return fetch.upload('instances/' + config.site_name + "/sendFile", formData, config, null, fs.statSync(file).size)
 }
 
