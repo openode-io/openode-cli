@@ -1,75 +1,33 @@
-const cliConfs = require("./cliConfs");
-const request = require("request");
+const apiRequest = require("./req");
 const log = require("./log");
 const prompt = require("prompt");
 const promptUtil = require("./promptUtil")
 
+// TODO: use a faster route to verify the token
 function tokenValid(token) {
-  return new Promise((resolve, reject) => {
-    let url = cliConfs.getApiUrl() + 'instances/';
-
-    request.get({
-      headers: {
-        "x-auth-token": token
-      },
-      url: url,
-      json: true
-    }, function optionalCallback(err, httpResponse, body) {
-      if (err || httpResponse.statusCode != 200) {
-        resolve(false);
-      } else {
-        resolve(true);
-      }
-    });
-  });
+  return apiRequest.get('instances/', {
+    token: token
+  },null, true)
 }
 
 function authenticate(email, password) {
-  return new Promise((resolve, reject) => {
-    let url = cliConfs.getApiUrl() + 'account/getToken';
-
-    request.post({
-      url: url,
-      json: true,
-      form: {
-        email,
-        password
-      }
-    }, function optionalCallback(err, httpResponse, body) {
-      if (err || httpResponse.statusCode != 200) {
-        console.log(err);
-        reject("invalid credentials");
-      } else {
-        resolve(body);
-      }
-    });
-  });
+  return apiRequest.post('account/getToken', {
+    email,
+    password
+  }, {
+    token: ''
+  })
 }
 
 function signupApi(email, password, password_confirmation, newsletter) {
-  return new Promise((resolve, reject) => {
-    let url = cliConfs.getApiUrl() + 'account/register';
-
-    request.post({
-      url: url,
-      json: true,
-      form: {
-        account: {
-          email,
-          password,
-          password_confirmation,
-          newsletter
-        }
-      }
-    }, function optionalCallback(err, httpResponse, body) {
-
-      if (err || httpResponse.statusCode != 200) {
-        reject(body);
-      } else {
-        resolve(body);
-      }
-    });
-  });
+  return apiRequest.post('account/register',{
+    account: {
+      email,
+      password,
+      password_confirmation,
+      newsletter
+    }
+  }, { token: '' } )
 }
 
 function login() {
@@ -101,7 +59,6 @@ function login() {
   });
 }
 
-// request wether or not the user wants to register to the newsletter
 function wantsNewsletter() {
   return new Promise((resolve, reject) => {
     const schema = {
@@ -119,7 +76,7 @@ function wantsNewsletter() {
     prompt.start();
 
     prompt.get(schema, function (err, result) {
-      if (err || ! result) {
+      if (err || !result) {
         return reject(err);
       } else {
         resolve(result.wantsNewsletter);
@@ -155,11 +112,11 @@ async function signup() {
       if (user) {
         return user.token;
       }
-    } catch(err) {
+    } catch (err) {
       log.err(err);
       user = null;
 
-      if ( ! err.error) {
+      if (!err.error) {
         return null;
       }
     }
@@ -186,7 +143,7 @@ function loginOrSignup() {
 
     prompt.get(schema, function (err, result) {
 
-      if (err || ! result) {
+      if (err || !result) {
         return reject(err);
       }
 
@@ -197,8 +154,7 @@ function loginOrSignup() {
           console.log(err);
           reject(err)
         });
-      }
-      else if (result.loginOrSignup == "r") {
+      } else if (result.loginOrSignup == "r") {
         signup().then((token) => {
           resolve(token);
         }).catch((err) => {
@@ -213,7 +169,7 @@ function loginOrSignup() {
   });
 }
 
-module.exports = function(env) {
+module.exports = function (env) {
   return new Promise((resolve, reject) => {
     tokenValid(env.token).then((isValid) => {
       if (isValid) {

@@ -1,13 +1,12 @@
 const fs = require("fs");
-const request = require("request");
+const compareVersion = require("compare-version");
+const apiRequest = require("./req");
 const env = require("./env");
 const auth = require("./auth");
-const req = require("./req");
 const log = require("./log");
 const instance = require("./instance");
 const deploy = require("./deploy");
 const cliConfs = require("./cliConfs");
-const compareVersion = require("compare-version");
 
 function isFirstRun() {
   try {
@@ -21,7 +20,6 @@ function isFirstRun() {
 
 async function verifyNewVersion(versionClient) {
   const versionApi = await getApiVersion();
-
   if (versionApi && compareVersion(versionClient, versionApi) === -1) {
     log.prettyPrint(`** WARNING! A new version of this CLI is available: \n` +
       ` - Your Version: ${versionClient}\n - Available Version: ${versionApi} \n\n` +
@@ -32,7 +30,6 @@ async function verifyNewVersion(versionClient) {
 async function prepareAuthenticatedCommand(version, forceEnvs = null, dontPromptLocationPlan = false) {
   try {
     await cliConfs.determineClosestEndpoint();
-
     let envs = forceEnvs ? forceEnvs : env.get();
     env.set(envs);
     let token = await auth(envs);
@@ -78,7 +75,7 @@ async function checkCurrentRepositoryValid(envVars) {
 
 function checkGlobalNotice() {
   return new Promise((resolve) => {
-    req.get('global/settings', {}).then((result) => {
+    apiRequest.get('global/settings', {}).then((result) => {
       if (result && result.global_msg) {
         switch(result.global_msg_class) {
           case "alert-danger":
@@ -103,11 +100,9 @@ function checkGlobalNotice() {
 
 function getApiVersion() {
   return new Promise((resolve) => {
-    req.get('global/version', {}).then((result) => {
-
+    apiRequest.get('global/version', {}).then((result) => {
       resolve(result.version);
     }).catch((err) => {
-
       resolve(null)
     });
   });
@@ -116,7 +111,7 @@ function getApiVersion() {
 
 function checkSomeOpenodeServicesDown() {
   return new Promise((resolve) => {
-    req.get('global/services/down', {}).then((result) => {
+    apiRequest.get('global/services/down', {}).then((result) => {
 
       if (result && result.length && result.length > 0) {
         console.log("**********");
@@ -134,21 +129,15 @@ function checkSomeOpenodeServicesDown() {
 }
 
 function verifyAsyncCLIVersion(version, callback) {
-  request.get({
-    url: "https://registry.npmjs.org/openode/latest",
-    timeout: 20000,
-    json: true,
-  }, function optionalCallback(err, httpResponse, body) {
-    if (!err && httpResponse.statusCode === 200 && typeof body === 'object') {
-      if (body.version && body.version !== version) {
-        callback(`\n\n***WARNING*** A new CLI version is available.\n\n` +
-          `Your current version: ${version}\nLatest version: ${body.version}\n\n` +
-          `For upgrading: npm install -g openode\n\n`)
-      } else {
-        callback()
-      }
-    }
-  });
+  apiRequest.get('', { token: "" }, "https://registry.npmjs.org/openode/latest")
+  .then (function(body) {
+    if (body.version && body.version !== version) {
+      callback(`\n\n***WARNING*** A new CLI version is available.\n\n` +
+        `Your current version: ${version}\nLatest version: ${body.version}\n\n` +
+        `For upgrading: npm install -g openode\n\n`)
+    } else {
+      callback()
+    }  })
 }
 
 async function checkOpenodeStatus({ version }) {

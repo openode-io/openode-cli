@@ -5,7 +5,7 @@ const log = require("./modules/log");
 const ciConf = require("./modules/ciConf");
 const envModule = require("./modules/env");
 const moduleLocations = require("./modules/locations");
-const req = require("./modules/req");
+const apiRequest = require("./modules/req");
 const packageJson = require("./package.json");
 const deployModule = require("./modules/deploy");
 const eventsStream = require("./modules/eventsStream");
@@ -600,7 +600,7 @@ function processCommander() {
       .description('List the available configs (used by set-config)')
       .action(async function() {
         let [envVars, ] = await prepareAuth();
-        await runCommand(progress(req.get('global/available-configs', envVars)));
+        await runCommand(progress(apiRequest.get('global/available-configs', envVars)));
       });
 
 

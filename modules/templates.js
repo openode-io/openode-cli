@@ -1,55 +1,14 @@
-const cliConfs = require("./cliConfs");
-const request = require("request");
+const apiRequest = require("./req");
 const log = require("./log");
 const fs = require("fs");
 const instanceReq = require("./instanceRequest");
 
 function getBuildTemplatesFilesList() {
-  return new Promise((resolve, reject) => {
-
-    const url = `https://api.github.com/repos/openode-io/build-templates/git/trees/master?recursive=true`;
-
-    request.get({
-      headers: {
-        'User-Agent': 'express'
-      },
-      url,
-      timeout: 300000,
-      json: true,
-    }, function optionalCallback(err, httpResponse, body) {
-      if (err || httpResponse.statusCode != 200) {
-        reject(body);
-      } else {
-        resolve(body);
-      }
-    });
-
-  })
+  return apiRequest.get('', { token: "" }, 'https://api.github.com/repos/openode-io/build-templates/git/trees/master?recursive=true')
 }
 
 function getBuildTemplateProjectFile(path) {
-  const version = "v1";
-
-  return new Promise((resolve, reject) => {
-
-    const url = `https://raw.githubusercontent.com/openode-io` +
-                `/build-templates/master/${path}`;
-    
-    request.get({
-      headers: {
-        'User-Agent': 'express'
-      },
-      url,
-      timeout: 300000,
-    }, function optionalCallback(err, httpResponse, body) {
-      if (err || httpResponse.statusCode != 200) {
-        reject(body);
-      } else {
-        resolve(body);
-      }
-    });
-
-  })
+    return apiRequest.get('', { token: '' }, 'https://raw.githubusercontent.com/openode-io/build-templates/master/' + path)
 }
 
 async function templates() {

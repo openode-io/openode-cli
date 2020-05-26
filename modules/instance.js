@@ -1,5 +1,4 @@
-const cliConfs = require("./cliConfs");
-const request = require("request");
+const apiRequest = require("./req");
 const log = require("./log");
 const promptUtil = require("./promptUtil");
 const instanceRequest = require("./instanceRequest");
@@ -7,96 +6,34 @@ const instanceOp = require("./instance_operation");
 const modLocations = require("./locations");
 
 function getWebsite(sitename, config) {
-  return new Promise((resolve, reject) => {
-
-    if (!sitename || sitename == "") {
-      resolve(null);
-    }
-
-    let url = cliConfs.getApiUrl() + 'instances/' + sitename + "/";
-
-    request.get({
-      headers: {
-        "x-auth-token": config.token
-      },
-      url: url,
-      json: true
-    }, function optionalCallback(err, httpResponse, body) {
-      if (err || httpResponse.statusCode != 200) {
-        resolve(null);
-      } else {
-        resolve(body);
-      }
-    });
-  });
+  if (!sitename || sitename == "") return null
+  return apiRequest.get(`instances/${sitename}/`, config)
 }
 
 function createInstance(opts, config) {
-  return new Promise((resolve, reject) => {
-
-    if ( ! opts.sitename || opts.sitename == "") {
-      resolve(false);
-    }
-
-    let url = cliConfs.getApiUrl() + 'instances/create';
-
-    request.post({
-      headers: {
-        "x-auth-token": config.token
-      },
-      url: url,
-      json: true,
-      form: {
-        "site_name": opts.sitename,
-        "instance_type": opts.instanceType
-      }
-    }, function optionalCallback(err, httpResponse, body) {
-      if (err || httpResponse.statusCode != 200) {
-        log.err(body); // show error
-        resolve(null);
-      } else {
-        resolve(body); // returns the created website info
-      }
-    });
-  });
+  if (!opts.sitename || opts.sitename == "") {
+    return resolve(false);
+  }
+  return apiRequest.post('instances/create', {
+    "site_name": opts.sitename,
+    "instance_type": opts.instanceType
+  }, config)
 }
 
 function sitenames(config, instanceType = "server") {
-  return new Promise((resolve, reject) => {
-    let url = `${cliConfs.getApiUrl()}instances/?instance_type=${instanceType}`;
-
-    request.get({
-      headers: {
-        "x-auth-token": config.token
-      },
-      url: url,
-      json: true
-    }, function optionalCallback(err, httpResponse, body) {
-      if (err || httpResponse.statusCode != 200) {
-        resolve([]);
-      } else {
-        try {
-          resolve(body.map(site => site.site_name));
-        } catch (err) {
-          log.err(err);
-          resolve([]);
-        }
-
-      }
-    });
-  });
+  return apiRequest.get(`instances/?instance_type=${instanceType}`, config)
+    .then(function (body) {
+      if (!body) return []
+      return body.map(site => site.site_name)
+    })
 }
 
 async function selectExistingOrCreate(env) {
-
   let instanceType = "server";
-
   let selectedSitename = null;
-
   while (selectedSitename == null) {
     let sites = await sitenames(env, instanceType);
     let defaultSitename = "";
-
     if (sites.length >= 1) {
       defaultSitename = sites[0];
     }
@@ -105,7 +42,7 @@ async function selectExistingOrCreate(env) {
       properties: {
         sitename: {
           description: 'Type your subdomain sitename (Example: my-site)' +
-             instanceType === 'server' ? ' OR custom domain (mysite.com)' : '',
+            instanceType === 'server' ? ' OR custom domain (mysite.com)' : '',
           message: 'Invalid input, please enter a sitename or custom domain.',
           required: true,
           default: defaultSitename
@@ -137,7 +74,7 @@ async function selectExistingOrCreate(env) {
     } else {
       log.out("creating website...")
       // try to create it!
-      let siteCreated = await createInstance({ 
+      let siteCreated = await createInstance({
         sitename: result.sitename,
         instanceType
       }, env);
@@ -157,7 +94,7 @@ async function selectLocation(env, allLocations) {
 
   let selectedLocation = null;
 
-  while ( ! selectedLocation) {
+  while (!selectedLocation) {
     let defaultLocation = allLocations[0].id;
 
     const schema = {
@@ -181,22 +118,24 @@ async function selectLocation(env, allLocations) {
 
     let locationValid = allLocations.find(l => [l.id, l.str_id].includes(result.location));
 
-    if ( ! locationValid) {
+    if (!locationValid) {
       log.out("Invalid location");
     } else {
       log.out("adding location...")
 
       // try to create it!
       const resultAddLocation =
-        await instanceOp("addLocation", env, { "location_str_id": result.location } );
+        await instanceOp("addLocation", env, {
+          "location_str_id": result.location
+        });
 
       if (resultAddLocation && resultAddLocation.error) {
         log.out(resultAddLocation);
       }
 
-      selectedLocation = resultAddLocation.result === 'success'
-        ? result.location
-        : null;
+      selectedLocation = resultAddLocation.result === 'success' ?
+        result.location :
+        null;
     }
   }
 
@@ -232,7 +171,7 @@ async function selectPlan(env, locationId, allPlans) {
 
     let planValid = allPlans.find(l => l.id === result.plan);
 
-    if ( ! planValid) {
+    if (!planValid) {
       log.out("Invalid plan");
     } else {
       log.out("setting plan...");
@@ -254,23 +193,23 @@ async function getLocations(sitename, env) {
   return await instanceRequest.getOp("locations", sitename, env, {});
 }
 
-module.exports = async function(env, dontPromptLocationPlan) {
+module.exports = async function (env, dontPromptLocationPlan) {
   // first check if it has a sitename
   let website = await getWebsite(env.site_name, env);
 
-  if ( ! website) {
+  if (!website) {
     let site_name = await selectExistingOrCreate(env);
     website = await getWebsite(site_name, env);
   }
 
   env.site_name = website.site_name;
 
-  if ( ! dontPromptLocationPlan) {
+  if (!dontPromptLocationPlan) {
     // second: the location
     const locations = await getLocations(env.site_name, env);
     let locationId = null;
 
-    if ( ! locations || locations.length === 0) {
+    if (!locations || locations.length === 0) {
       const allLocations = await modLocations.availableLocations(env, website.type);
 
       locationId = await selectLocation(env, allLocations);
@@ -279,10 +218,14 @@ module.exports = async function(env, dontPromptLocationPlan) {
     }
 
     // third: the plan
-    const plan = await instanceOp("plan", env, { "location_str_id": locationId });
+    const plan = await instanceOp("plan", env, {
+      "location_str_id": locationId
+    });
 
-    if ( ! plan) {
-      const availPlans = await instanceOp("plans", env, { "location_str_id": locationId });
+    if (!plan) {
+      const availPlans = await instanceOp("plans", env, {
+        "location_str_id": locationId
+      });
       await selectPlan(env, locationId, availPlans);
     }
   }
