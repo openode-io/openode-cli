@@ -38,43 +38,24 @@ async function get(path, config, url = null, skipResponseProcessing = false) {
   return processJsonResponse(response, skipResponseProcessing)
 }
 
-function post(path, params, config, url = null) {
-  return new Promise((resolve, reject) => {
-    
-    fetch(prepareUrl(url, path), {
-        method: 'POST',
-        headers: {
-          "content-type": "application/json",
-          "x-auth-token": config.token,
-          'User-Agent': 'express'
-        },
-        body: JSON.stringify(params)
-      })
-      .then(response => {
-        if (response.ok) {
-          response.json().then(function (data) {
-            resolve(data);
-          })
-        } else {
-          response.json().then(function (data) {
-            reject(data);
-          })
-        }
-      })
-      .catch(function (err) {
-        console.log(err)
-      })
+async function post(path, params, config, url = null) {
+  const response = await fetch(prepareUrl(url, path), {
+    method: 'POST',
+    headers: {
+      "content-type": "application/json",
+      "x-auth-token": config.token,
+      'User-Agent': 'express'
+    },
+    body: JSON.stringify(params)
   })
+
+  return processJsonResponse(response)
 }
 
-
 async function upload(path, params, config, url = null, length = 0) {
-  
-
   const response = await fetch(prepareUrl(url, path), {
       method: 'POST',
       headers: {
-        "contentType": "application/json",
         "x-auth-token": config.token,
         'User-Agent': 'express',
         "Content-Length": length
@@ -85,33 +66,18 @@ async function upload(path, params, config, url = null, length = 0) {
   return response.text()
 }
 
-function remove(path, params, config, url = null) {
-  return new Promise((resolve, reject) => {
-    
-    fetch(prepareUrl(url, path), {
-        method: 'DELETE',
-        headers: {
-          "content-type": "application/json",
-          "x-auth-token": config.token,
-          'User-Agent': 'express'
-        },
-        body: JSON.stringify(params)
-      })
-      .then(response => {
-        if (response.ok) {
-          response.json().then(function (data) {
-            resolve(data);
-          })
-        } else {
-          response.json().then(function (data) {
-            reject(data);
-          })
-        }
-      })
-      .catch(function (err) {
-        console.log(err)
-      })
+async function remove(path, params, config, url = null) {
+  const response = await fetch(prepareUrl(url, path), {
+    method: 'DELETE',
+    headers: {
+      "content-type": "application/json",
+      "x-auth-token": config.token,
+      'User-Agent': 'express'
+    },
+    body: JSON.stringify(params)
   })
+
+  return processJsonResponse(response)
 }
 
 module.exports = {
