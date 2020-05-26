@@ -77,32 +77,13 @@ async function sendCompressedFile(file, config, options) {
   formData.append('version', config.version)
   formData.append('location_str_id', options.location_str_id)
   const bodyLength = await new Promise((resolve, reject) => {
-    formData.getLength(function (err, bodyLength) {
-      if (err) {
-        reject(err)
-      } else resolve(length)
-    })
-  })
-  return apiRequest.upload('instances/' + config.site_name + "/sendCompressedFile", formData, config, null, Length)
-}
-
-async function sendFile(file, config, options) {
-  let formData = new FormData()
-  let file2Upload = fs.createReadStream(file);
-  formData.append('file', file2Upload)
-  formData.append('info', JSON.stringify({
-    "path": file
-  }))
-  formData.append('version', config.version)
-  formData.append('location_str_id', options.location_str_id)
-  const Length = await new Promise((resolve, reject) => {
     formData.getLength(function (err, length) {
       if (err) {
         reject(err)
       } else resolve(length)
     })
   })
-  return apiRequest.upload('instances/' + config.site_name + "/sendFile", formData, config, null, fs.statSync(file).size)
+  return apiRequest.upload('instances/' + config.site_name + "/sendCompressedFile", formData, config, null, bodyLength)
 }
 
 function deleteFiles(files, config, options) {
@@ -373,7 +354,6 @@ async function verifyServerAllocated(envVars) {
 
 module.exports = {
   localFilesListing,
-  sendFile,
   deploy,
   syncFiles,
   ensureOneLocation,

@@ -91,22 +91,4 @@ describe('Deploy', function() {
       }
     });
   });
-
-  describe('send files', function() {
-    it("single file", function(done) {
-      nock(cliConfs.API_URL)
-        .post('/instances/mysite/sendFile')
-        .reply(200, {
-         });
-
-      /* todo fix
-      deployModule.sendFile("./test/localRepos/basic/test.js", {"token": "12354asdfasdfasdf", "site_name": "mysite"}, { location_str_id: "canada"}).then((result) => {
-        done();
-      }).catch(err => {
-        done(err);
-      });
-      */
-      done();
-    });
-  });
 });
