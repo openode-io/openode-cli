@@ -10,23 +10,25 @@ function prepareUrl(url, path) {
   return cliConfs.getApiUrl() + path;
 }
 
-async function processJsonResponse(response, skipResponseProcessing = false) {
+async function processJsonResponse(response,
+                                    skipResponseProcessing = false,
+                                    format = 'json') {
   if (response.ok) {
     if (skipResponseProcessing) {
       return true
     } else {
-      return response.json()
+      return response[format]()
     }
   } else {
     if (skipResponseProcessing) {
       return false
     } else {
-      throw await response.json()
+      throw (await response[format]())
     }
   }
 }
 
-async function get(path, config, url = null, skipResponseProcessing = false) {
+async function get(path, config, { url, skipResponseProcessing, format } = {}) {
   const response = await fetch(prepareUrl(url, path), {
     headers: {
       "content-type": "application/json",
@@ -35,7 +37,7 @@ async function get(path, config, url = null, skipResponseProcessing = false) {
     },
   })
   
-  return processJsonResponse(response, skipResponseProcessing)
+  return processJsonResponse(response, skipResponseProcessing, format)
 }
 
 async function post(path, params, config, url = null) {

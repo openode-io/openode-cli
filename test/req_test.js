@@ -37,7 +37,13 @@ describe('Req', function() {
         token: '1234'
       }
 
-      const result = await reqModule.get(null, config, beginUrl + path, false)
+      const result = await reqModule.get(
+        null,
+        config,
+        {
+          url: beginUrl + path,
+          skipResponseProcessing: false 
+        })
 
       expect(result).to.eql({ version: '2.0.16' })
     });
@@ -61,7 +67,13 @@ describe('Req', function() {
       }
 
       try {
-        await reqModule.get(null, config, beginUrl + path, false)
+        await reqModule.get(
+          null,
+          config,
+          {
+            url: beginUrl + path,
+            skipResponseProcessing: false 
+          })
         throw 'invalid'
       } catch(err) {
         expect(err.error).to.equal('major issue')
@@ -86,7 +98,13 @@ describe('Req', function() {
         token: '1234'
       }
 
-      const result = await reqModule.get(null, config, beginUrl + path, true)
+      const result = await reqModule.get(
+        null,
+        config,
+        {
+          url: beginUrl + path,
+          skipResponseProcessing: true
+        })
 
       expect(result).to.eql(true)
     });
@@ -109,7 +127,13 @@ describe('Req', function() {
         token: '1234'
       }
 
-      const result = await reqModule.get(null, config, beginUrl + path, true)
+      const result = await reqModule.get(
+        null,
+        config,
+        {
+          url: beginUrl + path,
+          skipResponseProcessing: true
+        })
 
       expect(result).to.eql(false)
     });
