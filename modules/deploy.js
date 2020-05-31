@@ -12,15 +12,7 @@ const LIMIT_BYTES_PER_ARCHIVE = 10000000
 const LIMIT_BYTES_PER_FILE = 100000000
 
 function promisifiedSha1File (path) {
-  return new Promise((resolve, reject) => {
-    sha1File(path, function (err, sum) {
-      if (err) {
-        reject(err)
-      } else {
-        resolve(sum)
-      }
-    })
-  })
+  return sha1File(path)
 }
 
 async function localFilesListing (dir, files2Ignore, firstLevel = false) {
@@ -334,9 +326,10 @@ async function verifyServerAllocated (envVars) {
 module.exports = {
   localFilesListing,
   deploy,
-  syncFiles,
-  ensureOneLocation,
   deleteLocalArchive,
+  ensureOneLocation,
+  promisifiedSha1File,
+  syncFiles,
   verifyServerAllocated,
   verifyReceivedChanges
 }
