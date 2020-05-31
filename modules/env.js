@@ -1,58 +1,58 @@
-const fs = require('fs');
-const log = require("./log");
-const gitignore = require('./utils/parse-gitignore');
-const pathModule = require("path");
+const fs = require('fs')
+const log = require('./log')
+const gitignore = require('./utils/parse-gitignore')
+const pathModule = require('path')
 
-function get() {
+function get () {
   try {
-    let content = fs.readFileSync('./.openode');
+    const content = fs.readFileSync('./.openode')
 
-    return JSON.parse(content);
-  } catch(err) {
-    return {};
+    return JSON.parse(content)
+  } catch (err) {
+    return {}
   }
 };
 
-function set(envs) {
+function set (envs) {
   try {
-    fs.writeFileSync("./.openode", JSON.stringify(envs));
-  } catch(err) {
-    log.err(err);
+    fs.writeFileSync('./.openode', JSON.stringify(envs))
+  } catch (err) {
+    log.err(err)
   }
 }
 
-function files2Ignore(path = "./.openodeignore", defaultList2Ignore = []) {
-  let result = [];
+function files2Ignore (path = './.openodeignore', defaultList2Ignore = []) {
+  let result = []
 
-  const openodeIgnoreFile = path;
+  const openodeIgnoreFile = path
 
-  if ( ! fs.existsSync(path)) {
-    result = defaultList2Ignore;
+  if (!fs.existsSync(path)) {
+    result = defaultList2Ignore
   } else {
     try {
       result = gitignore(openodeIgnoreFile, defaultList2Ignore).map((f) => {
-        return f.replace(/\/\*\*/g, "")
-          .replace(/\/\*/g, "");
-      });
-    } catch(err) {
-      result = defaultList2Ignore;
+        return f.replace(/\/\*\*/g, '')
+          .replace(/\/\*/g, '')
+      })
+    } catch (err) {
+      result = defaultList2Ignore
     }
   }
 
   // normalize:
-  result = result.map(r => pathModule.normalize(r));
+  result = result.map(r => pathModule.normalize(r))
 
-  return result;
+  return result
 }
 
-function extractFiles2Ignore(path = "./.openodeignore") {
+function extractFiles2Ignore (path = './.openodeignore') {
   return files2Ignore(path, [
-    ".openode",
-    ".openodeignore",
-    "node_modules",
-    ".git",
-    "openode_scripts"
-  ]);
+    '.openode',
+    '.openodeignore',
+    'node_modules',
+    '.git',
+    'openode_scripts'
+  ])
 }
 
 module.exports = {
@@ -60,4 +60,4 @@ module.exports = {
   set,
   extractFiles2Ignore,
   files2Ignore
-};
+}
