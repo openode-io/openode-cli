@@ -1,33 +1,33 @@
-const util = require('util');
+const util = require('util')
 
-function out(msg) {
-  const date = new Date();
-  console.log("[" + date + "] - ", msg);
+function out (msg) {
+  const date = new Date()
+  console.log('[' + date + '] - ', msg)
 }
 
-function err(msg) {
-  const date = new Date();
-  console.error("[" + date + "] - ", msg);
+function err (msg) {
+  const date = new Date()
+  console.error('[' + date + '] - ', msg)
 }
 
-function prettyPrint(json) {
-  if (typeof(json) === 'object') {
+function prettyPrint (json) {
+  if (typeof (json) === 'object') {
     try {
-      json = JSON.parse(json);
-    } catch(err) {
+      json = JSON.parse(json)
+    } catch (err) {
 
     }
 
-    console.log(util.inspect(json, {depth: null, colors: true}));
+    console.log(util.inspect(json, { depth: null, colors: true }))
   } else {
-    console.log(json);
+    console.log(json)
   }
 }
 
 // result: { stdout, stderr, exit_code }
-function printCmdDetails(result) {
-  if ( ! result) {
-    return console.log(`No result available.`)
+function printCmdDetails (result) {
+  if (!result) {
+    return console.log('No result available.')
   }
 
   if (result.stdout) {
@@ -39,16 +39,16 @@ function printCmdDetails(result) {
   }
 }
 
-function alertError(txt) {
-  console.log("\x1b[41m\x1b[37m%s\x1b[0m", txt)
+function alertError (txt) {
+  console.log('\x1b[41m\x1b[37m%s\x1b[0m', txt)
 }
 
-function alertWarning(txt) {
-  console.log("\x1b[43m\x1b[30m%s\x1b[0m", txt)
+function alertWarning (txt) {
+  console.log('\x1b[43m\x1b[30m%s\x1b[0m', txt)
 }
 
-function alertInfo(txt) {
-  console.log("\x1b[44m\x1b[37m%s\x1b[0m", txt)
+function alertInfo (txt) {
+  console.log('\x1b[44m\x1b[37m%s\x1b[0m', txt)
 }
 
 module.exports = {

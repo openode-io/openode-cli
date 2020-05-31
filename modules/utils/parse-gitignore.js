@@ -1,115 +1,114 @@
 
-var fs = require('fs');
-var isGlob = require('is-glob');
-var unique = require('array-unique');
-var cache = {};
+var fs = require('fs')
+var isGlob = require('is-glob')
+var unique = require('array-unique')
+var cache = {}
 
-function gitignore(fp, patterns, options) {
-  if (!fp || !fs.existsSync(fp)) return [];
-  console.log(`git ignore..`)
+function gitignore (fp, patterns, options) {
+  if (!fp || !fs.existsSync(fp)) return []
+  console.log('git ignore..')
 
-  if (cache.hasOwnProperty(fp)) {
-    return cache[fp];
+  if (cache.hasOwnProperty(fp)) { // eslint-disable-line
+    return cache[fp]
   }
 
   if (typeof pattern !== 'string' && !Array.isArray(patterns)) {
-    options = patterns;
-    patterns = [];
+    options = patterns
+    patterns = []
   }
 
-  options = options || {};
-  var str = fs.readFileSync(fp, 'utf8');
-  var lines = str.split(/\r\n|\n/).concat(patterns || []);
-  var arr = unique(gitignore.parse(lines, options));
+  options = options || {}
+  var str = fs.readFileSync(fp, 'utf8')
+  var lines = str.split(/\r\n|\n/).concat(patterns || [])
+  var arr = unique(gitignore.parse(lines, options))
 
   if (options.cache !== false) {
-    gitignore.cache[fp] = arr;
+    gitignore.cache[fp] = arr
   }
-  return arr;
+  return arr
 }
 
-gitignore.cache = cache;
+gitignore.cache = cache
 
-gitignore.parse = function parse(arr, opts) {
-  arr = arrayify(arr);
-  var len = arr.length, i = -1;
-  var res = [];
+gitignore.parse = function parse (arr, opts) {
+  arr = arrayify(arr)
+  var len = arr.length; var i = -1
+  var res = []
 
   while (++i < len) {
-    var str = arr[i];
-    str = (str || '').trim();
+    var str = arr[i]
+    str = (str || '').trim()
 
     if (!str || str.charAt(0) === '#') {
-      continue;
+      continue
     }
 
-    var parsed = gitignore.toGlob(str);
-    addPattern(res, parsed.patterns, parsed.stats, opts);
+    var parsed = gitignore.toGlob(str)
+    addPattern(res, parsed.patterns, parsed.stats, opts)
   }
-  return res;
-};
+  return res
+}
 
-gitignore.toGlob = function toGlob(str) {
-  var parsed = {}, stats = {};
+gitignore.toGlob = function toGlob (str) {
+  var parsed = {}; var stats = {}
 
-  stats.first = str.charAt(0);
-  stats.last = str.slice(-1);
+  stats.first = str.charAt(0)
+  stats.last = str.slice(-1)
 
-  stats.isNegated = stats.first === '!';
-  stats.isGlob = isGlob(str);
+  stats.isNegated = stats.first === '!'
+  stats.isGlob = isGlob(str)
 
   if (stats.isNegated) {
-    str = str.slice(1);
-    stats.first = str.charAt(0);
+    str = str.slice(1)
+    stats.first = str.charAt(0)
   }
 
   if (stats.first === '/') {
-    str = str.slice(1);
+    str = str.slice(1)
   }
 
   if (/\w\/[*]{2}\/\w/.test(str)) {
-    str += '|' + str.split('/**/').join('/');
+    str += '|' + str.split('/**/').join('/')
   }
 
   if (/^[\w.]/.test(str) && /\w$/.test(str) && !stats.isGlob) {
-    str += '|' + str + '/**';
-
+    str += '|' + str + '/**'
   } else if (/\/$/.test(str)) {
-    str += '**';
+    str += '**'
   }
 
-  parsed.stats = stats;
-  parsed.patterns = str.split('|');
-  return parsed;
-};
+  parsed.stats = stats
+  parsed.patterns = str.split('|')
+  return parsed
+}
 
-function addPattern(res, arr, stats, options) {
-  arr = arrayify(arr);
-  var len = arr.length, i = -1;
+function addPattern (res, arr, stats, options) {
+  arr = arrayify(arr)
+  var len = arr.length; var i = -1
   while (++i < len) {
-    var str = arr[i];
+    var str = arr[i]
     if (stats.isNegated) {
-      str = '!' + str;
+      str = '!' + str
     }
     if (options.invert) {
-      str = invert(str);
+      str = invert(str)
     }
     if (res.indexOf(str) === -1) {
-      res.push(str);
+      res.push(str)
     }
   }
-  return res;
+  return res
 }
 
-function invert(str) {
+function invert (str) {
   if (str.charAt(0) === '!') {
-    return str.slice(1);
+    return str.slice(1)
   }
-  return '!' + str;
+  return '!' + str
 }
 
-function arrayify(val) {
-  return Array.isArray(val) ? val : [val];
+function arrayify (val) {
+  return Array.isArray(val) ? val : [val]
 }
 
 module.exports = gitignore

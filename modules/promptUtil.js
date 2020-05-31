@@ -1,18 +1,18 @@
-const prompt = require("prompt");
+const prompt = require('prompt')
 
-function promisifyPrompt(schema) {
+function promisifyPrompt (schema) {
   return new Promise((resolve, reject) => {
-    prompt.start();
+    prompt.start()
     prompt.get(schema, function (err, result) {
       if (err) {
-        resolve(null);
+        resolve(null)
       } else {
-        resolve(result);
+        resolve(result)
       }
-    });
-  });
+    })
+  })
 }
 
 module.exports = {
   promisifyPrompt
-};
+}
