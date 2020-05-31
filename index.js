@@ -193,35 +193,6 @@ function processCommander() {
     });
 
   commander
-    .command('sync-n-reload')
-    .option("-t <token>", "User token used for authentication")
-    .option("-s <site name>", "Instance site name.")
-    .description('Sync and then reload your instance')
-    .action(async function(opts) {
-
-      let envVars = await auth(opts);
-
-      await main.checkCurrentRepositoryValid(envVars);
-
-      function proc(locationId) {
-        return require("./modules/deploy").syncFiles(envVars, { "location_str_id": locationId })
-          .then((resultSync) => {
-
-            return require("./modules/instance_operation")("reload", envVars,
-              { "location_str_id": locationId}).then((resultReload) => {
-
-                return {
-                  sync: resultSync,
-                  reload: resultReload
-                };
-              });
-          });
-      }
-
-      await runCommand(progress(processAllLocations(envVars, null, proc), envVars));
-    });
-
-  commander
     .command('ci-conf <token> <sitename>')
     .description('Write the confs for your continuous integration (CI) env')
     .action(async function(token, sitename) {
@@ -272,16 +243,6 @@ function processCommander() {
       }
 
       await runCommand(progress(processAllLocations(envVars, null, proc), envVars));
-    });
-
-  commander
-    .command('stats')
-    .description('Get daily stats about the instance.')
-    .action(async function(opts) {
-      let [envVars, ] = await prepareAuth();
-
-      await runCommand(progress(
-        require("./modules/instanceRequest").getOp("stats", envVars.site_name, envVars)));
     });
 
   commander
@@ -527,20 +488,6 @@ function processCommander() {
         function proc(locationId) {
           return require("./modules/instance_operation")("destroyStorage", envVars,
             { "location_str_id": locationId } );
-        }
-
-        await runCommand(progress(processAllLocations(envVars, locationIdInput, proc)));
-      });
-
-  commander
-    .command('set-cpus <nbCpus> [locationId]')
-      .description('Increase the extra storage capacity')
-      .action(async function(nbCpus, locationIdInput) {
-        let [envVars, ] = await prepareAuth();
-
-        function proc(locationId) {
-          return require("./modules/instance_operation")("setCpus", envVars,
-            { "location_str_id": locationId, nbCpus } );
         }
 
         await runCommand(progress(processAllLocations(envVars, locationIdInput, proc)));

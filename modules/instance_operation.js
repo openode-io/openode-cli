@@ -71,12 +71,6 @@ module.exports = async function (operation, env, options = {}) {
           amount_gb: options.amountGB
         }, env)
 
-      case 'setCpus':
-        return await instanceReq.postOp('set-cpus', env.site_name, {
-          location_str_id: options.location_str_id,
-          nb_cpus: options.nbCpus
-        }, env)
-
       case 'locations':
         return await instanceReq.getOp('locations', env.site_name, env)
 

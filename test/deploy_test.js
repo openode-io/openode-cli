@@ -91,4 +91,20 @@ describe('Deploy', function() {
       }
     });
   });
+
+  describe('promisifiedSha1File', function() {
+    it("basic txt file", async function() {
+      const filename = './test/fixtures/sha1file/simpleFile.txt'
+      const result = await deployModule.promisifiedSha1File(filename)
+
+      expect(result).to.equal('3c608e47152c7b175e9d3c171002dc234bb00953')
+    })
+
+    it("large html file", async function() {
+      const filename = './test/fixtures/sha1file/largeFile.html'
+      const result = await deployModule.promisifiedSha1File(filename)
+
+      expect(result).to.equal('c651ed21931458ca3bc42c20cbb764bf01174962')
+    })
+  })
 });
