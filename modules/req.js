@@ -1,129 +1,92 @@
+
 const cliConfs = require("./cliConfs");
 const fetch = require("node-fetch");
 
-function get(path, config, url = null, bool = false) {
-  return new Promise((resolve, reject) => {
-    if (url === null) url = cliConfs.getApiUrl() + path;
-    fetch(url, {
-        headers: {
-          "content-type": "application/json",
-          "x-auth-token": config.token,
-          'User-Agent': 'express'
-        },
-      })
-      .then(response => {
-        if (response.ok) {
-          if (!bool) {
-            response.json().then(function (data) {
-              resolve(data);
-            })
-          } else resolve(true)
-        } else {
-          if (!bool) {
-            response.json().then(function (data) {
-              reject(data);
-            })
-          } else resolve(false)
-        }
-      })
-      .catch(function (err) {
-        console.log(err)
-      })
-  })
+function prepareUrl(url, path) {
+  if (url) {
+    return url
+  }
+
+  return cliConfs.getApiUrl() + path;
 }
 
-function post(path, params, config, url = null) {
-  return new Promise((resolve, reject) => {
-    if (url === null) url = cliConfs.getApiUrl() + path;
-    fetch(url, {
-        method: 'POST',
-        headers: {
-          "content-type": "application/json",
-          "x-auth-token": config.token,
-          'User-Agent': 'express'
-        },
-        body: JSON.stringify(params)
-      })
-      .then(response => {
-        if (response.ok) {
-          response.json().then(function (data) {
-            resolve(data);
-          })
-        } else {
-          response.json().then(function (data) {
-            reject(data);
-          })
-        }
-      })
-      .catch(function (err) {
-        console.log(err)
-      })
-  })
+async function processJsonResponse(response,
+                                    skipResponseProcessing = false,
+                                    format = 'json') {
+  if (response.ok) {
+    if (skipResponseProcessing) {
+      return true
+    } else {
+      return response[format]()
+    }
+  } else {
+    if (skipResponseProcessing) {
+      return false
+    } else {
+      throw (await response[format]())
+    }
+  }
 }
 
-
-function upload(path, params, config, url = null, Length = 0) {
-  return new Promise((resolve, reject) => {
-    if (url === null) url = cliConfs.getApiUrl() + path;
-    fetch(url, {
-        method: 'POST',
-        headers: {
-          "contentType": "application/json",
-          "x-auth-token": config.token,
-          'User-Agent': 'express',
-          "Content-Length": Length
-        },
-        body: params
-      })
-      .then(response => {
-        if (response.ok) {
-          response.text().then(function (data) {
-            resolve(data);
-          })
-        } else {
-          response.text().then(function (data) {
-            reject(data);
-          })
-        }
-      })
-      .catch(function (err) {
-        console.log(err)
-      })
+async function get(path, config, { url, skipResponseProcessing, format } = {}) {
+  const response = await fetch(prepareUrl(url, path), {
+    headers: {
+      "content-type": "application/json",
+      "x-auth-token": config.token,
+      'User-Agent': 'express'
+    },
   })
+  
+  return processJsonResponse(response, skipResponseProcessing, format)
 }
 
-function remove(path, params, config, url = null) {
-  return new Promise((resolve, reject) => {
-    if (url === null) url = cliConfs.getApiUrl() + path;
-    fetch(url, {
-        method: 'DELETE',
-        headers: {
-          "content-type": "application/json",
-          "x-auth-token": config.token,
-          'User-Agent': 'express'
-        },
-        body: JSON.stringify(params)
-      })
-      .then(response => {
-        if (response.ok) {
-          response.json().then(function (data) {
-            resolve(data);
-          })
-        } else {
-          response.json().then(function (data) {
-            reject(data);
-          })
-        }
-      })
-      .catch(function (err) {
-        console.log(err)
-      })
+async function post(path, params, config, url = null) {
+  const response = await fetch(prepareUrl(url, path), {
+    method: 'POST',
+    headers: {
+      "content-type": "application/json",
+      "x-auth-token": config.token,
+      'User-Agent': 'express'
+    },
+    body: JSON.stringify(params)
   })
+
+  return processJsonResponse(response)
+}
+
+async function upload(path, params, config, url = null, length = 0) {
+  const response = await fetch(prepareUrl(url, path), {
+      method: 'POST',
+      headers: {
+        "x-auth-token": config.token,
+        'User-Agent': 'express',
+        "Content-Length": length
+      },
+      body: params
+    })
+
+  return response.text()
+}
+
+async function remove(path, params, config, url = null) {
+  const response = await fetch(prepareUrl(url, path), {
+    method: 'DELETE',
+    headers: {
+      "content-type": "application/json",
+      "x-auth-token": config.token,
+      'User-Agent': 'express'
+    },
+    body: JSON.stringify(params)
+  })
+
+  return processJsonResponse(response)
 }
 
 module.exports = {
   get,
   post,
-  upload,
-  remove
+  processJsonResponse,
+  remove,
+  prepareUrl,
+  upload
 };

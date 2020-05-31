@@ -118,10 +118,12 @@ module.exports = async function(operation, env, options = {}) {
 
       case "setEnv":
         return await instanceReq.postOp(`env_variables/${options.variable}`,
-                                        env.site_name, {
-          "location_str_id": options.location_str_id,
-          "value": options.value
-        }, env);
+          env.site_name, 
+          {
+            "location_str_id": options.location_str_id,
+            "value": options.value
+          },
+          env);
 
       case "delEnv":
         return await instanceReq.delOp(`env_variables/${options.variable}`,

@@ -129,7 +129,13 @@ function checkSomeOpenodeServicesDown() {
 }
 
 function verifyAsyncCLIVersion(version, callback) {
-  apiRequest.get('', { token: "" }, "https://registry.npmjs.org/openode/latest")
+  apiRequest.get(
+    null,
+    { token: "" },
+    {
+      url: "https://registry.npmjs.org/openode/latest"
+    }
+  )
   .then (function(body) {
     if (body.version && body.version !== version) {
       callback(`\n\n***WARNING*** A new CLI version is available.\n\n` +
@@ -138,6 +144,9 @@ function verifyAsyncCLIVersion(version, callback) {
     } else {
       callback()
     }  })
+  .catch(err => {
+    console.error(err);
+  })
 }
 
 async function checkOpenodeStatus({ version }) {

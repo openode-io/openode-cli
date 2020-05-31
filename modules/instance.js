@@ -5,9 +5,17 @@ const instanceRequest = require("./instanceRequest");
 const instanceOp = require("./instance_operation");
 const modLocations = require("./locations");
 
-function getWebsite(sitename, config) {
-  if (!sitename || sitename == "") return null
-  return apiRequest.get(`instances/${sitename}/`, config)
+async function getWebsite(sitename, config) {
+  if (!sitename || sitename == "") {
+    return null;
+  }
+
+  try {
+    return await apiRequest.get(`instances/${sitename}/`, config)
+  } catch (_err) {
+    // ignoring error
+    return null;
+  }
 }
 
 function createInstance(opts, config) {
@@ -31,9 +39,11 @@ function sitenames(config, instanceType = "server") {
 async function selectExistingOrCreate(env) {
   let instanceType = "server";
   let selectedSitename = null;
+
   while (selectedSitename == null) {
     let sites = await sitenames(env, instanceType);
     let defaultSitename = "";
+
     if (sites.length >= 1) {
       defaultSitename = sites[0];
     }

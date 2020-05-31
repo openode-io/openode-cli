@@ -1,24 +1,41 @@
 const apiRequest = require("./req");
 const packageJson = require("../package.json");
 
-function getOp(operation, sitename, config, options = {}) {
+async function getOp(operation, sitename, config, options = {}) {
     if (!sitename || sitename == "") {
-        return resolve({})
+        return {};
     }
+
     const params = Object.keys(options).map(k => k + '=' + options[k]).join("&");
-    return apiRequest.get(`instances/${sitename}/${operation}?${params}`, config)
+
+    return apiRequest.get(
+        `instances/${sitename}/${operation}?${params}`,
+        config
+    )
 }
 
-function postOp(operation, sitename, form, config) {
+async function postOp(operation, sitename, form, config) {
     if (!sitename || sitename == "") {
-        return resolve({})
+        return {};
     }
-    return apiRequest.post(`instances/${sitename}/${operation}?version=${packageJson.version}`, form, config)
+
+    return apiRequest.post(
+        `instances/${sitename}/${operation}?version=${packageJson.version}`,
+        form,
+        config
+    )
 }
 
-function delOp(operation, sitename, id, config) {
-    if (!sitename || sitename == "") reject({});
-    return apiRequest.remove(`instances/${sitename}/${operation}?version=${packageJson.version}&id=${id}`, config)
+async function delOp(operation, sitename, id, config) {
+    if (!sitename || sitename == "") {
+        {};
+    }
+
+    return apiRequest.remove(
+        `instances/${sitename}/${operation}?version=${packageJson.version}&id=${id}`,
+        {},
+        config
+    )
 }
 
 module.exports = {

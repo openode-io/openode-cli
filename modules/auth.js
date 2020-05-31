@@ -6,8 +6,10 @@ const promptUtil = require("./promptUtil")
 // TODO: use a faster route to verify the token
 function tokenValid(token) {
   return apiRequest.get('instances/', {
-    token: token
-  },null, true)
+      token
+    },
+    { skipResponseProcessing: true }
+  )
 }
 
 function authenticate(email, password) {
@@ -22,12 +24,14 @@ function authenticate(email, password) {
 function signupApi(email, password, password_confirmation, newsletter) {
   return apiRequest.post('account/register',{
     account: {
-      email,
-      password,
-      password_confirmation,
-      newsletter
-    }
-  }, { token: '' } )
+        email,
+        password,
+        password_confirmation,
+        newsletter
+      }
+    },
+    { token: '' }
+  )
 }
 
 function login() {

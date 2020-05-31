@@ -4,11 +4,24 @@ const fs = require("fs");
 const instanceReq = require("./instanceRequest");
 
 function getBuildTemplatesFilesList() {
-  return apiRequest.get('', { token: "" }, 'https://api.github.com/repos/openode-io/build-templates/git/trees/master?recursive=true')
+  return apiRequest.get(
+    '',
+    { token: "" },
+    {
+      url: 'https://api.github.com/repos/openode-io/build-templates/git/trees/master?recursive=true'
+    }
+  )
 }
 
 function getBuildTemplateProjectFile(path) {
-    return apiRequest.get('', { token: '' }, 'https://raw.githubusercontent.com/openode-io/build-templates/master/' + path)
+    return apiRequest.get(
+      '',
+      { token: '' },
+      {
+        url: 'https://raw.githubusercontent.com/openode-io/build-templates/master/' + path,
+        format: 'text'
+      }
+    )
 }
 
 async function templates() {
