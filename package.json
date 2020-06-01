@@ -52,11 +52,11 @@
     "commander": "^5.1.0",
     "compare-version": "^0.1.2",
     "form-data": "^3.0.0",
+    "inquirer": "^7.1.0",
     "is-glob": "^4.0.1",
     "lodash": "^4.17.15",
     "node-fetch": "^2.6.0",
     "ora": "^4.0.4",
-    "prompt": "^1.0.0",
     "sha1-file": "^2.0.0",
     "ws": "^7.3.0"
   }

@@ -1,6 +1,6 @@
 const apiRequest = require('./req')
 const log = require('./log')
-const promptUtil = require('./promptUtil')
+const inquirer = require('inquirer')
 const instanceRequest = require('./instanceRequest')
 const instanceOp = require('./instance_operation')
 const modLocations = require('./locations')
@@ -49,18 +49,6 @@ async function selectExistingOrCreate (env) {
       defaultSitename = sites[0]
     }
 
-    const schema = {
-      properties: {
-        sitename: {
-          description: 'Type your subdomain sitename (Example: my-site)' +
-            instanceType === 'server' ? ' OR custom domain (mysite.com)' : '',
-          message: 'Invalid input, please enter a sitename or custom domain.',
-          required: true,
-          default: defaultSitename
-        }
-      }
-    }
-
     if (sites.length > 0) {
       console.log('Existing sites:')
 
@@ -75,7 +63,14 @@ async function selectExistingOrCreate (env) {
       }
     }
 
-    const result = await promptUtil.promisifyPrompt(schema)
+    const schema = [{
+      type: 'input',
+      message: 'Type your subdomain sitename (Example: my-site)' + instanceType === 'server' ? ' OR custom domain (mysite.com)' : '',
+      name: 'sitename',
+      default: defaultSitename
+    }]
+
+    const result = await inquirer.prompt(schema)
 
     const siteExists = await getWebsite(result.sitename, env)
 
@@ -84,7 +79,6 @@ async function selectExistingOrCreate (env) {
       return result.sitename
     } else {
       log.out('creating website...')
-      // try to create it!
       const siteCreated = await createInstance({
         sitename: result.sitename,
         instanceType
@@ -107,24 +101,19 @@ async function selectLocation (env, allLocations) {
   while (!selectedLocation) {
     const defaultLocation = allLocations[0].id
 
-    const schema = {
-      properties: {
-        location: {
-          description: 'Select a location (type the id)',
-          message: 'Invalid input, please enter a valid location.',
-          required: true,
-          default: defaultLocation
-        }
-      }
-    }
+    const schema = [{
+      type: 'input',
+      message: 'Select a location (type the id)',
+      name: 'location',
+      default: defaultLocation
+    }]
 
     if (allLocations.length > 0) {
       console.log('-----------------------------------------')
       console.log(allLocations)
-      console.log('Select a location')
     }
 
-    const result = await promptUtil.promisifyPrompt(schema)
+    const result = await inquirer.prompt(schema)
 
     const locationValid = allLocations.find(l => [l.id, l.str_id].includes(result.location))
 
@@ -133,7 +122,6 @@ async function selectLocation (env, allLocations) {
     } else {
       log.out('adding location...')
 
-      // try to create it!
       const resultAddLocation =
         await instanceOp('addLocation', env, {
           location_str_id: result.location
@@ -143,9 +131,7 @@ async function selectLocation (env, allLocations) {
         log.out(resultAddLocation)
       }
 
-      selectedLocation = resultAddLocation.result === 'success'
-        ? result.location
-        : null
+      selectedLocation = resultAddLocation.result === 'success' ? result.location : null
     }
   }
 
@@ -158,25 +144,19 @@ async function selectPlan (env, locationId, allPlans) {
   while (selectedPlan == null) {
     const defaultPlan = allPlans[0].id
 
-    const schema = {
-      properties: {
-        plan: {
-          description: 'Select a plan (type the id)',
-          message: 'Invalid input, please enter a valid plan.',
-          required: true,
-          default: defaultPlan
-        }
-      }
-    }
+    const schema = [{
+      type: 'input',
+      message: 'Select a plan (type the id)',
+      name: 'plan',
+      default: defaultPlan
+    }]
 
     if (allPlans.length > 0) {
       console.log('-----------------------------------------')
       console.log(allPlans)
-      console.log('Select a plan')
     }
 
-    const result = await promptUtil.promisifyPrompt(schema)
-
+    const result = await inquirer.prompt(schema)
     const planValid = allPlans.find(l => l.id === result.plan)
 
     if (!planValid) {
@@ -184,7 +164,6 @@ async function selectPlan (env, locationId, allPlans) {
     } else {
       log.out('setting plan...')
 
-      // try to create it!
       await instanceOp('set-plan', env, {
         location_str_id: locationId,
         plan: result.plan

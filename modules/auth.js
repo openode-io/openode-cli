@@ -1,15 +1,14 @@
 const apiRequest = require('./req')
 const log = require('./log')
-const prompt = require('prompt')
-const promptUtil = require('./promptUtil')
+const inquirer = require('inquirer')
 
 // TODO: use a faster route to verify the token
 function tokenValid (token) {
   return apiRequest.get('instances/', {
     token
-  },
-  { skipResponseProcessing: true }
-  )
+  }, {
+    skipResponseProcessing: true
+  })
 }
 
 function authenticate (email, password) {
@@ -21,95 +20,77 @@ function authenticate (email, password) {
   })
 }
 
-function signupApi (email, password, password_confirmation, newsletter) { // eslint-disable-line
+function signupApi (email, password, passwordConfirmation, newsletter) {
   return apiRequest.post('account/register', {
     account: {
       email,
       password,
-      password_confirmation,
+      password_confirmation: passwordConfirmation,
       newsletter
     }
+  }, {
+    token: ''
+  })
+}
+
+async function login () {
+  const schema = [{
+    type: 'input',
+    message: 'email:',
+    name: 'email'
   },
-  { token: '' }
-  )
-}
-
-function login () {
+  {
+    type: 'password',
+    message: 'Password:',
+    name: 'password'
+  }
+  ]
+  const result = await inquirer.prompt(schema)
   return new Promise((resolve, reject) => {
-    const schema = {
-      properties: {
-        email: {
-          required: true
-        },
-        password: {
-          hidden: true
-        }
-      }
-    }
-
-    prompt.start()
-
-    prompt.get(schema, function (err, result) {
-      if (err) {
-        reject(err)
-      } else {
-        authenticate(result.email, result.password).then((token) => {
-          resolve(token)
-        }).catch(err => {
-          reject(err)
-        })
-      }
+    authenticate(result.email, result.password).then((token) => {
+      resolve(token)
+    }).catch(err => {
+      reject(err)
     })
   })
 }
 
-function wantsNewsletter () {
-  return new Promise((resolve, reject) => {
-    const schema = {
-      properties: {
-        wantsNewsletter: {
-          description: 'Subscribe to the newsletter ([y]es or [n]o) ?',
-          pattern: /^[y,n]$/,
-          message: 'Invalid input, please enter either Y or N.',
-          required: true,
-          default: 'y'
-        }
-      }
-    }
-
-    prompt.start()
-
-    prompt.get(schema, function (err, result) {
-      if (err || !result) {
-        return reject(err)
-      } else {
-        resolve(result.wantsNewsletter)
-      }
-    })
-  })
+async function wantsNewsletter () {
+  const schema = [{
+    type: 'input',
+    message: 'Subscribe to the newsletter ([y]es or [n]o) ?',
+    name: 'wantsNewsletter',
+    choices: ['y', 'n'],
+    default: 'y'
+  }]
+  const result = await inquirer.prompt(schema)
+  return result.wantsNewsletter === 'y' ? 1 : 0
 }
 
 async function signup () {
-  const schema = {
-    properties: {
-      email: {
-        required: true
-      },
-      password: {
-        hidden: true
-      },
-      password_confirmation: {
-        hidden: true
-      }
-    }
+  const schema = [{
+    type: 'input',
+    message: 'email:',
+    name: 'email'
+  },
+  {
+    type: 'password',
+    message: 'Password:',
+    name: 'password'
+  },
+  {
+    type: 'password',
+    message: 'Repeat Password:',
+    name: 'password_confirmation'
   }
+  ]
 
   let user = null
 
   while (user === null) {
     try {
-      const result = await promptUtil.promisifyPrompt(schema)
-      const newsletter = (await wantsNewsletter()) === 'y'
+      const result = await inquirer.prompt(schema)
+      const newsletter = await wantsNewsletter()
       user = await signupApi(result.email, result.password, result.password_confirmation, newsletter)
 
       if (user) {
@@ -118,7 +99,6 @@ async function signup () {
     } catch (err) {
       log.err(err)
       user = null
-
       if (!err.error) {
         return null
       }
@@ -128,45 +108,35 @@ async function signup () {
   return user.token
 }
 
-function loginOrSignup () {
-  return new Promise((resolve, reject) => {
-    const schema = {
-      properties: {
-        loginOrSignup: {
-          description: 'Would you like to [l]ogin or [r]egister a new account?',
-          pattern: /^[l,r]$/,
-          message: 'Invalid input, please enter either l to [l]ogin or r to [r]egister.',
-          required: true,
-          default: 'r'
-        }
-      }
-    }
-
-    prompt.start()
-
-    prompt.get(schema, function (err, result) {
-      if (err || !result) {
-        return reject(err)
-      }
-
-      if (result.loginOrSignup === 'l') {
+async function loginOrSignup () {
+  const schema = [{
+    type: 'input',
+    message: 'Would you like to [l]ogin or [r]egister a new account?',
+    name: 'loginOrSignup',
+    choices: ['l', 'r'],
+    default: 'r'
+  }]
+  const result = await inquirer.prompt(schema)
+  return await new Promise((resolve, reject) => {
+    switch (result.loginOrSignup) {
+      case 'l':
         login().then((token) => {
           resolve(token)
         }).catch((err) => {
-          console.log(err)
           reject(err)
         })
-      } else if (result.loginOrSignup === 'r') {
+        break
+      case 'r':
         signup().then((token) => {
           resolve(token)
         }).catch((err) => {
-          console.log(err)
           reject(err)
         })
-      } else {
-
-      }
-    })
+        break
+      default:
+        resolve({ error: 'invalid input: [r]egister or [l]ogin only' })
+        break
+    }
   })
 }
 
