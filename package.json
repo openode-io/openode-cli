@@ -1,6 +1,6 @@
 {
   "name": "openode",
-  "version": "2.0.26",
+  "version": "2.0.27",
   "description": "opeNode command line interface to control and manage instances.",
   "main": "index.js",
   "scripts": {
@@ -43,7 +43,7 @@
     "expect.js": "^0.3.1",
     "mocha": "^7.2.0",
     "nock": "^12.0.3",
-    "nyc": "^15.0.1"
+    "nyc": "^15.1.0"
   },
   "dependencies": {
     "archiver": "^4.0.1",

@@ -162,13 +162,7 @@ function processCommander() {
     .option("-s <site name>", "Instance site name.")
     .description('Reload your container instance')
     .action(async function(opts) {
-
-      const options = {
-      };
-
       let envVars = await auth(opts);
-
-      await main.checkCurrentRepositoryValid(envVars);
 
       function proc(locationId) {
         return require("./modules/instance_operation")("reload", envVars,
