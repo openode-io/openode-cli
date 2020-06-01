@@ -25,7 +25,7 @@ function signupApi (email, password, passwordConfirmation, newsletter) {
     account: {
       email,
       password,
-      passwordConfirmation,
+      password_confirmation: passwordConfirmation,
       newsletter
     }
   }, {
@@ -64,19 +64,7 @@ async function wantsNewsletter () {
     default: 'y'
   }]
   const result = await inquirer.prompt(schema)
-  return new Promise((resolve, reject) => {
-    switch (result.wantsNewsletter) {
-      case 'y':
-        resolve(result.wantsNewsletter)
-        break
-      case 'n':
-        resolve(result.wantsNewsletter)
-        break
-      default:
-        resolve('y')
-        break
-    }
-  })
+  return result.wantsNewsletter === 'y' ? 1 : 0
 }
 
 async function signup () {
