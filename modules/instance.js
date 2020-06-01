@@ -1,11 +1,11 @@
 const apiRequest = require('./req')
 const log = require('./log')
-const promptUtil = require('./promptUtil')
+const inquirer = require('inquirer')
 const instanceRequest = require('./instanceRequest')
 const instanceOp = require('./instance_operation')
 const modLocations = require('./locations')
 
-async function getWebsite (sitename, config) {
+async function getWebsite(sitename, config) {
   if (!sitename || sitename === '') {
     return null
   }
@@ -18,7 +18,7 @@ async function getWebsite (sitename, config) {
   }
 }
 
-async function createInstance (opts, config) {
+async function createInstance(opts, config) {
   if (!opts.sitename || opts.sitename === '') {
     return false
   }
@@ -29,7 +29,7 @@ async function createInstance (opts, config) {
   }, config)
 }
 
-function sitenames (config, instanceType = 'server') {
+function sitenames(config, instanceType = 'server') {
   return apiRequest.get(`instances/?instance_type=${instanceType}`, config)
     .then(function (body) {
       if (!body) return []
@@ -37,7 +37,7 @@ function sitenames (config, instanceType = 'server') {
     })
 }
 
-async function selectExistingOrCreate (env) {
+async function selectExistingOrCreate(env) {
   const instanceType = 'server'
   let selectedSitename = null
 
@@ -47,18 +47,6 @@ async function selectExistingOrCreate (env) {
 
     if (sites.length >= 1) {
       defaultSitename = sites[0]
-    }
-
-    const schema = {
-      properties: {
-        sitename: {
-          description: 'Type your subdomain sitename (Example: my-site)' +
-            instanceType === 'server' ? ' OR custom domain (mysite.com)' : '',
-          message: 'Invalid input, please enter a sitename or custom domain.',
-          required: true,
-          default: defaultSitename
-        }
-      }
     }
 
     if (sites.length > 0) {
@@ -75,7 +63,14 @@ async function selectExistingOrCreate (env) {
       }
     }
 
-    const result = await promptUtil.promisifyPrompt(schema)
+    const schema = [{
+      type: 'input',
+      message: 'Type your subdomain sitename (Example: my-site)' + instanceType === 'server' ? ' OR custom domain (mysite.com)' : '',
+      name: 'sitename',
+      default: defaultSitename
+    }]
+
+    const result = await inquirer.prompt(schema)
 
     const siteExists = await getWebsite(result.sitename, env)
 
@@ -84,7 +79,6 @@ async function selectExistingOrCreate (env) {
       return result.sitename
     } else {
       log.out('creating website...')
-      // try to create it!
       const siteCreated = await createInstance({
         sitename: result.sitename,
         instanceType
@@ -101,30 +95,25 @@ async function selectExistingOrCreate (env) {
   return selectedSitename
 }
 
-async function selectLocation (env, allLocations) {
+async function selectLocation(env, allLocations) {
   let selectedLocation = null
 
   while (!selectedLocation) {
     const defaultLocation = allLocations[0].id
 
-    const schema = {
-      properties: {
-        location: {
-          description: 'Select a location (type the id)',
-          message: 'Invalid input, please enter a valid location.',
-          required: true,
-          default: defaultLocation
-        }
-      }
-    }
+    const schema = [{
+      type: 'input',
+      message: 'Select a location (type the id)',
+      name: 'location',
+      default: defaultLocation
+    }]
 
     if (allLocations.length > 0) {
       console.log('-----------------------------------------')
       console.log(allLocations)
-      console.log('Select a location')
     }
 
-    const result = await promptUtil.promisifyPrompt(schema)
+    const result = await inquirer.prompt(schema)
 
     const locationValid = allLocations.find(l => [l.id, l.str_id].includes(result.location))
 
@@ -133,7 +122,6 @@ async function selectLocation (env, allLocations) {
     } else {
       log.out('adding location...')
 
-      // try to create it!
       const resultAddLocation =
         await instanceOp('addLocation', env, {
           location_str_id: result.location
@@ -143,40 +131,32 @@ async function selectLocation (env, allLocations) {
         log.out(resultAddLocation)
       }
 
-      selectedLocation = resultAddLocation.result === 'success'
-        ? result.location
-        : null
+      selectedLocation = resultAddLocation.result === 'success' ? result.location : null
     }
   }
 
   return selectedLocation
 }
 
-async function selectPlan (env, locationId, allPlans) {
+async function selectPlan(env, locationId, allPlans) {
   let selectedPlan = null
 
   while (selectedPlan == null) {
     const defaultPlan = allPlans[0].id
 
-    const schema = {
-      properties: {
-        plan: {
-          description: 'Select a plan (type the id)',
-          message: 'Invalid input, please enter a valid plan.',
-          required: true,
-          default: defaultPlan
-        }
-      }
-    }
+    const schema = [{
+      type: 'input',
+      message: 'Select a plan (type the id)',
+      name: 'plan',
+      default: defaultPlan
+    }]
 
     if (allPlans.length > 0) {
       console.log('-----------------------------------------')
       console.log(allPlans)
-      console.log('Select a plan')
     }
 
-    const result = await promptUtil.promisifyPrompt(schema)
-
+    const result = await inquirer.prompt(schema)
     const planValid = allPlans.find(l => l.id === result.plan)
 
     if (!planValid) {
@@ -184,7 +164,6 @@ async function selectPlan (env, locationId, allPlans) {
     } else {
       log.out('setting plan...')
 
-      // try to create it!
       await instanceOp('set-plan', env, {
         location_str_id: locationId,
         plan: result.plan
@@ -197,11 +176,11 @@ async function selectPlan (env, locationId, allPlans) {
   return selectedPlan
 }
 
-async function getLocations (sitename, env) {
+async function getLocations(sitename, env) {
   return await instanceRequest.getOp('locations', sitename, env, {})
 }
 
-async function currentActiveInstance (env, dontPromptLocationPlan) {
+async function currentActiveInstance(env, dontPromptLocationPlan) {
   // first check if it has a sitename
   let website = await getWebsite(env.site_name, env)
 
