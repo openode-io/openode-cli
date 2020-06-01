@@ -20,12 +20,12 @@ function authenticate (email, password) {
   })
 }
 
-function signupApi(email, password, password_confirmation, newsletter) { // eslint-disable-line
+function signupApi (email, password, passwordConfirmation, newsletter) {
   return apiRequest.post('account/register', {
     account: {
       email,
       password,
-      password_confirmation,
+      passwordConfirmation,
       newsletter
     }
   }, {
