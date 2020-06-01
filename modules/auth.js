@@ -1,18 +1,18 @@
-const apiRequest = require("./req");
-const log = require("./log");
-const prompt = require("prompt");
-const promptUtil = require("./promptUtil")
+const apiRequest = require('./req')
+const log = require('./log')
+const prompt = require('prompt')
+const promptUtil = require('./promptUtil')
 
 // TODO: use a faster route to verify the token
-function tokenValid(token) {
+function tokenValid (token) {
   return apiRequest.get('instances/', {
-      token
-    },
-    { skipResponseProcessing: true }
+    token
+  },
+  { skipResponseProcessing: true }
   )
 }
 
-function authenticate(email, password) {
+function authenticate (email, password) {
   return apiRequest.post('account/getToken', {
     email,
     password
@@ -21,20 +21,20 @@ function authenticate(email, password) {
   })
 }
 
-function signupApi(email, password, password_confirmation, newsletter) {
-  return apiRequest.post('account/register',{
+function signupApi (email, password, password_confirmation, newsletter) { // eslint-disable-line
+  return apiRequest.post('account/register', {
     account: {
-        email,
-        password,
-        password_confirmation,
-        newsletter
-      }
-    },
-    { token: '' }
+      email,
+      password,
+      password_confirmation,
+      newsletter
+    }
+  },
+  { token: '' }
   )
 }
 
-function login() {
+function login () {
   return new Promise((resolve, reject) => {
     const schema = {
       properties: {
@@ -45,25 +45,25 @@ function login() {
           hidden: true
         }
       }
-    };
+    }
 
-    prompt.start();
+    prompt.start()
 
     prompt.get(schema, function (err, result) {
       if (err) {
-        reject(err);
+        reject(err)
       } else {
         authenticate(result.email, result.password).then((token) => {
-          resolve(token);
+          resolve(token)
         }).catch(err => {
-          reject(err);
-        });
+          reject(err)
+        })
       }
-    });
-  });
+    })
+  })
 }
 
-function wantsNewsletter() {
+function wantsNewsletter () {
   return new Promise((resolve, reject) => {
     const schema = {
       properties: {
@@ -72,24 +72,24 @@ function wantsNewsletter() {
           pattern: /^[y,n]$/,
           message: 'Invalid input, please enter either Y or N.',
           required: true,
-          default: "y"
+          default: 'y'
         }
       }
-    };
+    }
 
-    prompt.start();
+    prompt.start()
 
     prompt.get(schema, function (err, result) {
       if (err || !result) {
-        return reject(err);
+        return reject(err)
       } else {
-        resolve(result.wantsNewsletter);
+        resolve(result.wantsNewsletter)
       }
-    });
-  });
+    })
+  })
 }
 
-async function signup() {
+async function signup () {
   const schema = {
     properties: {
       email: {
@@ -102,34 +102,33 @@ async function signup() {
         hidden: true
       }
     }
-  };
+  }
 
-  let user = null;
+  let user = null
 
-  while (user == null) {
-
+  while (user === null) {
     try {
-      let result = await promptUtil.promisifyPrompt(schema);
-      let newsletter = (await wantsNewsletter()) === 'y';
-      user = await signupApi(result.email, result.password, result.password_confirmation, newsletter);
+      const result = await promptUtil.promisifyPrompt(schema)
+      const newsletter = (await wantsNewsletter()) === 'y'
+      user = await signupApi(result.email, result.password, result.password_confirmation, newsletter)
 
       if (user) {
-        return user.token;
+        return user.token
       }
     } catch (err) {
-      log.err(err);
-      user = null;
+      log.err(err)
+      user = null
 
       if (!err.error) {
-        return null;
+        return null
       }
     }
   }
 
-  return user.token;
+  return user.token
 }
 
-function loginOrSignup() {
+function loginOrSignup () {
   return new Promise((resolve, reject) => {
     const schema = {
       properties: {
@@ -138,58 +137,56 @@ function loginOrSignup() {
           pattern: /^[l,r]$/,
           message: 'Invalid input, please enter either l to [l]ogin or r to [r]egister.',
           required: true,
-          default: "r"
+          default: 'r'
         }
       }
-    };
+    }
 
-    prompt.start();
+    prompt.start()
 
     prompt.get(schema, function (err, result) {
-
       if (err || !result) {
-        return reject(err);
+        return reject(err)
       }
 
-      if (result.loginOrSignup == "l") {
+      if (result.loginOrSignup === 'l') {
         login().then((token) => {
-          resolve(token);
+          resolve(token)
         }).catch((err) => {
-          console.log(err);
+          console.log(err)
           reject(err)
-        });
-      } else if (result.loginOrSignup == "r") {
+        })
+      } else if (result.loginOrSignup === 'r') {
         signup().then((token) => {
-          resolve(token);
+          resolve(token)
         }).catch((err) => {
-          console.log(err);
+          console.log(err)
           reject(err)
-        });
-
+        })
       } else {
 
       }
-    });
-  });
+    })
+  })
 }
 
 module.exports = function (env) {
   return new Promise((resolve, reject) => {
     tokenValid(env.token).then((isValid) => {
       if (isValid) {
-        log.out("[+] Authentication valid.")
-        resolve(env.token);
+        log.out('[+] Authentication valid.')
+        resolve(env.token)
       } else {
         loginOrSignup().then((token) => {
-          log.out("[+] Authentication valid.")
-          resolve(token);
+          log.out('[+] Authentication valid.')
+          resolve(token)
         }).catch(err => {
-          reject(err);
-        });
+          reject(err)
+        })
       }
     }).catch((err) => {
-      console.log(err);
-      reject(err);
-    });
-  });
-};
+      console.log(err)
+      reject(err)
+    })
+  })
+}
