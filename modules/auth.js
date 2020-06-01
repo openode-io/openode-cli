@@ -3,7 +3,7 @@ const log = require('./log')
 const inquirer = require('inquirer')
 
 // TODO: use a faster route to verify the token
-function tokenValid(token) {
+function tokenValid (token) {
   return apiRequest.get('instances/', {
     token
   }, {
@@ -11,7 +11,7 @@ function tokenValid(token) {
   })
 }
 
-function authenticate(email, password) {
+function authenticate (email, password) {
   return apiRequest.post('account/getToken', {
     email,
     password
@@ -33,20 +33,20 @@ function signupApi(email, password, password_confirmation, newsletter) { // esli
   })
 }
 
-async function login() {
-  return await new Promise(async (resolve, reject) => {
-    const schema = [{
-        type: 'input',
-        message: 'email:',
-        name: 'email'
-      },
-      {
-        type: 'password',
-        message: 'Password:',
-        name: 'password'
-      }
-    ]
-    const result = await inquirer.prompt(schema)
+async function login () {
+  const schema = [{
+    type: 'input',
+    message: 'email:',
+    name: 'email'
+  },
+  {
+    type: 'password',
+    message: 'Password:',
+    name: 'password'
+  }
+  ]
+  const result = await inquirer.prompt(schema)
+  return new Promise((resolve, reject) => {
     authenticate(result.email, result.password).then((token) => {
       resolve(token)
     }).catch(err => {
@@ -55,20 +55,20 @@ async function login() {
   })
 }
 
-async function wantsNewsletter() {
-  return await new Promise(async (resolve, reject) => {
-    const schema = [{
-      type: 'input',
-      message: 'Subscribe to the newsletter ([y]es or [n]o) ?',
-      name: 'wantsNewsletter',
-      choices: ['y', 'n'],
-      default: 'y'
-    }]
-    const result = await inquirer.prompt(schema)
+async function wantsNewsletter () {
+  const schema = [{
+    type: 'input',
+    message: 'Subscribe to the newsletter ([y]es or [n]o) ?',
+    name: 'wantsNewsletter',
+    choices: ['y', 'n'],
+    default: 'y'
+  }]
+  const result = await inquirer.prompt(schema)
+  return new Promise((resolve, reject) => {
     switch (result.wantsNewsletter) {
       case 'y':
         resolve(result.wantsNewsletter)
-        break;
+        break
       case 'n':
         resolve(result.wantsNewsletter)
         break
@@ -79,22 +79,22 @@ async function wantsNewsletter() {
   })
 }
 
-async function signup() {
+async function signup () {
   const schema = [{
-      type: 'input',
-      message: 'email:',
-      name: 'email'
-    },
-    {
-      type: 'password',
-      message: 'Password:',
-      name: 'password'
-    },
-    {
-      type: 'password',
-      message: 'Repeat Password:',
-      name: 'password_confirmation'
-    }
+    type: 'input',
+    message: 'email:',
+    name: 'email'
+  },
+  {
+    type: 'password',
+    message: 'Password:',
+    name: 'password'
+  },
+  {
+    type: 'password',
+    message: 'Repeat Password:',
+    name: 'password_confirmation'
+  }
   ]
 
   let user = null
@@ -120,16 +120,16 @@ async function signup() {
   return user.token
 }
 
-async function loginOrSignup() {
-  return await new Promise(async (resolve, reject) => {
-    const schema = [{
-      type: 'input',
-      message: 'Would you like to [l]ogin or [r]egister a new account?',
-      name: 'loginOrSignup',
-      choices: ['l', 'r'],
-      default: 'r'
-    }]
-    const result = await inquirer.prompt(schema)
+async function loginOrSignup () {
+  const schema = [{
+    type: 'input',
+    message: 'Would you like to [l]ogin or [r]egister a new account?',
+    name: 'loginOrSignup',
+    choices: ['l', 'r'],
+    default: 'r'
+  }]
+  const result = await inquirer.prompt(schema)
+  return await new Promise((resolve, reject) => {
     switch (result.loginOrSignup) {
       case 'l':
         login().then((token) => {
@@ -137,7 +137,7 @@ async function loginOrSignup() {
         }).catch((err) => {
           reject(err)
         })
-        break;
+        break
       case 'r':
         signup().then((token) => {
           resolve(token)
@@ -146,7 +146,7 @@ async function loginOrSignup() {
         })
         break
       default:
-        reject({ error: "invalid input: [r]egister or [l]ogin only" })
+        resolve({ error: 'invalid input: [r]egister or [l]ogin only' })
         break
     }
   })

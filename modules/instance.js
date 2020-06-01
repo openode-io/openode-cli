@@ -5,7 +5,7 @@ const instanceRequest = require('./instanceRequest')
 const instanceOp = require('./instance_operation')
 const modLocations = require('./locations')
 
-async function getWebsite(sitename, config) {
+async function getWebsite (sitename, config) {
   if (!sitename || sitename === '') {
     return null
   }
@@ -18,7 +18,7 @@ async function getWebsite(sitename, config) {
   }
 }
 
-async function createInstance(opts, config) {
+async function createInstance (opts, config) {
   if (!opts.sitename || opts.sitename === '') {
     return false
   }
@@ -29,7 +29,7 @@ async function createInstance(opts, config) {
   }, config)
 }
 
-function sitenames(config, instanceType = 'server') {
+function sitenames (config, instanceType = 'server') {
   return apiRequest.get(`instances/?instance_type=${instanceType}`, config)
     .then(function (body) {
       if (!body) return []
@@ -37,7 +37,7 @@ function sitenames(config, instanceType = 'server') {
     })
 }
 
-async function selectExistingOrCreate(env) {
+async function selectExistingOrCreate (env) {
   const instanceType = 'server'
   let selectedSitename = null
 
@@ -95,7 +95,7 @@ async function selectExistingOrCreate(env) {
   return selectedSitename
 }
 
-async function selectLocation(env, allLocations) {
+async function selectLocation (env, allLocations) {
   let selectedLocation = null
 
   while (!selectedLocation) {
@@ -138,7 +138,7 @@ async function selectLocation(env, allLocations) {
   return selectedLocation
 }
 
-async function selectPlan(env, locationId, allPlans) {
+async function selectPlan (env, locationId, allPlans) {
   let selectedPlan = null
 
   while (selectedPlan == null) {
@@ -176,11 +176,11 @@ async function selectPlan(env, locationId, allPlans) {
   return selectedPlan
 }
 
-async function getLocations(sitename, env) {
+async function getLocations (sitename, env) {
   return await instanceRequest.getOp('locations', sitename, env, {})
 }
 
-async function currentActiveInstance(env, dontPromptLocationPlan) {
+async function currentActiveInstance (env, dontPromptLocationPlan) {
   // first check if it has a sitename
   let website = await getWebsite(env.site_name, env)
 
