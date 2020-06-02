@@ -160,7 +160,6 @@ function auth (env) {
   })
 }
 
-
 module.exports = {
   auth,
   tokenValid
