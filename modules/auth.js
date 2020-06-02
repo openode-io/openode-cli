@@ -2,9 +2,8 @@ const apiRequest = require('./req')
 const log = require('./log')
 const inquirer = require('inquirer')
 
-// TODO: use a faster route to verify the token
 function tokenValid (token) {
-  return apiRequest.get('instances/', {
+  return apiRequest.get('account/me', {
     token
   }, {
     skipResponseProcessing: true
@@ -140,7 +139,7 @@ async function loginOrSignup () {
   })
 }
 
-module.exports = function (env) {
+function auth (env) {
   return new Promise((resolve, reject) => {
     tokenValid(env.token).then((isValid) => {
       if (isValid) {
@@ -159,4 +158,10 @@ module.exports = function (env) {
       reject(err)
     })
   })
+}
+
+
+module.exports = {
+  auth,
+  tokenValid
 }
