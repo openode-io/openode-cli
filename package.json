@@ -1,6 +1,6 @@
 {
   "name": "openode",
-  "version": "2.0.28",
+  "version": "2.0.29",
   "description": "opeNode command line interface to control and manage instances.",
   "main": "index.js",
   "scripts": {
@@ -34,14 +34,14 @@
   "homepage": "https://github.com/openode-io/openode-cli#readme",
   "devDependencies": {
     "depcheck": "^0.9.2",
-    "eslint": "7.1.0",
+    "eslint": "7.2.0",
     "eslint-config-standard": "14.1.1",
-    "eslint-plugin-import": "2.20.2",
+    "eslint-plugin-import": "2.21.2",
     "eslint-plugin-node": "11.1.0",
     "eslint-plugin-promise": "4.2.1",
     "eslint-plugin-standard": "4.0.1",
     "expect.js": "^0.3.1",
-    "mocha": "^7.2.0",
+    "mocha": "^8.0.1",
     "nock": "^12.0.3",
     "nyc": "^15.1.0"
   },

@@ -67,11 +67,13 @@ openode restart
 
 ### Sync - Send only the changed/new files
 
-If you only need to send new files without deploying, then you can simply run:
+If you want to synchronize the files prior to deploy the following command can be used.
 
 ```
 openode sync
 ```
+
+Note that this is a temporarily remote location, *NOT* the live files. When you run *openode sync*, files are basically prepared. Then when you hit *openode deploy*, these files are built into an image.
 
 ### Upgrading Your Plan
 
@@ -148,8 +150,7 @@ For example, if you run openode `exec "ls -la"`, the list of files will be liste
 
 ### Clear remote repository
 
-In order to clear all content of your cloud repository (excluding persistent volumes),
-the following operation must done:
+In order to clear the temp (see the *sync* command for more details) remote folder, run:
 
 ```
 openode erase-all
