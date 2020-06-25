@@ -6,6 +6,7 @@ const ciConf = require("./modules/ciConf");
 const envModule = require("./modules/env");
 const moduleLocations = require("./modules/locations");
 const apiRequest = require("./modules/req");
+const instanceRequest = require("./modules/instanceRequest");
 const packageJson = require("./package.json");
 const deployModule = require("./modules/deploy");
 const eventsStream = require("./modules/eventsStream");
@@ -342,6 +343,17 @@ function processCommander() {
       .action(async function(storageArea) {
         let [envVars, ] = await prepareAuth();
         await runCommand(progress(require("./modules/storageAreas")("del", envVars, storageArea)));
+      });
+
+  // snapshots
+  commander
+    .command('create-snapshot <path>')
+      .description('Create a snapshot of a given path.')
+      .action(async function(path) {
+        let [envVars, ] = await prepareAuth();
+        await runCommand(progress(
+          instanceRequest.postOp('snapshots', envVars.site_name, { path }, envVars)
+        ));
       });
 
   // plans

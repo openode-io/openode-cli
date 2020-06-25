@@ -271,6 +271,16 @@ openode del-storage-area [relative-folder]
 
 Exemple [relative-folder]: db/
 
+### Snapshots
+
+## Create a snapshot
+
+```
+openode create-snapshot <path>
+```
+
+Creates a snapshot of the content in given folder.
+
 ### Locations
 
 The following commands allow to manage locations where your website is deployed.
