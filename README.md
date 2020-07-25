@@ -62,8 +62,10 @@ openode login
 If you would like to deploy without synchronizing the files, this is the right command to use:
 
 ```
-openode restart
+openode restart [-l locationId] [--with-latest-deployment]
 ```
+
+The **--with-latest-deployment** uses the latest deployed image instead of rebuilding a new one.
 
 ### Sync - Send only the changed/new files
 
