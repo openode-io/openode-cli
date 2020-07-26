@@ -140,15 +140,20 @@ function processCommander() {
     });
 
   commander
-    .command('restart [locationId]')
+    .command('restart')
+    .option("-l <locationId>", "Location ID.")
+    .option("--with-latest-deployment",
+            "Use the latest available image to spawn the instance.")
     .description('Restart the instance without synchronizing the files.')
-    .action(async function(locationIdInput) {
+    .action(async function(opts = {}) {
+      const locationIdInput = opts.L
+      const withLatestDeployment = opts.withLatestDeployment
 
       let [envVars, ] = await prepareAuth();
 
       function proc(locationId) {
         return require("./modules/instance_operation")("restart", envVars,
-          { "location_str_id": locationId})
+          { "location_str_id": locationId, withLatestDeployment })
       }
 
       await runCommand(progress(

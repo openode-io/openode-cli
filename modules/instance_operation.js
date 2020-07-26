@@ -19,8 +19,25 @@ module.exports = async function (operation, env, options = {}) {
         return await instanceReq.getOp('plan', env.site_name, env, options)
       case 'set-plan':
         return await instanceReq.postOp('set-plan', env.site_name, options, env)
-      case 'restart':
+      case 'restart': {
+        let parentExecutionId
+
+        if (options.withLatestDeployment) {
+          const optionsLatestDeployment = { ...options, status: 'success' }
+          const latestDeployments = await instanceReq.getOp('executions/list/Deployment',
+            env.site_name,
+            env, optionsLatestDeployment)
+
+          if (latestDeployments && latestDeployments.length > 0) {
+            parentExecutionId = latestDeployments[0].id
+          }
+        }
+
+        options.parent_execution_id =
+          parentExecutionId ? `${parentExecutionId}` : undefined
+
         return await instanceReq.postOp('restart', env.site_name, options, env)
+      }
       case 'reload':
         return await instanceReq.postOp('reload', env.site_name, options, env)
       case 'deployPreBuilt':
