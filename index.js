@@ -88,12 +88,12 @@ async function processAllLocations(envVars, locationIdInput, callbackProcess, ma
 async function auth(opts) {
   let envVars = {};
 
-  if ( ! opts.T) {
+  if ( ! opts.T && !opts.t) {
     // did not specify token, need to ask it/.openode
     [envVars, ] = await prepareAuth();
   } else {
-    envVars.token = opts.T;
-    envVars.site_name = opts.S;
+    envVars.token = opts.t || opts.T;
+    envVars.site_name = opts.s || opts.S;
     envVars.version = packageJson.version;
     await prepareAuth(envVars);
   }
@@ -146,7 +146,7 @@ function processCommander() {
             "Use the latest available image to spawn the instance.")
     .description('Restart the instance without synchronizing the files.')
     .action(async function(opts = {}) {
-      const locationIdInput = opts.L
+      const locationIdInput = opts.L || opts.l
       const withLatestDeployment = opts.withLatestDeployment
 
       let [envVars, ] = await prepareAuth();
@@ -234,7 +234,7 @@ function processCommander() {
     .description('Print logs in realtime')
     .action(async function(opts) {
       let [envVars, ] = await prepareAuth();
-      let nbLines = opts.N;
+      let nbLines = opts.N || opts.n;
 
       function proc(locationId) {
         return require("./modules/instance_operation")("logs", envVars,
