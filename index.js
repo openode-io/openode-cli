@@ -231,14 +231,20 @@ function processCommander() {
   commander
     .command('logs')
     .option("-n <nb-lines>", "Number of lines")
-    .description('Print logs in realtime')
+    .option("-a <app-name>", "Application name, default=www, or addon name")
+    .description('Print latest logs')
     .action(async function(opts) {
       let [envVars, ] = await prepareAuth();
-      let nbLines = opts.N || opts.n;
+      const nbLines = opts.N || opts.n;
+      const app = opts.A || opts.a || 'www';
 
       function proc(locationId) {
         return require("./modules/instance_operation")("logs", envVars,
-          { "location_str_id": locationId, nbLines: nbLines || 100 }
+          {
+            "location_str_id": locationId,
+            nbLines: nbLines || 100,
+            app,
+          }
         );
       }
 
@@ -247,13 +253,20 @@ function processCommander() {
 
   commander
     .command('exec <myCmd>')
+      .option("-a <app-name>", "Application name, default=www, or addon name")
       .description('Execute a command in your container instance')
-      .action(async function(myCmd) {
+      .action(async function(myCmd, opts = {}) {
         let [envVars, ] = await prepareAuth();
+        const app = opts.A || opts.a || 'www';
 
         function proc(locationId) {
           return require("./modules/instance_operation")("cmd", envVars,
-            { "location_str_id": locationId, cmd: myCmd, service: '' })
+            {
+              "location_str_id": locationId,
+              cmd: myCmd,
+              app,
+              service: ''
+            })
           .then((result) => {
             if (result && result.result) {
               log.printCmdDetails(result.result);
@@ -442,6 +455,20 @@ function processCommander() {
         await runCommand(progress(require("./modules/instance_operation")("removeLocation", envVars,
           { "location_str_id": locationId } )));
       });
+
+  // addons
+  commander
+    .command('addons')
+    .description('List active addons')
+    .action(async function() {
+      let [envVars, ] = await prepareAuth();
+      
+      await runCommand(progress(
+        instanceRequest.getOp('addons', envVars.site_name, envVars, { })
+      ));
+    });
+
+  // templates
 
   commander
     .command('list-templates')
