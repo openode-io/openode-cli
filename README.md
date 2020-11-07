@@ -34,7 +34,7 @@ This command will upload your local repository to the opeNode cloud, npm install
 then launch a secure container of your server, and then put it online. During this
 command, you can also select between using a subdomain.openode.io or a custom domain.
 
-Note that when you run *openode deploy* and your website is already running, it will update your files, update the environment variables (if they changed), and reload your website with 0-second-downtime.
+Note that when you run *openode deploy* and your website is already running, it will update your files, update the environment variables (if they changed), and reload your website.
 
 #### Options
 

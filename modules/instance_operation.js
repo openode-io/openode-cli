@@ -19,6 +19,8 @@ module.exports = async function (operation, env, options = {}) {
         return await instanceReq.getOp('plan', env.site_name, env, options)
       case 'set-plan':
         return await instanceReq.postOp('set-plan', env.site_name, options, env)
+      case 'scm-clone':
+        return await instanceReq.postOp('scm-clone', env.site_name, options, env)
       case 'restart': {
         let parentExecutionId
 

@@ -118,18 +118,22 @@ function processCommander() {
     });
 
   commander
-    .command('deploy')
+    .command('deploy [repository_url]')
     .option("-t <token>", "User token used for authentication")
     .option("-s <site name>", "Instance site name.")
     .description('Deploy your website on opeNode')
-    .action(async function(opts) {
+    .action(async function(repositoryUrl, opts) {
 
       const options = {
+        repository_url: repositoryUrl
       };
 
       let envVars = await auth(opts);
 
-      await main.checkCurrentRepositoryValid(envVars);
+      if (!repositoryUrl) {
+        await main.checkCurrentRepositoryValid(envVars);
+      }
+
       await deployModule.verifyServerAllocated(envVars);
 
       await runCommand(progress(

@@ -279,7 +279,20 @@ async function deploy (env, options) {
     for (const location of locations2Deploy) {
       options.location_str_id = location.id
 
-      await execSyncFiles(env, options)
+      if (options.repository_url) {
+        console.log(`Cloning ${options.repository_url}...`)
+        const resultClone = await instanceOperation('scm-clone', env, options)
+
+        console.log(resultClone.status)
+        if (resultClone.status !== "success") {
+          console.log(resultClone)
+          process.exit(1)
+        }
+        console.log("...cloned!")
+      }
+      else {
+        await execSyncFiles(env, options)
+      }
 
       const curRes = await instanceOperation('restart', env, options)
 
