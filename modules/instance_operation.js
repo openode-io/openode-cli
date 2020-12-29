@@ -6,6 +6,8 @@ module.exports = async function (operation, env, options = {}) {
     switch (operation) {
       case 'status':
         return await instanceReq.getOp('', env.site_name, env)
+      case 'stats':
+        return await instanceReq.getOp('stats', env.site_name, env)
       case 'logs': {
         const result = await instanceReq.getOp('logs', env.site_name, env, options)
         log.prettyPrint(result.logs)

@@ -233,6 +233,14 @@ function processCommander() {
     });
 
   commander
+    .command('stats')
+    .description('Get stats on your opeNode instance')
+    .action(async function() {
+      let [envVars, ] = await prepareAuth();
+      await runCommand(progress(require("./modules/instance_operation")("stats", envVars), envVars));
+    });
+
+  commander
     .command('logs')
     .option("-n <nb-lines>", "Number of lines")
     .option("-a <app-name>", "Application name, default=www, or addon name")
