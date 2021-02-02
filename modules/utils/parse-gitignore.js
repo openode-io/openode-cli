@@ -1,8 +1,8 @@
 
-var fs = require('fs')
-var isGlob = require('is-glob')
-var unique = require('array-unique')
-var cache = {}
+const fs = require('fs')
+const isGlob = require('is-glob')
+const unique = require('array-unique')
+const cache = {}
 
 function gitignore (fp, patterns, options) {
   if (!fp || !fs.existsSync(fp)) return []
@@ -18,9 +18,9 @@ function gitignore (fp, patterns, options) {
   }
 
   options = options || {}
-  var str = fs.readFileSync(fp, 'utf8')
-  var lines = str.split(/\r\n|\n/).concat(patterns || [])
-  var arr = unique(gitignore.parse(lines, options))
+  const str = fs.readFileSync(fp, 'utf8')
+  const lines = str.split(/\r\n|\n/).concat(patterns || [])
+  const arr = unique(gitignore.parse(lines, options))
 
   if (options.cache !== false) {
     gitignore.cache[fp] = arr
@@ -32,25 +32,25 @@ gitignore.cache = cache
 
 gitignore.parse = function parse (arr, opts) {
   arr = arrayify(arr)
-  var len = arr.length; var i = -1
-  var res = []
+  const len = arr.length; let i = -1
+  const res = []
 
   while (++i < len) {
-    var str = arr[i]
+    let str = arr[i]
     str = (str || '').trim()
 
     if (!str || str.charAt(0) === '#') {
       continue
     }
 
-    var parsed = gitignore.toGlob(str)
+    const parsed = gitignore.toGlob(str)
     addPattern(res, parsed.patterns, parsed.stats, opts)
   }
   return res
 }
 
 gitignore.toGlob = function toGlob (str) {
-  var parsed = {}; var stats = {}
+  const parsed = {}; const stats = {}
 
   stats.first = str.charAt(0)
   stats.last = str.slice(-1)
@@ -84,9 +84,9 @@ gitignore.toGlob = function toGlob (str) {
 
 function addPattern (res, arr, stats, options) {
   arr = arrayify(arr)
-  var len = arr.length; var i = -1
+  const len = arr.length; let i = -1
   while (++i < len) {
-    var str = arr[i]
+    let str = arr[i]
     if (stats.isNegated) {
       str = '!' + str
     }
