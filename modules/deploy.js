@@ -120,7 +120,7 @@ function sendFiles (files, config, options) {
       resolve()
     }
 
-    var output = fs.createWriteStream(config.token + '.zip')
+    const output = fs.createWriteStream(config.token + '.zip')
 
     output.on('close', function () {
       sendCompressedFile(config.token + '.zip', config, options).then((result) => {
