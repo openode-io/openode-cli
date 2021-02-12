@@ -6,7 +6,6 @@ const cache = {}
 
 function gitignore (fp, patterns, options) {
   if (!fp || !fs.existsSync(fp)) return []
-  console.log('git ignore..')
 
   if (cache.hasOwnProperty(fp)) { // eslint-disable-line
     return cache[fp]
