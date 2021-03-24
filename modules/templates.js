@@ -63,7 +63,7 @@ function determineDefaultTemplate () {
     return 'node-minimal'
   } else if (fs.existsSync('./shard.yml')) {
     return 'crystal-minimal'
-  }else if (anyFilesExist(['./index.html', './index.htm'])) {
+  } else if (anyFilesExist(['./index.html', './index.htm'])) {
     return 'nginx-static'
   } else if (anyFilesExist(['./index.php'])) {
     return 'php-apache-minimal'
