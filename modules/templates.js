@@ -57,13 +57,13 @@ function determineDefaultTemplate () {
     return 'rust-minimal'
   } else if (fs.existsSync('./build.sbt')) {
     return 'scala-sbt'
-  } else if (fs.existsSync('./shard.yml')) {
-    return 'crystal-amber'
   } else if (fs.existsSync('./project.clj')) {
     return 'clojure'
   } else if (fs.existsSync('./package.json')) {
     return 'node-minimal'
-  } else if (anyFilesExist(['./index.html', './index.htm'])) {
+  } else if (fs.existsSync('./shard.yml')) {
+    return 'crystal-minimal'
+  }else if (anyFilesExist(['./index.html', './index.htm'])) {
     return 'nginx-static'
   } else if (anyFilesExist(['./index.php'])) {
     return 'php-apache-minimal'
