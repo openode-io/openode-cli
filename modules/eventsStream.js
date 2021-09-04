@@ -14,11 +14,12 @@ function listenOnOpen (ws, params) {
 function listenMessages (ws, callback) {
   assert.ok(callback)
 
-  ws.on('message', (msg) => {
+  ws.on('message', (msg, isBinary) => {
     let input = null
 
     try {
-      input = (typeof msg === 'string') ? JSON.parse(msg) : msg
+      const message = isBinary ? msg : msg.toString();
+      input = (typeof message === 'string') ? JSON.parse(message) : message
     } catch (err) {
       console.error(err)
       return null
