@@ -18,7 +18,7 @@ function listenMessages (ws, callback) {
     let input = null
 
     try {
-      const message = isBinary ? msg : msg.toString();
+      const message = isBinary ? msg : msg.toString()
       input = (typeof message === 'string') ? JSON.parse(message) : message
     } catch (err) {
       console.error(err)
