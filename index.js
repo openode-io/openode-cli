@@ -377,10 +377,13 @@ function processCommander() {
 
   // snapshots
   commander
-    .command('create-snapshot <path>')
-      .description('Create a snapshot of a given path.')
+    .command('create-snapshot [path]')
+      .description('Create a snapshot.')
       .action(async function(path) {
         let [envVars, ] = await prepareAuth();
+
+        path = path || '/'
+
         await runCommand(progress(
           instanceRequest.postOp('snapshots', envVars.site_name, { path }, envVars)
         ));
