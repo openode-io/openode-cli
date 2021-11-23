@@ -53,6 +53,7 @@ describe('Env', function() {
       expect(f2ignore.indexOf("thisisatest2")).to.not.equal(-1);
       expect(f2ignore.indexOf("test3")).to.not.equal(-1);
       expect(f2ignore.indexOf("test4/test3")).to.not.equal(-1);
+      expect(f2ignore.indexOf(".gitignore")).to.not.equal(-1);
     });
   })
 });
