@@ -75,17 +75,6 @@ module.exports = async function (operation, env, options = {}) {
           location_str_id: options.location_str_id
         }, env)
 
-      case 'increaseStorage':
-        return await instanceReq.postOp('increase-storage', env.site_name, {
-          location_str_id: options.location_str_id,
-          amount_gb: options.amountGB
-        }, env)
-
-      case 'destroyStorage':
-        return await instanceReq.postOp('destroy-storage', env.site_name, {
-          location_str_id: options.location_str_id
-        }, env)
-
       case 'decreaseStorage':
         return await instanceReq.postOp('decrease-storage', env.site_name, {
           location_str_id: options.location_str_id,

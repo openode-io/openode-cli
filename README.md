@@ -220,59 +220,6 @@ openode del-dns [id]
 
 where id corresponds to the id returned by list-dns.
 
-### Persistence
-
-By default no data can be persisted in your instance (immutable). In order to persist
-data, you need to increase/decrease your storage. It will create an external persisted
-disk which will remain available wether or not your instance is online.
-
-#### Increase storage
-
-You can increase your storage via:
-
-```
-openode increase-storage [amountGB]
-```
-
-where amountGB is the number of GBs to add.
-
-where amountGB is the number of GBs to decrease.
-
-#### Destroy storage
-
-If you want to manually destroy your storage disk, you can do so via:
-
-```
-openode destroy-storage
-```
-
-### Defining storage areas
-
-The storage areas are folders which will never be deleted. Those folders can
-be used for storage purpose (database, configurations, etc.).
-
-#### List storage areas
-
-```
-openode storage-areas
-```
-
-#### Add a storage area
-
-```
-openode add-storage-area [relative-folder]
-```
-
-Exemple [relative-folder]: db/
-
-#### Delete a storage area
-
-```
-openode del-storage-area [relative-folder]
-```
-
-Exemple [relative-folder]: db/
-
 ### Snapshots
 
 ## Create a snapshot

@@ -350,31 +350,6 @@ function processCommander() {
       await runCommand(progress(processAllLocations(envVars, locationIdInput, procEraseAll)));
     });
 
-  // storage areas
-  commander
-    .command('storage-areas')
-      .description('List the storage areas')
-      .action(async function() {
-      let [envVars, ] = await prepareAuth();
-        await runCommand(progress(require("./modules/storageAreas")("list", envVars)));
-      });
-
-  commander
-    .command('add-storage-area <storageArea>')
-      .description('Add a new storage area')
-      .action(async function(storageArea) {
-        let [envVars, ] = await prepareAuth();
-        await runCommand(progress(require("./modules/storageAreas")("add", envVars, storageArea)));
-      });
-
-  commander
-    .command('del-storage-area <storageArea>')
-      .description('Delete a storage area')
-      .action(async function(storageArea) {
-        let [envVars, ] = await prepareAuth();
-        await runCommand(progress(require("./modules/storageAreas")("del", envVars, storageArea)));
-      });
-
   // snapshots
   commander
     .command('create-snapshot [path]')
@@ -471,18 +446,6 @@ function processCommander() {
           { "location_str_id": locationId } )));
       });
 
-  // addons
-  commander
-    .command('addons')
-    .description('List active addons')
-    .action(async function() {
-      let [envVars, ] = await prepareAuth();
-      
-      await runCommand(progress(
-        instanceRequest.getOp('addons', envVars.site_name, envVars, { })
-      ));
-    });
-
   // templates
 
   commander
@@ -514,34 +477,6 @@ function processCommander() {
 
         await runCommand(progress(require("./modules/templates")("template", {},
           { name } )));
-      });
-
-  commander
-    .command('increase-storage <amountGB> [locationId]')
-      .description('Increase the extra storage capacity')
-      .action(async function(amountGB, locationIdInput) {
-        let [envVars, ] = await prepareAuth();
-
-        function proc(locationId) {
-          return require("./modules/instance_operation")("increaseStorage", envVars,
-            { "location_str_id": locationId, amountGB } );
-        }
-
-        await runCommand(progress(processAllLocations(envVars, locationIdInput, proc)));
-      });
-
-  commander
-    .command('destroy-storage [locationId]')
-      .description('Destroy the persisted disk.')
-      .action(async function(locationIdInput) {
-        let [envVars, ] = await prepareAuth();
-
-        function proc(locationId) {
-          return require("./modules/instance_operation")("destroyStorage", envVars,
-            { "location_str_id": locationId } );
-        }
-
-        await runCommand(progress(processAllLocations(envVars, locationIdInput, proc)));
       });
 
   commander
