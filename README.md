@@ -39,11 +39,12 @@ Note that when you run *openode deploy* and your website is already running, it 
 #### Options
 
 ```
-openode deploy [-t TOKEN -s SITE_NAME]
+openode deploy [-t TOKEN -s SITE_NAME] [repository URL]
 ```
 
 * *-t:* Provide an API token used for authentication.
 * *-s:* Provide a site name.
+* repository url: a git repository using (optional)
 
 *.openodeignore*: If you add a .openodeignore file in your repository, the
 list of files provided in this file will get ignored (not sent). The format is the
